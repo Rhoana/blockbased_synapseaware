@@ -235,8 +235,8 @@ def PruneNeighborLabelSet(neighbor_label_set, holes, non_holes):
 
     for (label_one, label_two) in neighbor_label_set:
         # do not include any elements already labeled or connected to the border
-        if label_one in holes or label_two in holes: continue
-        if label_one in non_holes or label_two in non_holes: continue
+        if label_one in holes or label_one in non_holes: continue
+        if label_two in holes or label_two in non_holes: continue
         if label_one == BORDER_CONTACT or label_two == BORDER_CONTACT: continue
 
         neighbor_label_set_reduced.add((label_one, label_two))
@@ -315,7 +315,7 @@ def FindPerBlockConnectedComponents(data, iz, iy, ix):
     adjacency_set_time = time.time()
     neighbor_label_set = FindAdjacentLabelSetLocal(components)
     adjacency_set_time = time.time() - adjacency_set_time
-    
+
     # delete the components (no longer needed)
     del components
 

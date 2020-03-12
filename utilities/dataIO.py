@@ -3,12 +3,24 @@ import pickle
 
 
 
+import numpy as np
+
+
+
 from blockbased_synapseaware.data_structures.meta_data import MetaData
 
 
 
 def ReadMetaData(prefix):
     return MetaData(prefix)
+
+
+
+def ReadH5File(filename):
+    with h5py.File(filename, 'r') as hf:
+        data = np.array(hf[list(hf.keys())[0]])
+
+    return data
 
 
 
