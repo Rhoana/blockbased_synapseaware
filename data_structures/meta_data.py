@@ -21,6 +21,8 @@ class MetaData:
         self.volume_sizes = None
         # default start index value for the block
         self.start_indices = (0, 0, 0)
+        # place to save the hole filled segmentations
+        self.hole_filling_output_directory = None
 
         # open the meta file and read in requisite information
         with open('meta/{}.meta'.format(prefix), 'r') as fd:
@@ -44,6 +46,8 @@ class MetaData:
                 elif comment == '# start block indices':
                     start_indices = value.split(',')
                     self.start_indices = (int(start_indices[OR_Z]), int(start_indices[OR_Y]), int(start_indices[OR_X]))
+                elif comment == '# hole filling output directory':
+                    self.hole_filling_output_directory = value
 
         # make sure important values are initialized
         assert (not self.raw_segmentation_path == None)
@@ -143,3 +147,8 @@ class MetaData:
 
     def TempComponentsDirectory(self, iz, iy, ix):
         return '{}/{}/{:04d}z-{:04d}y-{:04d}x'.format(self.tmp_directory, self.prefix, iz, iy, ix)
+
+
+
+    def HoleFillingOutputDirectory(self):
+        return self.hole_filling_output_directory
