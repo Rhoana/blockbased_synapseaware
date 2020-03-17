@@ -1,5 +1,5 @@
 from blockbased_synapseaware.hole_filling.components import FindPerBlockConnectedComponents
-from blockbased_synapseaware.hole_filling.connect import ConnectLabelsAcrossBlocks
+from blockbased_synapseaware.hole_filling.connect import ConnectLabelsAcrossBlocks, CombineAssociatedLabels
 from blockbased_synapseaware.utilities.dataIO import ReadMetaData
 from blockbased_synapseaware.utilities.constants import *
 
@@ -23,3 +23,6 @@ def FillHolesSequentially(prefix):
         for iy in range(data.StartY(), data.EndY()):
             for ix in range(data.StartX(), data.EndX()):
                 ConnectLabelsAcrossBlocks(data, iz, iy, ix)
+
+    # compute the third step to link neighbor labels across blocks
+    CombineAssociatedLabels(data)

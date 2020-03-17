@@ -2,11 +2,13 @@ import time
 
 
 
-from numba import jit
+from numba import jit, types
+from numba.typed import Dict
 
 
 
-from blockbased_synapseaware.utilities.dataIO import PickleData, ReadH5File
+from blockbased_synapseaware.hole_filling.components import FindBackgroundComponentsAssociatedLabels, Set2Dictionary
+from blockbased_synapseaware.utilities.dataIO import PickleData, PickleNumbaData, ReadH5File, ReadPickledData
 from blockbased_synapseaware.utilities.constants import BORDER_CONTACT
 
 
@@ -157,5 +159,71 @@ def ConnectLabelsAcrossBlocks(data, iz, iy, ix):
     total_time = time.time() - start_time
 
     print ('Adjacency Set Time: {:0.2f} seconds.'.format(adjacency_set_time))
+    print ('Write Time: {:0.2f} seconds.'.format(write_time))
+    print ('Total Time: {:0.2f} seconds.'.format(total_time))
+
+
+
+def CombineAssociatedLabels(data):
+    # start timing statistics
+    start_time = time.time()
+
+    # create empty sets/dicts
+    neighbor_label_set_global = set()
+    associated_label_dict_global = Dict.empty(key_type=types.int64, value_type=types.int64)
+    undetermined_label_set_global = set()
+    neighbor_label_dict_local = dict()
+
+    read_time = time.time()
+
+    # iterate over all blocks and read in global/local dicts
+    for iz in range(data.StartZ(), data.EndZ()):
+        for iy in range(data.StartY(), data.EndY()):
+            for ix in range(data.StartX(), data.EndX()):
+                # get the location for the temporary directory
+                tmp_directory = data.TempComponentsDirectory(iz, iy, ix)
+
+                # read the four sets/dicts for this one block
+                block_neighbor_label_set_global = ReadPickledData('{}/neighbor-label-set-global.pickle'.format(tmp_directory))
+                block_associated_label_dict = ReadPickledData('{}/associated-label-set-local.pickle'.format(tmp_directory))
+                block_undetermined_label_set = ReadPickledData('{}/undetermined-label-set-local.pickle'.format(tmp_directory))
+                block_neighbor_label_dict_local = ReadPickledData('{}/neighbor-label-dictionary-reduced.pickle'.format(tmp_directory))
+
+                # combine the local datasets with the global ones
+                neighbor_label_set_global = neighbor_label_set_global.union(block_neighbor_label_set_global)
+                associated_label_dict_global.update(block_associated_label_dict)
+                undetermined_label_set_global = undetermined_label_set_global.union(block_undetermined_label_set)
+                neighbor_label_dict_local.update(block_neighbor_label_dict_local)
+
+                # free memory
+                del block_neighbor_label_set_global, block_associated_label_dict, block_undetermined_label_set, block_neighbor_label_dict_local
+
+
+    read_time = time.time() - read_time
+
+    background_associated_labels_time = time.time()
+
+    # create a neighbor label dict building on the reduced labels read in for each block
+    neighbor_label_dict_global = Set2Dictionary(neighbor_label_set_global, label_dict = neighbor_label_dict_local)
+    # find groupings of negative neighbors surrounded by a single positive label
+    associated_label_dict, undetermined_label_set, holes, non_holes = FindBackgroundComponentsAssociatedLabels(neighbor_label_dict_global, undetermined_label_set_global, associated_label_dict_global)
+
+    # set all of the undetermined values to non_holes:
+    for label in undetermined_label_set:
+        associated_label_dict[label] = 0
+
+    background_associated_labels_time = time.time() - background_associated_labels_time
+
+    # write the associated labels to disk
+    write_time = time.time()
+    # write only one associated labels dictionary for all blocks
+    tmp_directory = data.TempDirectory()
+    PickleNumbaData(associated_label_dict, '{}/hole-filling-associated-labels.pickle'.format(tmp_directory))
+    write_time = time.time() - write_time
+
+    total_time = time.time() - start_time
+
+    print ('Read Time: {:0.2f} seconds.'.format(read_time))
+    print ('Background Components Associated Labels: {:0.2f} seconds.'.format(background_associated_labels_time))
     print ('Write Time: {:0.2f} seconds.'.format(write_time))
     print ('Total Time: {:0.2f} seconds.'.format(total_time))

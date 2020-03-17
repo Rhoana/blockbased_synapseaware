@@ -136,5 +136,10 @@ class MetaData:
 
 
 
+    def TempDirectory(self):
+        return '{}/{}/'.format(self.tmp_directory, self.prefix)
+
+
+
     def TempComponentsDirectory(self, iz, iy, ix):
         return '{}/{}/{:04d}z-{:04d}y-{:04d}x'.format(self.tmp_directory, self.prefix, iz, iy, ix)

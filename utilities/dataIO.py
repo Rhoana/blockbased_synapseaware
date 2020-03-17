@@ -42,3 +42,9 @@ def PickleNumbaData(data, filename):
     temp.update(data)
 
     PickleData(temp, filename)
+
+
+
+def ReadPickledData(filename):
+    with open(filename, 'rb') as fd:
+        return pickle.load(fd)

@@ -135,8 +135,7 @@ def Set2Dictionary(label_set, label_dict = None):
 
     # go through all of the labels in the set
     for (label_one, label_two) in label_set:
-        # two background components cannot be neighbors
-        assert (label_one > 0 or label_two > 0)
+        # background components can be neighbors if they cross a border
 
         # skip non-background components
         if label_one > 0: continue
@@ -147,8 +146,7 @@ def Set2Dictionary(label_set, label_dict = None):
         # otherwise append the label to the dictionary entry for label_one
         elif not label_two in label_dict[label_one]:
             label_dict[label_one].append(label_two)
-        # this should never occur with sets
-        else: assert (False)
+        # when label_dict is not None, the element could already appear in the set
 
     return label_dict
 
@@ -160,14 +158,17 @@ def FindBackgroundComponentsAssociatedLabels(neighbor_label_dict, undetermined_l
     holes = set()
     non_holes = set()
 
+    #label = -7516291072
+
     # continue until there are no more undetermined components in the set
     while len(undetermined_label_set):
         query_component = undetermined_label_set.pop()
-
+        
         # check to see if there is one neighbor which is a neuron
         if len(neighbor_label_dict[query_component]) == 1 and neighbor_label_dict[query_component][0] != BORDER_CONTACT:
             # there should never be a case where there is one background component neighbor
             assert (neighbor_label_dict[query_component][0] > 0)
+
             associated_label_dict[query_component] = neighbor_label_dict[query_component][0]
             holes.add(query_component)
 
@@ -186,7 +187,7 @@ def FindBackgroundComponentsAssociatedLabels(neighbor_label_dict, undetermined_l
                         neighbor_label_dict[query_component].append(BORDER_CONTACT)
                 else:
                     for child in neighbor_label_dict[label]:
-                        if not child in neighbor_label_dict[query_component]:
+                        if not child in neighbor_label_dict[query_component] and not child == query_component:
                             neighbor_label_dict[query_component].append(child)
                             # if this component is also background, add to list of expandable nodes
                             if child < 0: labels_to_expand.append(child)
@@ -210,6 +211,7 @@ def FindBackgroundComponentsAssociatedLabels(neighbor_label_dict, undetermined_l
                     # all other background components adjacent to this neuron are also holes
                     for label in neighbor_label_dict[query_component]:
                         if label < 0:
+                            # make sure the label agrees if already discovered
                             associated_label_dict[label] = neuron_neighbors[0]
                             undetermined_label_set.remove(label)
                             holes.add(label)
@@ -219,6 +221,7 @@ def FindBackgroundComponentsAssociatedLabels(neighbor_label_dict, undetermined_l
                     non_holes.add(query_component)
                     for label in neighbor_label_dict[query_component]:
                         if label < 0:
+                            # make sure the label agrees if already discovered
                             associated_label_dict[label] = 0
                             undetermined_label_set.remove(label)
                             non_holes.add(label)
