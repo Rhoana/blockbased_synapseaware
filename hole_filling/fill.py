@@ -18,9 +18,6 @@ def FillHolesSequentially(prefix):
     assert (not data.HoleFillingOutputDirectory() == None)
     os.makedirs(data.HoleFillingOutputDirectory(), exist_ok=True)
 
-    # get the number of blocks in each dimension
-    nblocks = data.NBlocks()
-
     # compute the first step to fill holes in each block
     for iz in range(data.StartZ(), data.EndZ()):
         for iy in range(data.StartY(), data.EndY()):

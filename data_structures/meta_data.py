@@ -23,6 +23,9 @@ class MetaData:
         self.start_indices = (0, 0, 0)
         # place to save the hole filled segmentations
         self.hole_filling_output_directory = None
+        self.synapse_path = None
+        # place to save the generated skeletons
+        self.skeleton_output_directory = None
 
         # open the meta file and read in requisite information
         with open('meta/{}.meta'.format(prefix), 'r') as fd:
@@ -48,12 +51,17 @@ class MetaData:
                     self.start_indices = (int(start_indices[OR_Z]), int(start_indices[OR_Y]), int(start_indices[OR_X]))
                 elif comment == '# hole filling output directory':
                     self.hole_filling_output_directory = value
+                elif comment == '# path to synapses':
+                    self.synapse_path = value
+                elif comment == '# skeleton output directory':
+                    self.skeleton_output_directory = value
 
         # make sure important values are initialized
         assert (not self.raw_segmentation_path == None)
         assert (not self.tmp_directory == None)
         assert (not self.block_sizes == None)
         assert (not self.volume_sizes == None)
+        assert (not self.synapse_path == None)
 
         # create the tmp directory if it does not exist
         if not os.path.exists(self.tmp_directory):
@@ -152,3 +160,22 @@ class MetaData:
 
     def HoleFillingOutputDirectory(self):
         return self.hole_filling_output_directory
+
+
+
+    def SkeletonOutputDirectory(self):
+        return self.skeleton_output_directory
+
+
+
+    def ReadSegmentationBlock(self, iz, iy, ix):
+        # if there was no hole filling computed, read the raw segmentation data
+        if self.hole_filling_output_directory == None:
+            return ReadRawSegmentationBlock(self, iz, iy, ix)
+        # otherwise read in the hole filled output
+        filename = '{}/{:04d}z-{:04d}y-{:04d}x.h5'.format(self.hole_filling_output_directory, iz, iy, ix)
+
+        with h5py.File(filename, 'r') as hf:
+            data = np.array(hf[list(hf.keys())[0]])
+
+        return data

@@ -163,7 +163,7 @@ def FindBackgroundComponentsAssociatedLabels(neighbor_label_dict, undetermined_l
     # continue until there are no more undetermined components in the set
     while len(undetermined_label_set):
         query_component = undetermined_label_set.pop()
-        
+
         # check to see if there is one neighbor which is a neuron
         if len(neighbor_label_dict[query_component]) == 1 and neighbor_label_dict[query_component][0] != BORDER_CONTACT:
             # there should never be a case where there is one background component neighbor
@@ -250,7 +250,7 @@ def PruneNeighborLabelSet(neighbor_label_set, holes, non_holes):
 
 def FindPerBlockConnectedComponents(data, iz, iy, ix):
     # start timing statistics
-    start_time = time.time()
+    total_time = time.time()
 
     # get the number of blocks in each dimension
     nblocks = data.NBlocks()
@@ -305,12 +305,12 @@ def FindPerBlockConnectedComponents(data, iz, iy, ix):
 
     # write the components and all walls to file
     WriteH5File(components, '{}/components.h5'.format(tmp_directory))
-    WriteH5File(components[0,:,:], '{}/z-min.h5'.format(tmp_directory))
-    WriteH5File(components[-1,:,:], '{}/z-max.h5'.format(tmp_directory))
-    WriteH5File(components[:,0,:], '{}/y-min.h5'.format(tmp_directory))
-    WriteH5File(components[:,-1,:], '{}/y-max.h5'.format(tmp_directory))
-    WriteH5File(components[:,:,0], '{}/x-min.h5'.format(tmp_directory))
-    WriteH5File(components[:,:,-1], '{}/x-max.h5'.format(tmp_directory))
+    WriteH5File(components[0,:,:], '{}/z-min-hole-filling.h5'.format(tmp_directory))
+    WriteH5File(components[-1,:,:], '{}/z-max-hole-filling.h5'.format(tmp_directory))
+    WriteH5File(components[:,0,:], '{}/y-min-hole-filling.h5'.format(tmp_directory))
+    WriteH5File(components[:,-1,:], '{}/y-max-hole-filling.h5'.format(tmp_directory))
+    WriteH5File(components[:,:,0], '{}/x-min-hole-filling.h5'.format(tmp_directory))
+    WriteH5File(components[:,:,-1], '{}/x-max-hole-filling.h5'.format(tmp_directory))
 
     components_time = time.time() - components_time
 
@@ -347,7 +347,7 @@ def FindPerBlockConnectedComponents(data, iz, iy, ix):
     PickleData(neighbor_label_dict_reduced, '{}/neighbor-label-dictionary-reduced.pickle'.format(tmp_directory))
     write_time = time.time() - write_time
 
-    total_time = time.time() - start_time
+    total_time = time.time() - total_time
 
     print ('Read Time: {:0.2f} seconds.'.format(read_time))
     print ('Components Time: {:0.2f} seconds.'.format(components_time))

@@ -38,7 +38,7 @@ def FindLabelsAdjacentToGlobalBorder(label_set, seg_wall):
 
 def ConnectBlockToGlobalBorder(label_set, tmp_directory, axis, direction):
     # read in the wall for this border
-    seg_wall_filename = '{}/{}-{}.h5'.format(tmp_directory, axis, direction)
+    seg_wall_filename = '{}/{}-{}-hole-filling.h5'.format(tmp_directory, axis, direction)
 
     seg_wall = ReadH5File(seg_wall_filename)
 
@@ -86,8 +86,8 @@ def ConnectBlocks(data, label_set, iz, iy, ix, axis):
 
     # get the filenames for the current wall and its neighbor
     # the maximum of the current wall links to the min wall of its neighbor
-    current_wall_filename = '{}/{}-max.h5'.format(tmp_current_directory, axis)
-    neighbor_wall_filename = '{}/{}-min.h5'.format(tmp_neighbor_directory, axis)
+    current_wall_filename = '{}/{}-max-hole-filling.h5'.format(tmp_current_directory, axis)
+    neighbor_wall_filename = '{}/{}-min-hole-filling.h5'.format(tmp_neighbor_directory, axis)
 
     current_seg_wall = ReadH5File(current_wall_filename)
     neighbor_seg_wall = ReadH5File(neighbor_wall_filename)
@@ -100,7 +100,7 @@ def ConnectBlocks(data, label_set, iz, iy, ix, axis):
 
 def ConnectLabelsAcrossBlocks(data, iz, iy, ix):
     # start timing statistics
-    start_time = time.time()
+    total_time = time.time()
 
     # find all of the adjacent components across the boundaries
     adjacency_set_time = time.time()
@@ -156,7 +156,7 @@ def ConnectLabelsAcrossBlocks(data, iz, iy, ix):
     PickleData(neighbor_label_set_global, '{}/neighbor-label-set-global.pickle'.format(tmp_directory))
     write_time = time.time() - write_time
 
-    total_time = time.time() - start_time
+    total_time = time.time() - total_time
 
     print ('Adjacency Set Time: {:0.2f} seconds.'.format(adjacency_set_time))
     print ('Write Time: {:0.2f} seconds.'.format(write_time))
@@ -166,7 +166,7 @@ def ConnectLabelsAcrossBlocks(data, iz, iy, ix):
 
 def CombineAssociatedLabels(data):
     # start timing statistics
-    start_time = time.time()
+    total_time = time.time()
 
     # create empty sets/dicts
     neighbor_label_set_global = set()
@@ -221,7 +221,7 @@ def CombineAssociatedLabels(data):
     PickleNumbaData(associated_label_dict, '{}/hole-filling-associated-labels.pickle'.format(tmp_directory))
     write_time = time.time() - write_time
 
-    total_time = time.time() - start_time
+    total_time = time.time() - total_time
 
     print ('Read Time: {:0.2f} seconds.'.format(read_time))
     print ('Background Components Associated Labels: {:0.2f} seconds.'.format(background_associated_labels_time))
