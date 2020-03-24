@@ -93,7 +93,7 @@ def ComputeDirectionalAnchorPoints(data, iz, iy, ix, direction):
 
     # transform other variables
     cdef np.ndarray[long, ndim=1, mode='c'] cpp_block_size = np.ascontiguousarray(data.BlockSize(), dtype=ctypes.c_int64)
-    cdef np.ndarray[long, ndim=1, mode='c'] cpp_volume_size = np.ascontiguousarray((6144, 6144, 6144), dtype=ctypes.c_int64)
+    cdef np.ndarray[long, ndim=1, mode='c'] cpp_volume_size = np.ascontiguousarray(data.VolumeSize(), dtype=ctypes.c_int64)
 
     lookup_table_directory = '{}/PGMImage'.format(os.path.dirname(__file__))
 

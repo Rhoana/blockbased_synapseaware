@@ -1,4 +1,5 @@
 import os
+import sys
 import math
 import h5py
 
@@ -21,6 +22,10 @@ class MetaData:
         self.volume_sizes = None
         # default start index value for the block
         self.start_indices = (0, 0, 0)
+        # default values for number of blocks is -1, will be updated later
+        self.nzblocks = -1
+        self.nyblocks = -1
+        self.nxblocks = -1
         # place to save the hole filled segmentations
         self.hole_filling_output_directory = None
         self.synapse_path = None
@@ -38,7 +43,7 @@ class MetaData:
 
                 if comment == '# path to raw segmentations':
                     self.raw_segmentation_path = value
-                if comment == '# temporary files directory':
+                elif comment == '# temporary files directory':
                     self.tmp_directory = value
                 elif comment == '# block size':
                     block_sizes = value.split('x')
@@ -49,12 +54,20 @@ class MetaData:
                 elif comment == '# start block indices':
                     start_indices = value.split(',')
                     self.start_indices = (int(start_indices[OR_Z]), int(start_indices[OR_Y]), int(start_indices[OR_X]))
+                elif comment == '# number of blocks to skeletonize':
+                    nblocks = value.split(',')
+                    self.nzblocks = int(nblocks[OR_Z])
+                    self.nyblocks = int(nblocks[OR_Y])
+                    self.nxblocks = int(nblocks[OR_X])
                 elif comment == '# hole filling output directory':
                     self.hole_filling_output_directory = value
                 elif comment == '# path to synapses':
                     self.synapse_path = value
                 elif comment == '# skeleton output directory':
                     self.skeleton_output_directory = value
+                else:
+                    sys.stderr.write('Unrecognized meta file attribute: {}\n'.format(comment))
+                    exit(-1)
 
         # make sure important values are initialized
         assert (not self.raw_segmentation_path == None)
@@ -68,9 +81,10 @@ class MetaData:
             os.makedirs(self.tmp_directory, exist_ok=True)
 
         # create variables for the number of blocks
-        self.nzblocks = int(round(math.ceil(self.volume_sizes[OR_Z] / self.block_sizes[OR_Z])))
-        self.nyblocks = int(round(math.ceil(self.volume_sizes[OR_Y] / self.block_sizes[OR_Y])))
-        self.nxblocks = int(round(math.ceil(self.volume_sizes[OR_X] / self.block_sizes[OR_X])))
+        if self.nzblocks == -1 or self.nyblocks == -1 or self.nxblocks == -1:
+            self.nzblocks = int(round(math.ceil(self.volume_sizes[OR_Z] / self.block_sizes[OR_Z])))
+            self.nyblocks = int(round(math.ceil(self.volume_sizes[OR_Y] / self.block_sizes[OR_Y])))
+            self.nxblocks = int(round(math.ceil(self.volume_sizes[OR_X] / self.block_sizes[OR_X])))
 
 
 
