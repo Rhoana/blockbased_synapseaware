@@ -2,7 +2,7 @@ import os
 
 
 
-from blockbased_synapseaware.skeletonize.anchors import SaveAnchorWalls
+from blockbased_synapseaware.skeletonize.anchors import ComputeAnchorPoints, SaveAnchorWalls
 from blockbased_synapseaware.utilities.dataIO import ReadMetaData
 
 
@@ -20,3 +20,9 @@ def SkeletonizeSequentially(prefix):
         for iy in range(data.StartY(), data.EndY()):
             for ix in range(data.StartX(), data.EndX()):
                 SaveAnchorWalls(data, iz, iy, ix)
+
+    # compute the second step to find the anchors between blocks
+    for iz in range(data.StartZ(), data.EndZ()):
+        for iy in range(data.StartY(), data.EndY()):
+            for ix in range(data.StartX(), data.EndX()):
+                ComputeAnchorPoints(data, iz, iy, ix)

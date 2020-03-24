@@ -129,6 +129,16 @@ class MetaData:
 
 
 
+    def BlockSize(self):
+        return self.block_sizes
+
+
+
+    def VolumeSize(self):
+        return self.volume_sizes
+
+
+
     def IndexFromIndices(self, iz, iy, ix):
         zoffset = (iz - self.StartZ())
         yoffset = (iy - self.StartY())
