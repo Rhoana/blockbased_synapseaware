@@ -29,8 +29,10 @@ class MetaData:
         # place to save the hole filled segmentations
         self.hole_filling_output_directory = None
         self.synapse_path = None
+        self.somata_path = None
         # place to save the generated skeletons
         self.skeleton_output_directory = None
+        self.resolution = None
 
         # open the meta file and read in requisite information
         with open('meta/{}.meta'.format(prefix), 'r') as fd:
@@ -63,8 +65,13 @@ class MetaData:
                     self.hole_filling_output_directory = value
                 elif comment == '# path to synapses':
                     self.synapse_path = value
+                elif comment == '# path to somata':
+                    self.somata_path = value
                 elif comment == '# skeleton output directory':
                     self.skeleton_output_directory = value
+                elif comment == '# resolution in nm':
+                    resolutions = value.split('x')
+                    self.resolution = (float(resolutions[OR_Z]), float(resolutions[OR_Y]), float(resolutions[OR_X]))
                 else:
                     sys.stderr.write('Unrecognized meta file attribute: {}\n'.format(comment))
                     exit(-1)
@@ -75,6 +82,7 @@ class MetaData:
         assert (not self.block_sizes == None)
         assert (not self.volume_sizes == None)
         assert (not self.synapse_path == None)
+        assert (not self.resolution == None)
 
         # create the tmp directory if it does not exist
         if not os.path.exists(self.tmp_directory):
@@ -153,6 +161,11 @@ class MetaData:
 
 
 
+    def Resolution(self):
+        return self.resolution
+
+
+
     def IndexFromIndices(self, iz, iy, ix):
         zoffset = (iz - self.StartZ())
         yoffset = (iy - self.StartY())
@@ -163,7 +176,7 @@ class MetaData:
 
 
     def ReadRawSegmentationBlock(self, iz, iy, ix):
-        filename = '{}/Zebrafinch-{:04d}z-{:04d}y-{:04d}x.h5'.format(self.raw_segmentation_path, iz, iy, ix)
+        filename = '{}/{:04d}z-{:04d}y-{:04d}x.h5'.format(self.raw_segmentation_path, iz, iy, ix)
 
         with h5py.File(filename, 'r') as hf:
             data = np.array(hf[list(hf.keys())[0]])
@@ -198,6 +211,20 @@ class MetaData:
             return ReadRawSegmentationBlock(self, iz, iy, ix)
         # otherwise read in the hole filled output
         filename = '{}/{:04d}z-{:04d}y-{:04d}x.h5'.format(self.hole_filling_output_directory, iz, iy, ix)
+
+        with h5py.File(filename, 'r') as hf:
+            data = np.array(hf[list(hf.keys())[0]])
+
+        return data
+
+
+
+    def ReadSomataBlock(self, iz, iy, ix):
+        # return no soma if it does not exist
+        if self.somata_path == None:
+            return None
+        # otherwise read in the soma file
+        filename = '{}/{:04d}z-{:04d}y-{:04d}x.h5'.format(self.somata_path, iz, iy, ix)
 
         with h5py.File(filename, 'r') as hf:
             data = np.array(hf[list(hf.keys())[0]])
