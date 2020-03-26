@@ -31,7 +31,7 @@ def RemoveHoles(data, iz, iy, ix):
 
     # read in the associated labels and the connected components
     read_time = time.time()
-    components = ReadH5File('{}/components.h5'.format(data.TempComponentsDirectory(iz, iy, ix)))
+    components = ReadH5File('{}/components.h5'.format(data.TempBlockDirectory(iz, iy, ix)))
     # need to first create separate empty numba Dict
     associated_label_dict = Dict.empty(key_type=types.int64, value_type=types.int64)
     associated_label_dict.update(ReadPickledData('{}/hole-filling-associated-labels.pickle'.format(data.TempDirectory())))

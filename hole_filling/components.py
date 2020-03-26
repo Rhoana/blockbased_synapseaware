@@ -297,7 +297,7 @@ def FindPerBlockConnectedComponents(data, iz, iy, ix):
     del seg
 
     # save the components file to disk
-    tmp_directory = data.TempComponentsDirectory(iz, iy, ix)
+    tmp_directory = data.TempBlockDirectory(iz, iy, ix)
 
     # create the folder if it does not exist
     if not os.path.exists(tmp_directory):

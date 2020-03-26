@@ -81,8 +81,8 @@ def ConnectBlocks(data, label_set, iz, iy, ix, axis):
         neighbor_ix = ix + 1
 
     # get the directory for current/neighbor
-    tmp_current_directory = data.TempComponentsDirectory(iz, iy, ix)
-    tmp_neighbor_directory = data.TempComponentsDirectory(neighbor_iz, neighbor_iy, neighbor_ix)
+    tmp_current_directory = data.TempBlockDirectory(iz, iy, ix)
+    tmp_neighbor_directory = data.TempBlockDirectory(neighbor_iz, neighbor_iy, neighbor_ix)
 
     # get the filenames for the current wall and its neighbor
     # the maximum of the current wall links to the min wall of its neighbor
@@ -111,7 +111,7 @@ def ConnectLabelsAcrossBlocks(data, iz, iy, ix):
     neighbor_label_set_global.add((BORDER_CONTACT, BORDER_CONTACT))
 
     # get the temporary directory for this dataset
-    tmp_directory = data.TempComponentsDirectory(iz, iy, ix)
+    tmp_directory = data.TempBlockDirectory(iz, iy, ix)
 
     # this block occurs at the minimum in the z direction
     if iz == data.StartZ():
@@ -181,7 +181,7 @@ def CombineAssociatedLabels(data):
         for iy in range(data.StartY(), data.EndY()):
             for ix in range(data.StartX(), data.EndX()):
                 # get the location for the temporary directory
-                tmp_directory = data.TempComponentsDirectory(iz, iy, ix)
+                tmp_directory = data.TempBlockDirectory(iz, iy, ix)
 
                 # read the four sets/dicts for this one block
                 block_neighbor_label_set_global = ReadPickledData('{}/neighbor-label-set-global.pickle'.format(tmp_directory))

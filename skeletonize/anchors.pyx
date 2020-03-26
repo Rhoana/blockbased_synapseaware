@@ -43,7 +43,7 @@ def SaveAnchorWalls(data, iz, iy, ix):
     write_time = time.time()
 
     # get the temp directory for this block
-    tmp_directory = data.TempComponentsDirectory(iz, iy, ix)
+    tmp_directory = data.TempBlockDirectory(iz, iy, ix)
 
     WriteH5File(segmentation[0,:,:], '{}/z-min-anchor-points.h5'.format(tmp_directory))
     WriteH5File(segmentation[-1,:,:], '{}/z-max-anchor-points.h5'.format(tmp_directory))
@@ -72,12 +72,12 @@ def ComputeDirectionalAnchorPoints(data, iz, iy, ix, direction):
     if direction == 'x' and ix == data.EndX() - 1: return
 
     # get the directory for current block
-    tmp_current_directory = data.TempComponentsDirectory(iz, iy, ix)
+    tmp_current_directory = data.TempBlockDirectory(iz, iy, ix)
 
     # get directory for the neighbor block
-    if direction == 'z': tmp_neighbor_directory = data.TempComponentsDirectory(iz + 1, iy, ix)
-    if direction == 'y': tmp_neighbor_directory = data.TempComponentsDirectory(iz, iy + 1, ix)
-    if direction == 'x': tmp_neighbor_directory = data.TempComponentsDirectory(iz, iy, ix + 1)
+    if direction == 'z': tmp_neighbor_directory = data.TempBlockDirectory(iz + 1, iy, ix)
+    if direction == 'y': tmp_neighbor_directory = data.TempBlockDirectory(iz, iy + 1, ix)
+    if direction == 'x': tmp_neighbor_directory = data.TempBlockDirectory(iz, iy, ix + 1)
 
     # get the filenames for the current and neighbor walls
     current_wall_filename = '{}/{}-max-anchor-points.h5'.format(tmp_current_directory, direction)

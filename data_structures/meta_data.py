@@ -190,8 +190,13 @@ class MetaData:
 
 
 
-    def TempComponentsDirectory(self, iz, iy, ix):
+    def TempBlockDirectory(self, iz, iy, ix):
         return '{}/{}/{:04d}z-{:04d}y-{:04d}x'.format(self.tmp_directory, self.prefix, iz, iy, ix)
+
+
+
+    def SynapseDirectory(self):
+        return self.synapse_path
 
 
 
