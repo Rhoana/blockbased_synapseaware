@@ -47,20 +47,24 @@ class MetaData:
                     self.raw_segmentation_path = value
                 elif comment == '# temporary files directory':
                     self.tmp_directory = value
-                elif comment == '# block size':
+                elif comment == '# block size (x, y, z)':
                     block_sizes = value.split('x')
-                    self.block_sizes = (int(block_sizes[OR_Z]), int(block_sizes[OR_Y]), int(block_sizes[OR_X]))
-                elif comment == '# volume size':
+                    # use order 2, 1, 0 to convert from xyz to zyx
+                    self.block_sizes = (int(block_sizes[2]), int(block_sizes[1]), int(block_sizes[0]))
+                elif comment == '# volume size (x, y, z)':
                     volume_sizes = value.split('x')
-                    self.volume_sizes = (int(volume_sizes[OR_Z]), int(volume_sizes[OR_Y]), int(volume_sizes[OR_X]))
-                elif comment == '# start block indices':
+                    # use order 2, 1, 0 to convert from xyz to zyx
+                    self.volume_sizes = (int(volume_sizes[2]), int(volume_sizes[1]), int(volume_sizes[0]))
+                elif comment == '# start block indices (x, y, z)':
                     start_indices = value.split(',')
-                    self.start_indices = (int(start_indices[OR_Z]), int(start_indices[OR_Y]), int(start_indices[OR_X]))
-                elif comment == '# number of blocks to skeletonize':
-                    nblocks = value.split(',')
-                    self.nzblocks = int(nblocks[OR_Z])
-                    self.nyblocks = int(nblocks[OR_Y])
-                    self.nxblocks = int(nblocks[OR_X])
+                    # use order 2, 1, 0 to convert from xyz to zyx
+                    self.start_indices = (int(start_indices[2]), int(start_indices[1]), int(start_indices[0]))
+                elif comment == '# number of blocks to skeletonize (x, y, z)':
+                    nblocks = value.split('x')
+                    # use order 2, 1, 0 to convert from xyz to zyx
+                    self.nzblocks = int(nblocks[2])
+                    self.nyblocks = int(nblocks[1])
+                    self.nxblocks = int(nblocks[0])
                 elif comment == '# hole filling output directory':
                     self.hole_filling_output_directory = value
                 elif comment == '# path to synapses':
@@ -69,9 +73,10 @@ class MetaData:
                     self.somata_path = value
                 elif comment == '# skeleton output directory':
                     self.skeleton_output_directory = value
-                elif comment == '# resolution in nm':
+                elif comment == '# resolution in nm (x, y, z)':
                     resolutions = value.split('x')
-                    self.resolution = (float(resolutions[OR_Z]), float(resolutions[OR_Y]), float(resolutions[OR_X]))
+                    # use order 2, 1, 0 to convert from xyz to zyx
+                    self.resolution = (float(resolutions[2]), float(resolutions[1]), float(resolutions[0]))
                 else:
                     sys.stderr.write('Unrecognized meta file attribute: {}\n'.format(comment))
                     exit(-1)
