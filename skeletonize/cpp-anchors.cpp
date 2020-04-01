@@ -101,8 +101,8 @@ void CppComputeAnchorPoints(const char *lookup_table_directory,
 
     // number of labels shared between the two block surfaces
     long nsegments = iu_centers.size();
-    WritePtsFileHeader(current_fp, volume_size, block_size, nsegments);
-    WritePtsFileHeader(neighbor_fp, volume_size, block_size, nsegments);
+    WritePtsFileHeader(current_fp, nsegments);
+    WritePtsFileHeader(neighbor_fp, nsegments);
 
     // calculate the checksums for both the current and neighbor blocks
     long current_checksum = 0;
@@ -159,7 +159,7 @@ void CppComputeAnchorPoints(const char *lookup_table_directory,
             // get the local and global index for the current wall
             local_index = LocalIndicesToIndex(iz, iy, ix);
             current_local_indices[ii] = local_index;
-            global_index = LocalIndicesToGlobal(iz, iy, ix, current_block_index);
+            global_index = LocalIndicesToGlobalIndex(iz, iy, ix, current_block_index);
             current_global_indices[ii] = global_index;
 
             // update the current checksum
@@ -185,7 +185,7 @@ void CppComputeAnchorPoints(const char *lookup_table_directory,
             // get the local and global index for the neighbor wall
             local_index = LocalIndicesToIndex(iz, iy, ix);
             neighbor_local_indices[ii] = local_index;
-            global_index = LocalIndicesToGlobal(iz, iy, ix, neighbor_block_index);
+            global_index = LocalIndicesToGlobalIndex(iz, iy, ix, neighbor_block_index);
             neighbor_global_indices[ii] = global_index;
 
             // update the neighbor checksum
