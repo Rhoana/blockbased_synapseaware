@@ -43,10 +43,21 @@ class MetaData:
                 comment = lines[iv].strip()
                 value = lines[iv + 1].strip()
 
+                ##################
+                ### INPUT DATA ###
+                ##################
+
                 if comment == '# path to raw segmentations':
                     self.raw_segmentation_path = value
-                elif comment == '# temporary files directory':
-                    self.tmp_directory = value
+                elif comment == '# path to synapses':
+                    self.synapse_path = value
+                elif comment == '# path to somata':
+                    self.somata_path = value
+
+                ##########################
+                ### DATA SPECIFICATION ###
+                ##########################
+
                 elif comment == '# block size (x, y, z)':
                     block_sizes = value.split('x')
                     # use order 2, 1, 0 to convert from xyz to zyx
@@ -65,18 +76,22 @@ class MetaData:
                     self.nzblocks = int(nblocks[2])
                     self.nyblocks = int(nblocks[1])
                     self.nxblocks = int(nblocks[0])
-                elif comment == '# hole filling output directory':
-                    self.hole_filling_output_directory = value
-                elif comment == '# path to synapses':
-                    self.synapse_path = value
-                elif comment == '# path to somata':
-                    self.somata_path = value
-                elif comment == '# skeleton output directory':
-                    self.skeleton_output_directory = value
                 elif comment == '# resolution in nm (x, y, z)':
                     resolutions = value.split('x')
                     # use order 2, 1, 0 to convert from xyz to zyx
                     self.resolution = (float(resolutions[2]), float(resolutions[1]), float(resolutions[0]))
+
+                ##########################
+                ### OUTPUT DIRECTORIES ###
+                ##########################
+
+                elif comment == '# temporary files directory':
+                    self.tmp_directory = value
+                elif comment == '# hole filling output directory':
+                    self.hole_filling_output_directory = value
+
+                elif comment == '# skeleton output directory':
+                    self.skeleton_output_directory = value
                 else:
                     sys.stderr.write('Unrecognized meta file attribute: {}\n'.format(comment))
                     exit(-1)

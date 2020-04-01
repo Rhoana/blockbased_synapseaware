@@ -158,8 +158,6 @@ def FindBackgroundComponentsAssociatedLabels(neighbor_label_dict, undetermined_l
     holes = set()
     non_holes = set()
 
-    #label = -7516291072
-
     # continue until there are no more undetermined components in the set
     while len(undetermined_label_set):
         query_component = undetermined_label_set.pop()
