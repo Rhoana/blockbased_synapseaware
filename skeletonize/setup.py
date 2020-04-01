@@ -10,6 +10,7 @@ extensions = [
         include_dirs = [np.get_include()],
         sources = ['anchors.pyx', 'cpp-anchors.cpp', 'cpp-skeletonize.cpp', 'PGMImage/PGMImage.cpp'],
         extra_compile_args = ['-O4', '-std=c++0x'],
+        undef_macros = ['NDEBUG'],
         language = 'c++'
     ),
 
@@ -18,6 +19,7 @@ extensions = [
         include_dirs = [np.get_include()],
         sources = ['thinning.pyx', 'cpp-thinning.cpp', 'cpp-skeletonize.cpp'],
         extra_compile_args = ['-O4', '-std=c++0x'],
+        undef_macros = ['NDEBUG'],
         language = 'c++'
     )
 ]
