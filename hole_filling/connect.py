@@ -133,7 +133,7 @@ def ConnectLabelsAcrossBlocks(data, iz, iy, ix):
         neighbor_label_set_global = ConnectBlocks(data, neighbor_label_set_global, iz, iy, ix, 'z')
 
     # this block occurs at the maximum of the y direction
-    if iy == data.EndZ() - 1:
+    if iy == data.EndY() - 1:
         neighbor_label_set_global = ConnectBlockToGlobalBorder(neighbor_label_set_global, tmp_directory, 'y', 'max')
     # this block has a neighbor in the positive y direction
     else:
