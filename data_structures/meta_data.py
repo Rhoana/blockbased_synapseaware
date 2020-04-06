@@ -20,6 +20,7 @@ class MetaData:
         self.tmp_directory = None
         self.block_sizes = None
         self.volume_sizes = None
+        self.max_label = -1
         # default start index value for the block
         self.start_indices = (0, 0, 0)
         # default values for number of blocks is -1, will be updated later
@@ -58,6 +59,8 @@ class MetaData:
                 ### DATA SPECIFICATION ###
                 ##########################
 
+                elif comment == '# max label':
+                    self.max_label = int(value)
                 elif comment == '# block size (x, y, z)':
                     block_sizes = value.split('x')
                     # use order 2, 1, 0 to convert from xyz to zyx
@@ -99,6 +102,7 @@ class MetaData:
         # make sure important values are initialized
         assert (not self.raw_segmentation_path == None)
         assert (not self.tmp_directory == None)
+        assert (not self.max_label == -1)
         assert (not self.block_sizes == None)
         assert (not self.volume_sizes == None)
         assert (not self.synapse_path == None)
@@ -118,6 +122,11 @@ class MetaData:
 
     def NBlocks(self):
         return (self.nzblocks, self.nyblocks, self.nxblocks)
+
+
+
+    def NLabels(self):
+        return self.max_label + 1
 
 
 
@@ -206,7 +215,7 @@ class MetaData:
 
 
     def TempDirectory(self):
-        return '{}/{}/'.format(self.tmp_directory, self.prefix)
+        return '{}/{}'.format(self.tmp_directory, self.prefix)
 
 
 
@@ -233,7 +242,7 @@ class MetaData:
     def ReadSegmentationBlock(self, iz, iy, ix):
         # if there was no hole filling computed, read the raw segmentation data
         if self.hole_filling_output_directory == None:
-            return ReadRawSegmentationBlock(self, iz, iy, ix)
+            return self.ReadRawSegmentationBlock(iz, iy, ix)
         # otherwise read in the hole filled output
         filename = '{}/{:04d}z-{:04d}y-{:04d}x.h5'.format(self.hole_filling_output_directory, iz, iy, ix)
 
@@ -255,3 +264,60 @@ class MetaData:
             data = np.array(hf[list(hf.keys())[0]])
 
         return data
+
+
+
+    def LocalIndicesToGlobalIndex(self, iz, iy, ix, block_index):
+        # get the coordinates in global space
+        global_iz = iz + block_index[OR_Z] * self.block_sizes[OR_Z]
+        global_iy = iy + block_index[OR_Y] * self.block_sizes[OR_Y]
+        global_ix = ix + block_index[OR_X] * self.block_sizes[OR_X]
+
+        # convert to global index
+        return global_iz * self.volume_sizes[OR_Y] * self.volume_sizes[OR_X] + global_iy * self.volume_sizes[OR_X] + global_ix
+
+
+
+    def LocalIndicesToIndex(self, iz, iy, ix):
+        # return an index from the indices
+        return iz * self.block_sizes[OR_Y] * self.block_sizes[OR_X] + iy * self.block_sizes[OR_X] + ix
+
+
+
+    def LocalIndexToIndices(self, iv):
+        # get the coordinates in local space
+        iz = iv // (self.block_sizes[OR_Y] * self.block_sizes[OR_X])
+        iy = (iv - iz * self.block_sizes[OR_Y] * self.block_sizes[OR_X]) // self.block_sizes[OR_X]
+        ix = iv % self.block_sizes[OR_X]
+
+        return (iz, iy, ix)
+
+
+
+    def GlobalIndexToIndices(self, iv):
+        # get the coordinates in global space
+        iz = iv // (self.volume_sizes[OR_Y] * self.volume_sizes[OR_X])
+        iy = (iv - iz * self.volume_sizes[OR_Y] * self.volume_sizes[OR_X]) // self.volume_sizes[OR_X]
+        ix = iv % self.volume_sizes[OR_X]
+
+        return (iz, iy, ix)
+
+
+
+    def GlobalIndexToLocalIndex(self, iv):
+        # get the coordinatese in global space
+        global_iz, global_iy, global_ix = self.GlobalIndexToIndices(iv)
+
+        local_iz = global_iz % self.block_sizes[OR_Z]
+        local_iy = global_iy % self.block_sizes[OR_Y]
+        local_ix = global_ix % self.block_sizes[OR_X]
+
+        return self.LocalIndicesToIndex(local_iz, local_iy, local_ix)
+
+
+
+    def LocalIndexToGlobalIndex(self, iv, block_index):
+        # get the coordinates in local space
+        local_iz, local_iy, local_ix = self.LocalIndexToIndices(iv)
+
+        return self.LocalIndicesToGlobalIndex(local_iz, local_iy, local_ix, block_index)
