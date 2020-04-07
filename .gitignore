@@ -131,3 +131,4 @@ dmypy.json
 # cython generated files
 skeletonize/anchors.cpp
 skeletonize/thinning.cpp
+skeletonize/refinement.cpp

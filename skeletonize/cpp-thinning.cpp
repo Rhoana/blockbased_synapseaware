@@ -1,9 +1,4 @@
 #include <limits>
-#include <vector>
-#include <set>
-#include <map>
-#include <assert.h>
-#include <math.h>
 #include "cpp-skeletonize.h"
 
 
@@ -30,12 +25,9 @@ static const int NTHINNING_DIRECTIONS = 6;
 
 
 // aggregate variables for all blocks
-static std::set<long> labels_in_block;
-static std::map<long, std::set<long> > fixed_points;
 static std::map<long, std::set<long> > somata_interior_voxels;
 static std::map<long, std::set<long> > somata_surface_voxels;
 static std::map<long, std::set<long> > *border_voxels;
-static std::map<long, std::map<long, char> > segments;
 
 
 
@@ -498,74 +490,6 @@ static void PopulateSegments(long *segmentation)
 
 
 
-static int ReadFixedPtsFile(FILE *fp)
-{
-    long input_volume_size[3];
-    long input_block_size[3];
-    long nneurons;
-
-    // read the header
-    if (fread(&(input_volume_size[0]), sizeof(long), 3, fp) != 3) return 0;
-    if (fread(&(input_block_size[0]), sizeof(long), 3, fp) != 3) return 0;
-    if (fread(&nneurons, sizeof(long), 1, fp) != 1) return 0;
-
-    for (long iv = 0; iv < NDIMS; ++iv) {
-        assert (input_volume_size[iv] == volume_size[iv]);
-        assert (input_block_size[iv] == block_size[iv]);
-    }
-
-    long checksum = 0;
-
-    // go through every nneuron in this block
-    for (long iv = 0; iv < nneurons; ++iv) {
-        // get the label and number of elements
-        long label;
-        long nelements;
-
-        if (fread(&label, sizeof(long), 1, fp) != 1) return 0;
-        if (fread(&nelements, sizeof(long), 1, fp) != 1) return 0;
-
-        // create an array to read in all elements
-        long *elements = new long[nelements];
-
-        // read in global coordinates (unused here)
-        if (fread(&(elements[0]), sizeof(long), nelements, fp) != (unsigned long) nelements) return 0;
-        for (long ie = 0; ie < nelements; ++ie) {
-            checksum += elements[ie];
-        }
-
-        // read in local coordinates
-        if (fread(&(elements[0]), sizeof(long), nelements, fp) != (unsigned long) nelements) return 0;
-
-        // for each coordinate, get the padded index and mark as must remain
-        for (long ie = 0; ie < nelements; ++ie) {
-            long index = elements[ie];
-
-            // get the padded index
-            long padded_index = LocalIndexToPaddedIndex(index);
-
-            // set the equivalent element in the segments array to 3 (cannot remove)
-            segments[label][padded_index] = 3;
-            fixed_points[label].insert(padded_index);
-
-            checksum += elements[ie];
-        }
-
-        // free memory
-        delete[] elements;
-    }
-
-    // make sure that the checksum matches
-    long input_checksum;
-    if (fread(&input_checksum, sizeof(long), 1, fp) != 1) return 0;
-    assert (checksum == input_checksum);
-
-    // return success
-    return 1;
-}
-
-
-
 static void ReadSynapses(const char *synapse_directory, long current_block_index[3])
 {
     char synapse_filename[4096];
@@ -575,7 +499,8 @@ static void ReadSynapses(const char *synapse_directory, long current_block_index
     FILE *fp = fopen(synapse_filename, "rb");
     if (!fp) { fprintf(stderr, "Failed to read %s.\n", synapse_filename); exit(-1); }
 
-    if (!ReadFixedPtsFile(fp)) { fprintf(stderr, "Failed to read %s.\n", synapse_filename); exit(-1); }
+    // read in the points using local coordinates, a mapped value of 3, and populating fixed point array
+    if (!ReadPtsFile(fp, true, 3, true)) { fprintf(stderr, "Failed to read %s.\n", synapse_filename); exit(-1); }
 
     // close the file
     fclose(fp);
@@ -603,7 +528,8 @@ static void ReadAnchorPoints(const char *tmp_directory)
         FILE *fp = fopen(anchor_pts_filename, "rb");
         if (!fp) continue;
 
-        if (!ReadFixedPtsFile(fp)) { fprintf(stderr, "Failed to read %s.\n", anchor_pts_filename); exit(-1); }
+        // read in the points using local coordinates, a mapped value of 3, and populating fixed point array
+        if (!ReadPtsFile(fp, true, 3, true)) { fprintf(stderr, "Failed to read %s.\n", anchor_pts_filename); exit(-1); }
 
         // close the file
         fclose(fp);
@@ -1045,6 +971,7 @@ void CppTopologicalThinning(const char *lookup_table_directory,
 
     // overwrite all global variables from previous calls to this file
     labels_in_block = std::set<long>();
+    fixed_points = std::map<long, std::set<long> >();
     somata_interior_voxels = std::map<long, std::set<long> >();
     somata_surface_voxels = std::map<long, std::set<long> >();
     segments = std::map<long, std::map<long, char> >();
@@ -1075,6 +1002,9 @@ void CppTopologicalThinning(const char *lookup_table_directory,
     // iterate over all labels in the volume for thinning
     std::set<long>::iterator it;
     for (it = labels_in_block.begin(); it != labels_in_block.end(); ++it) {
+        // initialize new widths mapping for this label
+        widths = std::map<long, float>();
+
         current_label = *it;
 
         printf("Processing Neuron %ld\n", current_label);
@@ -1094,9 +1024,14 @@ void CppTopologicalThinning(const char *lookup_table_directory,
 
     // overwrite all global variables from this iteration
     labels_in_block.clear();
+    fixed_points.clear();
     somata_interior_voxels.clear();
     somata_surface_voxels.clear();
     segments.clear();
+
+    for (long dir = 0; dir < NTHINNING_DIRECTIONS; ++dir) {
+        border_voxels[dir].clear();
+    }
 
     // free memory
     delete[] lut_simple;

@@ -21,6 +21,15 @@ extensions = [
         extra_compile_args = ['-O4', '-std=c++0x'],
         undef_macros = ['NDEBUG'],
         language = 'c++'
+    ),
+
+    Extension(
+        name = 'refinement',
+        include_dirs = [np.get_include()],
+        sources = ['refinement.pyx', 'cpp-refinement.cpp', 'cpp-skeletonize.cpp', 'cpp-MinBinaryHeap.cpp'],
+        extra_compile_args = ['-O4', '-std=c++0x'],
+        undef_macros = ['NDEBUG'],
+        language = 'c++'
     )
 ]
 

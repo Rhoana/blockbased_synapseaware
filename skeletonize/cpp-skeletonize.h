@@ -2,7 +2,12 @@
 #define __CPP_SKELETONIZE__
 
 // universal includes
+#include <set>
+#include <map>
+#include <vector>
+#include <assert.h>
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 
 
@@ -22,6 +27,10 @@ extern float resolution[3];
 extern long volume_size[3];
 extern long block_size[3];
 extern long padded_block_size[3];
+extern std::set<long> labels_in_block;
+extern std::map<long, std::set<long> > fixed_points;
+extern std::map<long, std::map<long, char> > segments;
+
 
 
 
@@ -49,7 +58,23 @@ void CppTopologicalThinning(const char *lookup_table_directory,
 
 
 
+void CppSkeletonRefinement(const char *tmp_directory,
+                           const char *synapse_directory,
+                           const char *skeleton_output_directory,
+                           long label,
+                           float input_resolution[3],
+                           long input_volume_size[3],
+                           long input_block_size[3],
+                           long start_indices[3],
+                           long nblocks[3]);
+
+
+
 void WritePtsFileHeader(FILE *fp, long nlabels);
+
+
+
+int ReadPtsFile(FILE *fp, bool use_local_coordinates, char mapped_value, bool is_fixed_point);
 
 
 
@@ -189,6 +214,13 @@ inline long LocalPaddedIndexToIndex(long iv)
 
 
 
+inline long GlobalPaddedIndexToIndex(long iv)
+{
+    return GenericPaddedIndexToIndex(iv, volume_size);
+}
+
+
+
 //////////////////////////////////////////////////
 //// CONVERT BETWEEN LOCAL AND GLOBAL INDICES ////
 //////////////////////////////////////////////////
@@ -202,6 +234,22 @@ inline long LocalIndicesToGlobalIndex(long iz, long iy, long ix, long block_inde
 
     // convert to global index
     return global_iz * volume_size[OR_Y] * volume_size[OR_X] + global_iy * volume_size[OR_X] + global_ix;
+}
+
+
+
+inline long GlobalIndexToLocalIndex(long global_iv)
+{
+    long global_iz, global_iy, global_ix;
+    GlobalIndexToIndices(global_iv, global_iz, global_iy, global_ix);
+
+    // local index is mod of block size
+    long local_iz = global_iz % block_size[OR_Z];
+    long local_iy = global_iy % block_size[OR_Y];
+    long local_ix = global_ix % block_size[OR_X];
+
+    // return the local index
+    return LocalIndicesToIndex(local_iz, local_iy, local_ix);
 }
 
 #endif
