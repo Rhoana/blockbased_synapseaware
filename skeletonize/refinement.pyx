@@ -125,5 +125,15 @@ def RefineSkeleton(data, label):
     total_time = time.time() - total_time
 
     print ('Refinement Time: {:0.2f} seconds.'.format(refinement_time))
-    print ('Update Widths Time: {:0.2f} seconds'.format(widths_time))
+    print ('Update Widths Time: {:0.2f} seconds.'.format(widths_time))
     print ('Total Time: {:0.2f} seconds.'.format(total_time))
+
+    # output timing statistics
+    timing_directory = '{}/skeleton-refinement'.format(data.TimingDirectory())
+    if not os.path.exists(timing_directory):
+        os.makedirs(timing_directory, exist_ok=True)
+    timing_filename = '{}/{:016d}.txt'.format(timing_directory, label)
+    with open(timing_filename, 'w') as fd:
+        fd.write ('Refinement Time: {:0.2f} seconds.\n'.format(refinement_time))
+        fd.write ('Update Widths Time: {:0.2f} seconds.\n'.format(widths_time))
+        fd.write ('Total Time: {:0.2f} seconds.\n'.format(total_time))

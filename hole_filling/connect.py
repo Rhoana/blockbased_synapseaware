@@ -1,3 +1,4 @@
+import os
 import time
 
 
@@ -162,6 +163,16 @@ def ConnectLabelsAcrossBlocks(data, iz, iy, ix):
     print ('Write Time: {:0.2f} seconds.'.format(write_time))
     print ('Total Time: {:0.2f} seconds.'.format(total_time))
 
+    # output timing statistics
+    timing_directory = '{}/connect-labels-across-blocks'.format(data.TimingDirectory())
+    if not os.path.exists(timing_directory):
+        os.makedirs(timing_directory, exist_ok=True)
+    timing_filename = '{}/{:04d}z-{:04d}y-{:04d}x.txt'.format(timing_directory, iz, iy, ix)
+    with open(timing_filename, 'w') as fd:
+        fd.write ('Adjacency Set Time: {:0.2f} seconds.\n'.format(adjacency_set_time))
+        fd.write ('Write Time: {:0.2f} seconds.\n'.format(write_time))
+        fd.write ('Total Time: {:0.2f} seconds.\n'.format(total_time))
+
 
 
 def CombineAssociatedLabels(data):
@@ -227,3 +238,14 @@ def CombineAssociatedLabels(data):
     print ('Background Components Associated Labels: {:0.2f} seconds.'.format(background_associated_labels_time))
     print ('Write Time: {:0.2f} seconds.'.format(write_time))
     print ('Total Time: {:0.2f} seconds.'.format(total_time))
+
+    # output timing statistics
+    timing_directory = data.TimingDirectory()
+    if not os.path.exists(timing_directory):
+        os.makedirs(timing_directory, exist_ok=True)
+    timing_filename = '{}/combine-associated-labels.txt'.format(timing_directory)
+    with open(timing_filename, 'w') as fd:
+        fd.write ('Read Time: {:0.2f} seconds.\n'.format(read_time))
+        fd.write ('Background Components Associated Labels: {:0.2f} seconds.\n'.format(background_associated_labels_time))
+        fd.write ('Write Time: {:0.2f} seconds.\n'.format(write_time))
+        fd.write ('Total Time: {:0.2f} seconds.\n'.format(total_time))

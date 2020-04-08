@@ -89,3 +89,13 @@ def TopologicalThinning(data, iz, iy, ix):
     print ('Read Time: {:0.2f} seconds.'.format(read_time))
     print ('Thinning Time: {:0.2f} seconds.'.format(thinning_time))
     print ('Total Time: {:0.2f} seconds.'.format(total_time))
+
+    # output timing statistics
+    timing_directory = '{}/topological-thinning'.format(data.TimingDirectory())
+    if not os.path.exists(timing_directory):
+        os.makedirs(timing_directory, exist_ok=True)
+    timing_filename = '{}/{:04d}z-{:04d}y-{:04d}x.txt'.format(timing_directory, iz, iy, ix)
+    with open(timing_filename, 'w') as fd:
+        fd.write ('Read Time: {:0.2f} seconds.\n'.format(read_time))
+        fd.write ('Thinning Time: {:0.2f} seconds.\n'.format(thinning_time))
+        fd.write ('Total Time: {:0.2f} seconds.\n'.format(total_time))

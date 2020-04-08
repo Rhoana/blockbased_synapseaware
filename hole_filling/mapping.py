@@ -1,3 +1,4 @@
+import os
 import time
 
 
@@ -55,3 +56,14 @@ def RemoveHoles(data, iz, iy, ix):
     print ('Hole Fill Time: {:0.2f} seconds.'.format(hole_fill_time))
     print ('Write Time: {:0.2f} seconds.'.format(write_time))
     print ('Total Time: {:0.2f} seconds.'.format(total_time))
+
+    # output timing statistics
+    timing_directory = '{}/fill-holes'.format(data.TimingDirectory())
+    if not os.path.exists(timing_directory):
+        os.makedirs(timing_directory, exist_ok=True)
+    timing_filename = '{}/{:04d}z-{:04d}y-{:04d}x.txt'.format(timing_directory, iz, iy, ix)
+    with open(timing_filename, 'w') as fd:
+        fd.write ('Read Time: {:0.2f} seconds.\n'.format(read_time))
+        fd.write ('Hole Fill Time: {:0.2f} seconds.\n'.format(hole_fill_time))
+        fd.write ('Write Time: {:0.2f} seconds.\n'.format(write_time))
+        fd.write ('Total Time: {:0.2f} seconds.\n'.format(total_time))
