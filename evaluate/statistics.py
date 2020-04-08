@@ -150,7 +150,6 @@ def CalculateBlockStatisticsSequentially(prefix):
     for iz in range(data.StartZ(), data.EndZ()):
         for iy in range(data.StartY(), data.EndY()):
             for ix in range(data.StartX(), data.EndX()):
-                pass
-                #CalculatePerBlockStatistics(data, iz, iy, ix)
+                CalculatePerBlockStatistics(data, iz, iy, ix)
 
     CombineStatistics(data)
