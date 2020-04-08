@@ -165,6 +165,11 @@ class MetaData:
 
 
 
+    def StartIndices(self):
+        return self.start_indices
+
+
+
     def BlockZLength(self):
         return self.block_sizes[OR_Z]
 

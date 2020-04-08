@@ -7,7 +7,7 @@ float resolution[3];
 long volume_size[3];
 long block_size[3];
 long padded_block_size[3];
-std::set<long> labels_in_block;
+long padded_volume_size[3];
 std::map<long, std::set<long> > fixed_points;
 std::map<long, std::map<long, char> > segments;
 

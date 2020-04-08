@@ -89,6 +89,35 @@ def ReadPtsFile(data, filename):
 
 
 
+def ReadAttributePtsFile(data, filename):
+    # open the file
+    with open(filename, 'rb') as fd:
+        # read the header
+        volume_size = struct.unpack('qqq', fd.read(24))
+        block_size = struct.unpack('qqq', fd.read(24))
+        nlabels, = struct.unpack('q', fd.read(8))
+
+        # assert the header matches the current data info
+        assert (volume_size == data.VolumeSize())
+        assert (block_size == data.BlockSize())
+        assert (nlabels == 1)
+
+        # create dictionaries for the global indicies
+        global_indices = {}
+
+        for _ in range(nlabels):
+            label, nvoxels, = struct.unpack('qq', fd.read(16))
+
+            # get the global index and corresponding attribute for each voxel
+            for _ in range(nvoxels):
+                global_index, attribute_value, = struct.unpack('qf', fd.read(12))
+
+                global_indices[global_index] = attribute_value
+
+    return global_indices, label
+
+
+
 def WritePtsFile(data, filename, points, block_index = None, input_local_indices = True):
     # if local indices are given, need to know block index
     if (input_local_indices == True): assert (not block_index == None)
@@ -139,3 +168,31 @@ def WritePtsFile(data, filename, points, block_index = None, input_local_indices
 
         # write the checksum
         fd.write(struct.pack('q', checksum))
+
+
+
+def WriteAttributePtsFile(data, filename, label, attributes):
+    # retrieve header information
+    volume_size = data.VolumeSize()
+    block_size = data.BlockSize()
+    # there is only one label in attributes files
+    nlabels = 1
+
+    # open the file
+    with open(filename, 'wb') as fd:
+        # write the header
+        fd.write(struct.pack('qqq', *volume_size))
+        fd.write(struct.pack('qqq', *block_size))
+        fd.write(struct.pack('q', nlabels))
+
+        # number of voxels with corresponding attributes
+        nvoxels = len(attributes.keys())
+
+        # write the label and number of voxels
+        fd.write(struct.pack('q', label))
+        fd.write(struct.pack('q', nvoxels))
+
+        # write each global index with its corresponding attribute
+        for (voxel_index, attribute) in attributes.items():
+            fd.write(struct.pack('q', voxel_index))
+            fd.write(struct.pack('f', attribute))

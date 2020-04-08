@@ -27,7 +27,7 @@ extern float resolution[3];
 extern long volume_size[3];
 extern long block_size[3];
 extern long padded_block_size[3];
-extern std::set<long> labels_in_block;
+extern long padded_volume_size[3];
 extern std::map<long, std::set<long> > fixed_points;
 extern std::map<long, std::map<long, char> > segments;
 
@@ -116,6 +116,14 @@ inline void GlobalIndexToIndices(long iv, long &iz, long &iy, long &ix)
 
 
 
+inline void GlobalPaddedIndexToPaddedIndices(long iv, long &iz, long &iy, long &ix)
+{
+    // return this index to indices
+    GenericIndexToIndices(iv, iz, iy, ix, padded_volume_size);
+}
+
+
+
 ///////////////////////////////////////////////////////////
 //// CONVERT A SET OF COORDINATE INDICES INTO AN INDEX ////
 ///////////////////////////////////////////////////////////
@@ -144,6 +152,13 @@ inline long LocalPaddedIndicesToPaddedIndex(long iz, long iy, long ix)
 inline long GlobalIndicesToIndex(long iz, long iy, long ix)
 {
     return GenericIndicesToIndex(iz, iy, ix, volume_size);
+}
+
+
+
+inline long GlobalPaddedIndicesToPaddedIndex(long iz, long iy, long ix)
+{
+    return GenericIndicesToIndex(iz, iy, ix, padded_volume_size);
 }
 
 

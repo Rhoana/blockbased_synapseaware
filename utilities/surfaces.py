@@ -90,7 +90,7 @@ def GenerateSurfacesPerBlock(data, iz, iy, ix):
     tmp_directory = data.TempBlockDirectory(iz, iy, ix)
     surface_directory = '{}/surfaces'.format(tmp_directory)
     if not os.path.exists(surface_directory):
-        os.makedirs(surface_directory, exist_ok = True)
+        os.makedirs(surface_directory, exist_ok=True)
 
     for label in sorted(surfaces_per_label.keys()):
         surface_filename = '{}/{:016d}.pts'.format(surface_directory, label)
@@ -117,7 +117,7 @@ def CombineSurfaceVoxels(data):
     tmp_directory = data.TempDirectory()
     surface_directory = '{}/surfaces'.format(tmp_directory)
     if not os.path.exists(surface_directory):
-        os.makedirs(surface_directory, exist_ok = True)
+        os.makedirs(surface_directory, exist_ok=True)
 
     # iterate over all labels
     for label in range(1, data.NLabels()):

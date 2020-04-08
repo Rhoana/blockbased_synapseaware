@@ -33,7 +33,6 @@ def SkeletonizeSequentially(prefix):
     for iz in range(data.StartZ(), data.EndZ()):
         for iy in range(data.StartY(), data.EndY()):
             for ix in range(data.StartX(), data.EndX()):
-                print ('{} {} {}'.format(iz, iy, ix))
                 TopologicalThinning(data, iz, iy, ix)
 
     # compute the fourth step to refine the skeleton

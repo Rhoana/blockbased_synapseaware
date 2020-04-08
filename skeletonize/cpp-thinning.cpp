@@ -25,6 +25,7 @@ static const int NTHINNING_DIRECTIONS = 6;
 
 
 // aggregate variables for all blocks
+static std::set<long> labels_in_block;
 static std::map<long, std::set<long> > somata_interior_voxels;
 static std::map<long, std::set<long> > somata_surface_voxels;
 static std::map<long, std::set<long> > *border_voxels;
@@ -967,6 +968,7 @@ void CppTopologicalThinning(const char *lookup_table_directory,
         volume_size[iv] = input_volume_size[iv];
         block_size[iv] = input_block_size[iv];
         padded_block_size[iv] = block_size[iv] + 2;
+        padded_volume_size[iv] = volume_size[iv] + 2;
     }
 
     // overwrite all global variables from previous calls to this file
