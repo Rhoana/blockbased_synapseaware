@@ -74,13 +74,11 @@ def CombineStatistics(data):
     # start timing statistics
     total_time = time.time()
 
-    # create the output directory if it exists
+    # the statistics directory must already exist for previous results
     statistics_directory = '{}/statistics'.format(data.TempDirectory())
-    if not os.path.exists(statistics_directory):
-        os.makedirs(statistics_directory, exist_ok=True)
 
-    label_filled_volumes = {}
     label_volumes_with_holes = {}
+    label_volumes_filled = {}
     label_volumes = {}
     neuronal_volume_with_holes = 0
     neuronal_volume = 0
@@ -103,38 +101,38 @@ def CombineStatistics(data):
                 neuronal_volume_with_holes += statistics['raw_n_non_zero']
                 neuronal_volume += statistics['filled_n_non_zero']
 
-    # calculate what percent of the total volume of holes were filled
-    neuronal_filled_volume = neuronal_volume - neuronal_volume_with_holes
-    total_volume = data.NVoxels()
-
-    print ('Volume Size:     {:14d}'.format(total_volume))
-    print ('  Neuron Volume: {:14d} ({:0.2f}%)'.format(neuronal_volume, 100 * neuronal_volume / total_volume))
-    print ('  Filled Volume: {:14d} ({:0.2f}%)'.format(neuronal_filled_volume, 100 * neuronal_filled_volume / neuronal_volume))
-
     labels = label_volumes.keys()
     for label in labels:
         label_volume = label_volumes[label]
-        label_filled_volume = label_volume - label_volumes_with_holes[label]
+        label_volume_filled = label_volume - label_volumes_with_holes[label]
 
-        print ('Label:           {:14d}'.format(label_volume))
-        print ('  Filled Volume: {:14d} ({:0.2f}%)'.format(label_filled_volume, 100 * label_filled_volume / label_volume))
+        print ('Label {}:'.format(label))
+        print ('  Volume:        {:14d}'.format(label_volume))
+        print ('  Filled Volume: {:14d}   ({:5.2f}%)\n'.format(label_volume_filled, 100 * label_volume_filled / label_volume))
 
         # add to dictionary of filled volues
-        label_filled_volumes[label] = label_filled_volume
 
+        label_volumes_filled[label] = label_volume_filled
+    # calculate what percent of the total volume of holes were filled
+    neuronal_volume_filled = neuronal_volume - neuronal_volume_with_holes
+    total_volume = data.NVoxels()
+
+    print ('Volume Size:     {:14d}'.format(total_volume))
+    print ('  Neuron Volume: {:14d}   ({:5.2f}%)'.format(neuronal_volume, 100 * neuronal_volume / total_volume))
+    print ('  Filled Volume: {:14d}   ({:5.2f}%)'.format(neuronal_volume_filled, 100 * neuronal_volume_filled / neuronal_volume))
 
     # output the aggregated data to a pickle file
     statistics = {}
 
     statistics['label_volumes'] = label_volumes
     statistics['label_volumes_with_holes'] = label_volumes_with_holes
-    statistics['label_filled_volumes'] = label_filled_volumes
+    statistics['label_volumes_filled'] = label_volumes_filled
 
     statistics['neuronal_volume'] = neuronal_volume
     statistics['neuronal_volume_with_holes'] = neuronal_volume_with_holes
-    statistics['neuronal_filled_volume'] = neuronal_filled_volume
+    statistics['neuronal_volumes_filled'] = neuronal_volume_filled
 
-    statistics_filename = '{}/combined-statistics.pickle'.format(statistics_directory, iz, iy, ix)
+    statistics_filename = '{}/combined-statistics.pickle'.format(statistics_directory)
     PickleData(statistics, statistics_filename)
 
     total_time = time.time() - total_time
@@ -150,6 +148,7 @@ def CalculateBlockStatisticsSequentially(prefix):
     for iz in range(data.StartZ(), data.EndZ()):
         for iy in range(data.StartY(), data.EndY()):
             for ix in range(data.StartX(), data.EndX()):
-                CalculatePerBlockStatistics(data, iz, iy, ix)
+                #CalculatePerBlockStatistics(data, iz, iy, ix)
+                pass
 
     CombineStatistics(data)
