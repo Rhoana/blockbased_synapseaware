@@ -195,6 +195,15 @@ class MetaData:
 
 
 
+    def NVoxels(self):
+        nzvoxels = self.block_sizes[OR_Z] * self.nzblocks
+        nyvoxels = self.block_sizes[OR_Y] * self.nyblocks
+        nxvoxels = self.block_sizes[OR_X] * self.nxblocks
+
+        return nzvoxels * nyvoxels * nxvoxels
+
+
+
     def Resolution(self):
         return self.resolution
 
