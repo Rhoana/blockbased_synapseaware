@@ -220,12 +220,17 @@ class MetaData:
 
 
     def TempDirectory(self):
-        return '{}/{}'.format(self.tmp_directory, self.prefix)
+        return self.tmp_directory
 
 
 
     def TempBlockDirectory(self, iz, iy, ix):
-        return '{}/{}/{:04d}z-{:04d}y-{:04d}x'.format(self.tmp_directory, self.prefix, iz, iy, ix)
+        return '{}/{:04d}z-{:04d}y-{:04d}x'.format(self.tmp_directory, iz, iy, ix)
+
+
+
+    def TimingDirectory(self):
+        return '{}/timing'.format(self.tmp_directory)
 
 
 
