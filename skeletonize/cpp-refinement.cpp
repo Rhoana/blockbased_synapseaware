@@ -333,34 +333,8 @@ void CppSkeletonRefinement(const char *tmp_directory,
     for (long iz = start_indices[OR_Z]; iz < start_indices[OR_Z] + nblocks[OR_Z]; ++iz) {
         for (long iy = start_indices[OR_Y]; iy < start_indices[OR_Y] + nblocks[OR_Y]; ++iy) {
             for (long ix = start_indices[OR_X]; ix < start_indices[OR_X] + nblocks[OR_X]; ++ix) {
-                // must read skeletons first since they also include the synapses
-                char skeleton_filename[4096];
-                snprintf(skeleton_filename, 4096, "%s/%04ldz-%04ldy-%04ldx/skeletons/%016ld.pts", tmp_directory, iz, iy, ix, label);
-
-                // open the file, if it exists
-                FILE *skeleton_fp = fopen(skeleton_filename, "rb");
-                if (skeleton_fp) {
-                    // read in the points using global coordinates, a mapped value of 1, without populating the fixed point array
-                    if (!ReadPtsFile(skeleton_fp, false, 1, false)) { fprintf(stderr, "Failed to read %s.\n", skeleton_filename); exit(-1); }
-
-                    // close the file
-                    fclose(skeleton_fp);
-                }
-
-                char synapse_filename[4096];
-                snprintf(synapse_filename, 4096, "%s/%04ldz-%04ldy-%04ldx.pts", synapse_directory, iz, iy, ix);
-
-                // open the file
-                FILE *synapse_fp = fopen(synapse_filename, "rb");
-                if (!synapse_fp) { fprintf(stderr, "Failed to read %s.\n", synapse_filename); exit(-1); }
-
-                // read in the points using global coordinates, a mapped value of 3, and populating fixed point array
-                if (!ReadPtsFile(synapse_fp, false, 3, true)) { fprintf(stderr, "Failed to read %s.\n", synapse_filename); exit(-1); }
-
-                // close the file
-                fclose(synapse_fp);
-
                 // read in the somata file if it exists for this label for this block
+                // this must occur first so that skeletons and synapses can override the default somata surface value of 4
                 char somata_filename[4096];
                 snprintf(somata_filename, 4096, "%s/%04ldz-%04ldy-%04ldx/somata_surfaces/%016ld.pts", tmp_directory, iz, iy, ix, label);
 
@@ -376,6 +350,34 @@ void CppSkeletonRefinement(const char *tmp_directory,
                     // a cell body exists for this element
                     somata_exists = true;
                 }
+
+                // must read skeletons after somata but before synapses
+                char skeleton_filename[4096];
+                snprintf(skeleton_filename, 4096, "%s/%04ldz-%04ldy-%04ldx/skeletons/%016ld.pts", tmp_directory, iz, iy, ix, label);
+
+                // open the file, if it exists
+                FILE *skeleton_fp = fopen(skeleton_filename, "rb");
+                if (skeleton_fp) {
+                    // read in the points using global coordinates, a mapped value of 1, without populating the fixed point array
+                    if (!ReadPtsFile(skeleton_fp, false, 1, false)) { fprintf(stderr, "Failed to read %s.\n", skeleton_filename); exit(-1); }
+
+                    // close the file
+                    fclose(skeleton_fp);
+                }
+
+                // must read synapses last to make sure they do not receive a value of 1 (from skeletons) or 4 (from somata surfaces)
+                char synapse_filename[4096];
+                snprintf(synapse_filename, 4096, "%s/%04ldz-%04ldy-%04ldx.pts", synapse_directory, iz, iy, ix);
+
+                // open the file
+                FILE *synapse_fp = fopen(synapse_filename, "rb");
+                if (!synapse_fp) { fprintf(stderr, "Failed to read %s.\n", synapse_filename); exit(-1); }
+
+                // read in the points using global coordinates, a mapped value of 3, and populating fixed point array
+                if (!ReadPtsFile(synapse_fp, false, 3, true)) { fprintf(stderr, "Failed to read %s.\n", synapse_filename); exit(-1); }
+
+                // close the file
+                fclose(synapse_fp);
             }
         }
     }
