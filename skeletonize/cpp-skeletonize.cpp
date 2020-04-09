@@ -8,8 +8,8 @@ long volume_size[3];
 long block_size[3];
 long padded_block_size[3];
 long padded_volume_size[3];
-std::map<long, std::set<long> > fixed_points;
-std::map<long, std::map<long, char> > segments;
+std::unordered_map<long, std::unordered_set<long> > fixed_points;
+std::unordered_map<long, std::unordered_map<long, char> > segments;
 
 
 

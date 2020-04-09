@@ -53,8 +53,8 @@ void CppComputeAnchorPoints(const char *lookup_table_directory,
     const long depth = 1; // value for the depth of the image (always one)
 
     // set of all sets
-    std::set<long> labels = std::set<long>();
-    std::map<long, PGMImage *> images = std::map<long, PGMImage *>();
+    std::unordered_set<long> labels = std::unordered_set<long>();
+    std::unordered_map<long, PGMImage *> images = std::unordered_map<long, PGMImage *>();
 
     for (long iv = 0; iv < nentries; ++iv) {
         // don't consider background or when the neighbor has a different value
@@ -75,11 +75,11 @@ void CppComputeAnchorPoints(const char *lookup_table_directory,
     }
 
     // iu_center and iv_center will contain the thinned points (anchors)
-    std::map<long, std::vector<long> > iu_centers = std::map<long, std::vector<long> >();
-    std::map<long, std::vector<long> > iv_centers = std::map<long, std::vector<long> >();
+    std::unordered_map<long, std::vector<long> > iu_centers = std::unordered_map<long, std::vector<long> >();
+    std::unordered_map<long, std::vector<long> > iv_centers = std::unordered_map<long, std::vector<long> >();
 
     // for each label, thin the overlap
-    for (std::map <long, PGMImage *>::iterator it = images.begin(); it != images.end(); ++it) {
+    for (std::unordered_map <long, PGMImage *>::iterator it = images.begin(); it != images.end(); ++it) {
         ThinImage(lookup_table_directory, it->second, iu_centers[it->first], iv_centers[it->first]);
     }
 
@@ -107,7 +107,7 @@ void CppComputeAnchorPoints(const char *lookup_table_directory,
     long neighbor_checksum = 0;
 
     // iterate over all labels in the volume
-    for (std::map<long, std::vector<long> >::iterator it = iu_centers.begin(); it != iu_centers.end(); ++it) {
+    for (std::unordered_map<long, std::vector<long> >::iterator it = iu_centers.begin(); it != iu_centers.end(); ++it) {
         long label = it->first;
         long nanchors = iu_centers[label].size();
 

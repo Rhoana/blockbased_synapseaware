@@ -25,10 +25,10 @@ static const int NTHINNING_DIRECTIONS = 6;
 
 
 // aggregate variables for all blocks
-static std::set<long> labels_in_block;
-static std::map<long, std::set<long> > somata_interior_voxels;
-static std::map<long, std::set<long> > somata_surface_voxels;
-static std::map<long, std::set<long> > *border_voxels;
+static std::unordered_set<long> labels_in_block;
+static std::unordered_map<long, std::unordered_set<long> > somata_interior_voxels;
+static std::unordered_map<long, std::unordered_set<long> > somata_surface_voxels;
+static std::unordered_map<long, std::unordered_set<long> > *border_voxels;
 
 
 
@@ -169,7 +169,7 @@ typedef struct {
 
 // variables for each processed block
 long current_label;
-static std::map<long, float> widths;
+static std::unordered_map<long, float> widths;
 static List surface_voxels;
 
 
@@ -341,8 +341,8 @@ static void PopulateSomata(long *somata)
 
         // create new sets of voxels for both the interior and surface
         if (somata_interior_voxels.find(label) == somata_interior_voxels.end()) {
-            somata_interior_voxels[label] = std::set<long>();
-            somata_surface_voxels[label] = std::set<long>();
+            somata_interior_voxels[label] = std::unordered_set<long>();
+            somata_surface_voxels[label] = std::unordered_set<long>();
             somata_labels.push_back(label);
         }
 
@@ -436,10 +436,10 @@ static void PopulateSegments(long *segmentation)
 
         // create a new unordered map for this label
         if (segments.find(label) == segments.end()) {
-            segments[label] = std::map<long, char>();
-            fixed_points[label] = std::set<long>();
+            segments[label] = std::unordered_map<long, char>();
+            fixed_points[label] = std::unordered_set<long>();
             for (long dir = 0; dir < NTHINNING_DIRECTIONS; ++dir) {
-                border_voxels[dir][label] = std::set<long>();
+                border_voxels[dir][label] = std::unordered_set<long>();
             }
             labels_in_block.insert(label);
         }
@@ -476,12 +476,12 @@ static void PopulateSegments(long *segmentation)
     }
 
     // points on the surface of the cell body get a value of 4 (do not remove)
-    std::map<long, std::set<long> >::iterator label_iterator;
+    std::unordered_map<long, std::unordered_set<long> >::iterator label_iterator;
     for (label_iterator = somata_surface_voxels.begin(); label_iterator != somata_surface_voxels.end(); ++label_iterator) {
         long label = label_iterator->first;
 
         // iterate over all voxels in the surface of this somata
-        std::set<long>::iterator voxel_iterator;
+        std::unordered_set<long>::iterator voxel_iterator;
         for (voxel_iterator = somata_surface_voxels[label].begin(); voxel_iterator != somata_surface_voxels[label].end(); ++voxel_iterator) {
             long padded_index = *voxel_iterator;
             segments[label][padded_index] = 4;
@@ -545,7 +545,7 @@ static void CollectSurfaceVoxels(void)
     long n_surface_voxels = 0;
 
     // go through all voxels and check their six neighbors
-    std::map<long, char>::iterator it;
+    std::unordered_map<long, char>::iterator it;
     for (it = segments[current_label].begin(); it != segments[current_label].end(); ++it) {
         // all of these elements are either 1, 3, or 4 and in the segment
         long index = it->first;
@@ -843,7 +843,7 @@ static void WriteSkeletonOutputFiles(const char *tmp_directory, long current_blo
     }
 
     // add in the fixed points
-    std::set<long>::iterator it;
+    std::unordered_set<long>::iterator it;
     for (it = fixed_points[current_label].begin(); it != fixed_points[current_label].end(); ++it, ++iv) {
         // get the padded index
         long padded_index = *it;
@@ -891,7 +891,7 @@ static void WriteSkeletonOutputFiles(const char *tmp_directory, long current_blo
 static void WriteSomataSurfaces(const char *tmp_directory, long current_block_index[3])
 {
     // iterate over all labels in the map
-    std::map<long, std::set<long> >::iterator it;
+    std::unordered_map<long, std::unordered_set<long> >::iterator it;
     for (it = somata_surface_voxels.begin(); it != somata_surface_voxels.end(); ++it) {
         long label = it->first;
 
@@ -907,7 +907,7 @@ static void WriteSomataSurfaces(const char *tmp_directory, long current_block_in
         WritePtsFileHeader(fp, 1);
 
         // go through all voxels in the set and add to local and global arrays
-        std::set<long> voxels = it->second;
+        std::unordered_set<long> voxels = it->second;
         unsigned long nvoxels = voxels.size();
 
         // write the label and the number of voxels
@@ -922,7 +922,7 @@ static void WriteSomataSurfaces(const char *tmp_directory, long current_block_in
 
         // go through every voxel (currently they are padded)
         long iv = 0; // counter for the number of voxels processed
-        for (std::set<long>::iterator it = voxels.begin(); it != voxels.end(); ++it, ++iv) {
+        for (std::unordered_set<long>::iterator it = voxels.begin(); it != voxels.end(); ++it, ++iv) {
             long padded_index = *it;
 
             local_indices[iv] = LocalPaddedIndexToIndex(padded_index);
@@ -972,16 +972,16 @@ void CppTopologicalThinning(const char *lookup_table_directory,
     }
 
     // overwrite all global variables from previous calls to this file
-    labels_in_block = std::set<long>();
-    fixed_points = std::map<long, std::set<long> >();
-    somata_interior_voxels = std::map<long, std::set<long> >();
-    somata_surface_voxels = std::map<long, std::set<long> >();
-    segments = std::map<long, std::map<long, char> >();
+    labels_in_block = std::unordered_set<long>();
+    fixed_points = std::unordered_map<long, std::unordered_set<long> >();
+    somata_interior_voxels = std::unordered_map<long, std::unordered_set<long> >();
+    somata_surface_voxels = std::unordered_map<long, std::unordered_set<long> >();
+    segments = std::unordered_map<long, std::unordered_map<long, char> >();
 
     // create mappings for every wall
-    border_voxels = new std::map<long, std::set<long> >[NTHINNING_DIRECTIONS];
+    border_voxels = new std::unordered_map<long, std::unordered_set<long> >[NTHINNING_DIRECTIONS];
     for (long dir = 0; dir < NTHINNING_DIRECTIONS; ++dir) {
-        border_voxels[dir] = std::map<long, std::set<long> >();
+        border_voxels[dir] = std::unordered_map<long, std::unordered_set<long> >();
     }
 
     // create the mappings for somata and for segmentations
@@ -1002,10 +1002,10 @@ void CppTopologicalThinning(const char *lookup_table_directory,
     InitializeLookupTables(lookup_table_directory);
 
     // iterate over all labels in the volume for thinning
-    std::set<long>::iterator it;
+    std::unordered_set<long>::iterator it;
     for (it = labels_in_block.begin(); it != labels_in_block.end(); ++it) {
         // initialize new widths mapping for this label
-        widths = std::map<long, float>();
+        widths = std::unordered_map<long, float>();
 
         current_label = *it;
 

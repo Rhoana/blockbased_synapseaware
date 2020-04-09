@@ -58,7 +58,7 @@ static void WriteTempFiles(const char *tmp_directory, long label)
     std::vector<long> synapses = std::vector<long>();
     std::vector<long> skeleton = std::vector<long>();
 
-    std::map<long, char>::iterator it;
+    std::unordered_map<long, char>::iterator it;
     for (it = segments[label].begin(); it != segments[label].end(); ++it) {
         long padded_index = it->first;
         long global_index = GlobalPaddedIndexToIndex(padded_index);
@@ -114,7 +114,7 @@ static void WriteTempFiles(const char *tmp_directory, long label)
 static void RunDijkstrasAlgorithm(const char *skeleton_output_directory, long label)
 {
     // a mapping from linear global indices to indices in a dijkstra array data structure
-    std::map<long, long> dijkstra_map = std::map<long, long>();
+    std::unordered_map<long, long> dijkstra_map = std::unordered_map<long, long>();
 
     long nvoxels = segments[label].size();
     DijkstraData *voxel_data = new DijkstraData[nvoxels];
@@ -131,7 +131,7 @@ static void RunDijkstrasAlgorithm(const char *skeleton_output_directory, long la
 
     // initialize all data
     long index = 0;
-    std::map<long, char>::iterator it;
+    std::unordered_map<long, char>::iterator it;
     for (it = segments[label].begin(); it != segments[label].end(); ++it, ++index) {
         voxel_data[index].iv = it->first;               // voxel index
         voxel_data[index].prev = NULL;
@@ -202,10 +202,10 @@ static void RunDijkstrasAlgorithm(const char *skeleton_output_directory, long la
         }
     }
 
-    std::set<long> refined_skeleton = std::set<long>();
+    std::unordered_set<long> refined_skeleton = std::unordered_set<long>();
 
     // iterate over every synapse until it reaches the source
-    std::set<long>::iterator it2;
+    std::unordered_set<long>::iterator it2;
     for (it2 = fixed_points[label].begin(); it2 != fixed_points[label].end(); ++it2) {
         long padded_global_index = *it2;
 
@@ -324,8 +324,8 @@ void CppSkeletonRefinement(const char *tmp_directory,
     }
 
     // overwrite all global variables from previous calls to this file
-    fixed_points = std::map<long, std::set<long> >();
-    segments = std::map<long, std::map<long, char> >();
+    fixed_points = std::unordered_map<long, std::unordered_set<long> >();
+    segments = std::unordered_map<long, std::unordered_map<long, char> >();
 
     bool somata_exists = false;
 

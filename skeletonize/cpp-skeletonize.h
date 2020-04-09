@@ -2,8 +2,8 @@
 #define __CPP_SKELETONIZE__
 
 // universal includes
-#include <set>
-#include <map>
+#include <unordered_set>
+#include <unordered_map>
 #include <vector>
 #include <assert.h>
 #include <stdio.h>
@@ -28,8 +28,8 @@ extern long volume_size[3];
 extern long block_size[3];
 extern long padded_block_size[3];
 extern long padded_volume_size[3];
-extern std::map<long, std::set<long> > fixed_points;
-extern std::map<long, std::map<long, char> > segments;
+extern std::unordered_map<long, std::unordered_set<long> > fixed_points;
+extern std::unordered_map<long, std::unordered_map<long, char> > segments;
 
 
 
