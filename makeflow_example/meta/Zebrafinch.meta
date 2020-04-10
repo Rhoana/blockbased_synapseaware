@@ -1,0 +1,24 @@
+# max label
+409
+# block size (x, y, z)
+1024x1024x128
+# volume size (x, y, z)
+6144x6144x6144
+# start block indices (x, y, z)
+0, 0, 0
+# number of blocks to skeletonize (x, y, z)
+2x2x8
+# resolution in nm (x, y, z)
+18x18x20
+# temporary files directory
+/n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/
+# hole filling output directory
+/n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/filled_segments/
+# skeleton output directory
+/n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/skeletons_out/
+# path to raw segmentations
+/n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/raw_segments/
+# path to synapses
+/n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/synapses/
+# path to somata
+/n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/somata/

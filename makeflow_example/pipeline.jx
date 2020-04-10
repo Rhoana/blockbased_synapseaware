@@ -1,0 +1,73 @@
+
+{
+    "define" : {
+        "Z_RANGE"    : range(0,8),
+        "o_RANGE"    : range(0,0),
+        "ID_RANGE"   : range(0,410),
+        "CC_DIR"     : "connected-components-3d/",
+        "TH_DIR"     : "skeletons/examples/scripts/",
+        "OUTPUT_DIR" : "/n/pfister_lab2/Lab/tfranzmeyer/Data/1024x1024x128_mflow/Code/mfoutput/",
+    },
+
+    "rules" : [
+                ## Holefilling
+                # STEP 1
+                {
+                    "command" : "python "+ CC_DIR +"stepOne.py "+BZ,
+                    "inputs"  : [ ],
+                    "outputs" : [OUTPUT_DIR+"mf-HF-S1-out-"+BZ+"z.txt"],
+                } for BZ in Z_RANGE,
+
+                # STEP 2A
+                {
+                    "command" : "python "+ CC_DIR +"stepTwoA.py "+BZ,
+                    "inputs"  : [OUTPUT_DIR+"mf-HF-S1-out-"+BZ+"z.txt"],
+                    "outputs" : [OUTPUT_DIR+"mf-HF-S2A-out-"+BZ+"z.txt"],
+                } for BZ in Z_RANGE,
+
+                # STEP 2B
+                #{
+                #    "command" : "python "+ CC_DIR +"stepTwoB.py " + join([format(OUTPUT_DIR+"mf-HF-S2A-out-%dz.txt", BZ) for BZ in Z_RANGE])+ " > "+OUTPUT_DIR+"mf-HF-S2B-out.txt",
+                #    "inputs"  : [format(OUTPUT_DIR+"mf-HF-S2A-out-%dz.txt", BZ) for BZ in Z_RANGE],
+                #    "outputs" : [OUTPUT_DIR+"mf-HF-S2B-out.txt"],
+                #},
+
+                # STEP 3
+                {
+                    "command" : "python "+ CC_DIR +"stepThree.py "+BZ+" "+OUTPUT_DIR+"mf-HF-S2B-out.txt > "+OUTPUT_DIR+"mf-HF-S3-out-"+BZ+"z.txt",
+                    "inputs"  : [OUTPUT_DIR+"mf-HF-S2B-out.txt"],
+                    "outputs" : [OUTPUT_DIR+"mf-HF-S3-out-"+BZ+"z.txt"],
+                } for BZ in o_RANGE,
+
+                ## Thinning
+                # STEP 1
+                {
+                    "command" : "python "+ TH_DIR +"step1.py "+BZ+" "+OUTPUT_DIR+"mf-HF-S3-out-"+BZ+"z.txt > "+OUTPUT_DIR+"mf-TH-S1-out-"+BZ+"z.txt",
+                    "inputs"  : [OUTPUT_DIR+"mf-HF-S3-out-"+BZ+"z.txt"],
+                    "outputs" : [OUTPUT_DIR+"mf-TH-S1-out-"+BZ+"z.txt"],
+                } for BZ in o_RANGE,
+
+                # STEP 2
+                {
+                    "command" : "python "+ TH_DIR +"step2.py "+BZ+" "+OUTPUT_DIR+"mf-TH-S1-out-"+BZ+"z.txt > "+OUTPUT_DIR+"mf-TH-S2-out-"+BZ+"z.txt",
+                    "inputs"  : [OUTPUT_DIR+"mf-TH-S1-out-"+BZ+"z.txt"],
+                    "outputs" : [OUTPUT_DIR+"mf-TH-S2-out-"+BZ+"z.txt"],
+                } for BZ in o_RANGE,
+
+                # STEP 3
+                {
+                    "command" : "python "+ TH_DIR +"step3.py "+BZ+" "+OUTPUT_DIR+"mf-TH-S2-out-"+BZ+"z.txt > "+OUTPUT_DIR+"mf-TH-S3-out-"+BZ+"z.txt",
+                    "inputs"  : [OUTPUT_DIR+"mf-TH-S2-out-"+BZ+"z.txt"],
+                    "outputs" : [OUTPUT_DIR+"mf-TH-S3-out-"+BZ+"z.txt"],
+                } for BZ in o_RANGE,
+
+                # STEP 4
+                {
+                    "command" : "python "+ TH_DIR +"step4.py "+ID+" "+ID+" "+join([format(OUTPUT_DIR+"mf-TH-S3-out-%dz.txt", BZ) for BZ in Z_RANGE])+" > "+OUTPUT_DIR+"mf-TH-S4-out-"+ID+"label.txt",
+                    "inputs"  : [format(OUTPUT_DIR+"mf-TH-S3-out-%dz.txt", BZ) for BZ in Z_RANGE],
+                    "outputs" : [OUTPUT_DIR+"mf-TH-S4-out-"+ID+"label.txt"],
+                } for ID in o_RANGE,
+
+              ]
+}
+

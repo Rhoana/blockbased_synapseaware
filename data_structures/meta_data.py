@@ -80,7 +80,7 @@ class MetaData:
                     self.nyblocks = int(nblocks[1])
                     self.nxblocks = int(nblocks[0])
                 elif comment == '# resolution in nm (x, y, z)':
-                    resolutions = value.split('x')
+                    resolutions = value.split('x') 
                     # use order 2, 1, 0 to convert from xyz to zyx
                     self.resolution = (float(resolutions[2]), float(resolutions[1]), float(resolutions[0]))
 
