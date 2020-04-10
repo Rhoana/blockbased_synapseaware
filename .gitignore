@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# slurm tracking files
+makeflow_example/slurm*
+
 # Distribution / packaging
 .Python
 build/

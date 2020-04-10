@@ -1,0 +1,173 @@
+# FILE 1586522461571363 pipeline.jx.batchlog 1 0
+# STARTED 1586522461580851
+# FILE 1586522461584629 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-7z.txt 1 1073741824
+1586522462773990 7 1 52286150 24 1 0 0 0 25
+# FILE 1586522462774012 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-6z.txt 1 1073741824
+1586522463089973 6 1 52286151 23 2 0 0 0 25
+# FILE 1586522463089999 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-5z.txt 1 1073741824
+1586522463388430 5 1 52286153 22 3 0 0 0 25
+# FILE 1586522463388463 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-4z.txt 1 1073741824
+1586522463474971 4 1 52286154 21 4 0 0 0 25
+# FILE 1586522463475039 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-3z.txt 1 1073741824
+1586522464238407 3 1 52286155 20 5 0 0 0 25
+# FILE 1586522464238472 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-2z.txt 1 1073741824
+1586522465662851 2 1 52286157 19 6 0 0 0 25
+# FILE 1586522465662918 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-1z.txt 1 1073741824
+1586522465894251 1 1 52286159 18 7 0 0 0 25
+# FILE 1586522465894312 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-0z.txt 1 1073741824
+1586522465977196 0 1 52286161 17 8 0 0 0 25
+# FILE 1586522554354652 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-6z.txt 2 5
+1586522554360463 6 2 52286151 17 7 1 0 0 25
+# FILE 1586522554360487 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-6z.txt 1 1073741824
+1586522556413024 14 1 52286302 16 8 1 0 0 25
+# FILE 1586522558506296 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-0z.txt 2 5
+1586522558506306 0 2 52286161 16 7 2 0 0 25
+# FILE 1586522558506356 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-0z.txt 1 1073741824
+1586522561283495 8 1 52286303 15 8 2 0 0 25
+# FILE 1586522561298731 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-4z.txt 2 5
+1586522561298737 4 2 52286154 15 7 3 0 0 25
+# FILE 1586522561298774 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-4z.txt 1 1073741824
+1586522566973390 12 1 52286304 14 8 3 0 0 25
+# FILE 1586522566991241 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-3z.txt 2 5
+1586522566991258 3 2 52286155 14 7 4 0 0 25
+# FILE 1586522566991365 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-3z.txt 1 1073741824
+1586522569134943 11 1 52286305 13 8 4 0 0 25
+# FILE 1586522569150370 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-2z.txt 2 5
+1586522569150376 2 2 52286157 13 7 5 0 0 25
+# FILE 1586522569150411 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-2z.txt 1 1073741824
+1586522570935541 10 1 52286306 12 8 5 0 0 25
+# FILE 1586522570953381 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-1z.txt 2 5
+1586522570953398 1 2 52286159 12 7 6 0 0 25
+# FILE 1586522570953490 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-1z.txt 1 1073741824
+1586522571026799 9 1 52286307 11 8 6 0 0 25
+# FILE 1586522571078925 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-7z.txt 2 5
+1586522571078931 7 2 52286150 11 7 7 0 0 25
+# FILE 1586522571078962 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-7z.txt 1 1073741824
+1586522571464162 15 1 52286308 10 8 7 0 0 25
+# FILE 1586522571491480 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-5z.txt 2 5
+1586522571491497 5 2 52286153 10 7 8 0 0 25
+# FILE 1586522571491571 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-5z.txt 1 1073741824
+1586522571883580 13 1 52286309 9 8 8 0 0 25
+# FILE 1586522574933408 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-6z.txt 2 5
+# FILE 1586522574935892 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-6z.txt 3 5
+1586522574935906 14 2 52286302 9 7 9 0 0 25
+# FILE 1586522576005897 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-0z.txt 2 5
+# FILE 1586522576005911 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-0z.txt 3 5
+1586522576005924 8 2 52286303 9 6 10 0 0 25
+# FILE 1586522583179347 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-4z.txt 2 5
+# FILE 1586522583181741 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-4z.txt 3 5
+1586522583181746 12 2 52286304 9 5 11 0 0 25
+# FILE 1586522583197246 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-3z.txt 2 5
+# FILE 1586522583197252 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-3z.txt 3 5
+1586522583197256 11 2 52286305 9 4 12 0 0 25
+# FILE 1586522583212774 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-2z.txt 2 5
+# FILE 1586522583212778 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-2z.txt 3 5
+1586522583212782 10 2 52286306 9 3 13 0 0 25
+# FILE 1586522583228085 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-1z.txt 2 5
+# FILE 1586522583228098 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-1z.txt 3 5
+1586522583228106 9 2 52286307 9 2 14 0 0 25
+# FILE 1586522583243807 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-7z.txt 2 5
+# FILE 1586522583243822 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-7z.txt 3 5
+1586522583243831 15 2 52286308 9 1 15 0 0 25
+# FILE 1586522583259384 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-5z.txt 2 5
+# FILE 1586522583259397 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S1-out-5z.txt 3 5
+1586522583259405 13 2 52286309 9 0 16 0 0 25
+# FILE 1586522583259454 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S3-out.txt 1 1073741824
+1586522583681192 16 1 52286310 8 1 16 0 0 25
+# FILE 1586522611729325 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S3-out.txt 2 5
+# FILE 1586522611731736 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-7z.txt 3 5
+# FILE 1586522611731748 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-6z.txt 3 5
+# FILE 1586522611731757 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-5z.txt 3 5
+# FILE 1586522611731766 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-4z.txt 3 5
+# FILE 1586522611731775 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-3z.txt 3 5
+# FILE 1586522611731784 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-2z.txt 3 5
+# FILE 1586522611731793 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-1z.txt 3 5
+# FILE 1586522611731802 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S2-out-0z.txt 3 5
+1586522611731817 16 2 52286310 8 0 17 0 0 25
+# FILE 1586522611731840 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-7z.txt 1 1073741824
+1586522611849172 24 1 52286314 7 1 17 0 0 25
+# FILE 1586522611849250 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-6z.txt 1 1073741824
+1586522611919265 23 1 52286315 6 2 17 0 0 25
+# FILE 1586522611919319 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-5z.txt 1 1073741824
+1586522611990006 22 1 52286316 5 3 17 0 0 25
+# FILE 1586522611990031 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-4z.txt 1 1073741824
+1586522614687792 21 1 52286317 4 4 17 0 0 25
+# FILE 1586522614687862 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-3z.txt 1 1073741824
+1586522614814449 20 1 52286318 3 5 17 0 0 25
+# FILE 1586522614814515 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-2z.txt 1 1073741824
+1586522614884138 19 1 52286319 2 6 17 0 0 25
+# FILE 1586522614884207 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-1z.txt 1 1073741824
+1586522617085217 18 1 52286320 1 7 17 0 0 25
+# FILE 1586522617088668 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-0z.txt 1 1073741824
+1586522617208241 17 1 52286321 0 8 17 0 0 25
+# FILE 1586522617226556 makeflow.failed.24 3 0
+1586522617316113 24 3 52286314 0 7 17 1 0 25
+1586522617318673 24 0 52286314 1 7 17 0 0 25
+# FILE 1586522617318689 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-7z.txt 1 1073741824
+1586522622799224 24 1 52286322 0 8 17 0 0 25
+# FILE 1586522622817843 makeflow.failed.23 3 0
+1586522622900927 23 3 52286315 0 7 17 1 0 25
+1586522622903467 23 0 52286315 1 7 17 0 0 25
+# FILE 1586522622903509 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-6z.txt 1 1073741824
+1586522622980443 23 1 52286323 0 8 17 0 0 25
+# FILE 1586522623002660 makeflow.failed.22 3 0
+1586522623084533 22 3 52286316 0 7 17 1 0 25
+1586522623087006 22 0 52286316 1 7 17 0 0 25
+# FILE 1586522623087022 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-5z.txt 1 1073741824
+# FILE 1586522626620807 makeflow.failed.21 3 0
+1586522626708963 21 3 52286317 1 6 17 1 0 25
+1586522626711521 21 0 52286317 2 6 17 0 0 25
+1586522626937524 20 4 52286318 2 5 17 0 1 25
+1586522627260219 19 4 52286319 2 4 17 0 2 25
+1586522629903889 18 4 52286320 2 3 17 0 3 25
+1586522629947027 17 4 52286321 2 2 17 0 4 25
+1586522629997534 24 4 52286322 2 1 17 0 5 25
+1586522630159793 23 4 52286323 2 0 17 0 6 25
+# ABORTED 1586522630159874
+# FILE 1586522724909940 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-7z.txt 4 1073741824
+1586522724913503 24 0 52286322 3 0 17 0 5 25
+1586522724913577 23 0 52286323 4 0 17 0 4 25
+1586522724913643 20 0 52286318 5 0 17 0 3 25
+1586522724913705 19 0 52286319 6 0 17 0 2 25
+1586522724913765 18 0 52286320 7 0 17 0 1 25
+1586522724913802 17 0 52286321 8 0 17 0 0 25
+# FILE 1586522724956514 pipeline.jx.batchlog 1 0
+# STARTED 1586522724956565
+# FILE 1586522724960016 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-7z.txt 1 1073741824
+1586522727351636 24 1 52286331 7 1 17 0 0 25
+# FILE 1586522727351703 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-6z.txt 1 1073741824
+1586522729757041 23 1 52286332 6 2 17 0 0 25
+# FILE 1586522729757116 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-5z.txt 1 1073741824
+1586522729825003 22 1 52286333 5 3 17 0 0 25
+# FILE 1586522729825070 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-4z.txt 1 1073741824
+1586522730630390 21 1 52286334 4 4 17 0 0 25
+# FILE 1586522730630443 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-3z.txt 1 1073741824
+1586522730702142 20 1 52286335 3 5 17 0 0 25
+# FILE 1586522730702207 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-2z.txt 1 1073741824
+1586522730796580 19 1 52286336 2 6 17 0 0 25
+# FILE 1586522730796613 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-1z.txt 1 1073741824
+1586522730870740 18 1 52286337 1 7 17 0 0 25
+# FILE 1586522730870806 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-0z.txt 1 1073741824
+1586522730939986 17 1 52286338 0 8 17 0 0 25
+# FILE 1586522806519121 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-7z.txt 2 5
+# FILE 1586522806650528 makeflow.failed.24 4 0
+1586522806650548 24 2 52286331 0 7 18 0 0 25
+# FILE 1586522806665969 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-6z.txt 2 5
+# FILE 1586522806769593 makeflow.failed.23 4 0
+1586522806769610 23 2 52286332 0 6 19 0 0 25
+# FILE 1586522808831355 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-5z.txt 2 5
+# FILE 1586522808930298 makeflow.failed.22 4 0
+1586522808930333 22 2 52286333 0 5 20 0 0 25
+# FILE 1586522811998363 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-4z.txt 2 5
+# FILE 1586522812099240 makeflow.failed.21 4 0
+1586522812099255 21 2 52286334 0 4 21 0 0 25
+# FILE 1586522812119739 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-2z.txt 2 5
+1586522812119745 19 2 52286336 0 3 22 0 0 25
+# FILE 1586522812141427 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-1z.txt 2 5
+1586522812141439 18 2 52286337 0 2 23 0 0 25
+# FILE 1586522813165984 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-3z.txt 2 5
+1586522813166002 20 2 52286335 0 1 24 0 0 25
+# FILE 1586522814189102 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S4-out-0z.txt 2 5
+# FILE 1586522814189116 /n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/mf-HF-S3-out.txt 3 0
+1586522814189127 17 2 52286338 0 0 25 0 0 25
+# COMPLETED 1586522814189150
