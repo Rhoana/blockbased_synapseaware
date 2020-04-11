@@ -6,6 +6,16 @@ __pycache__/
 # C extensions
 *.so
 
+# Ignore local TODO file
+TODO
+
+# Ignore .dot and .png output files
+*.dot
+*.png
+
+# Ignore Mac files
+*.DS_Store
+
 # slurm tracking files
 makeflow_example/slurm*
 
