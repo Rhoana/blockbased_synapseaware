@@ -7,11 +7,13 @@ from blockbased_synapseaware.utilities.dataIO import ReadMetaData
 from blockbased_synapseaware.hole_filling.mapping import RemoveHoles
 
 # pass arguments
-if len(sys.argv)!=3:
-    raise ValueError(" Scripts needs exactley 2 input arguments (Prefix iz) ")
+if len(sys.argv)!=5:
+    raise ValueError(" Scripts needs exactley 2 input arguments (Prefix iz iy ix) ")
 else:
     prefix = sys.argv[1]
     iz = int(sys.argv[2])
+    iy = int(sys.argv[3])
+    ix = int(sys.argv[4])
 
 # read in the data for this block
 data = ReadMetaData(prefix)
@@ -28,9 +30,7 @@ if inp_text[:6]!="DONE.":
 assert (not data.HoleFillingOutputDirectory() == None)
 os.makedirs(data.HoleFillingOutputDirectory(), exist_ok=True)
 
-for iy in range(data.StartY(), data.EndY()):
-    for ix in range(data.StartX(), data.EndX()):
-        RemoveHoles(data, iz, iy, ix)
+RemoveHoles(data, iz, iy, ix)
 
 g = open(data.TempDirectory() + "mf-HF-S4-out-"+str(iz)+"z.txt", "w+")
 g.write("DONE.")

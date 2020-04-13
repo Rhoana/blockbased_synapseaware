@@ -8,11 +8,13 @@ from blockbased_synapseaware.skeletonize.anchors import ComputeAnchorPoints
 
 
 # pass arguments
-if len(sys.argv)!=3:
-    raise ValueError(" Scripts needs exactley 2 input arguments (Prefix iz) ")
+if len(sys.argv)!=5:
+    raise ValueError(" Scripts needs exactley 2 input arguments (Prefix iz iy ix) ")
 else:
     prefix = sys.argv[1]
     iz = int(sys.argv[2])
+    iy = int(sys.argv[3])
+    ix = int(sys.argv[4])
 
 # read in the data for this block
 data = ReadMetaData(prefix)
@@ -29,9 +31,7 @@ if inp_text[:6]!="DONE.":
 assert (not data.SkeletonOutputDirectory() == None)
 os.makedirs(data.SkeletonOutputDirectory(), exist_ok=True)
 
-for iy in range(data.StartY(), data.EndY()):
-    for ix in range(data.StartX(), data.EndX()):
-        ComputeAnchorPoints(data, iz, iy, ix)
+ComputeAnchorPoints(data, iz, iy, ix)
 
 g = open(data.TempDirectory() + "mf-SK-S2-out-"+str(iz)+"z.txt", "w+")
 g.write("DONE.")

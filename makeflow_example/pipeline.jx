@@ -2,8 +2,10 @@
 {
     "define" : {
         "Z_RANGE"    : range(0,8),
+        "Y_RANGE"    : range(0,2),
+        "X_RANGE"    : range(0,2),
+        "ID_RANGE"   : range(0,10),
         "o_RANGE"    : range(0,0), # nice to have for skipping a step
-        "ID_RANGE"   : range(0,410),
         "EX_DIR_HF"  : "execution_scripts/Holefilling/",
         "EX_DIR_SK"  : "execution_scripts/Skeletonize/",
         "Prefix"     : "Zebrafinch",
@@ -14,17 +16,17 @@
                 ## Holefilling
                 # STEP 1
                 {
-                    "command" : "python "+ EX_DIR_HF +"step-1-HF.py "+Prefix+" "+IZ,
+                    "command" : "python "+ EX_DIR_HF +"step-1-HF.py "+Prefix+" "+IZ+" "+IY+" "+IX,
                     "inputs"  : [ ],
                     "outputs" : [OUTPUT_DIR+"mf-HF-S1-out-"+IZ+"z.txt"],
-                } for IZ in Z_RANGE,
+                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 2
                 {
-                    "command" : "python "+ EX_DIR_HF +"step-2-HF.py "+Prefix+" "+IZ,
+                    "command" : "python "+ EX_DIR_HF +"step-2-HF.py "+Prefix+" "+IZ+" "+IY+" "+IX,
                     "inputs"  : [format(OUTPUT_DIR+"mf-HF-S1-out-%dz.txt", IZ) for IZ in Z_RANGE],
                     "outputs" : [OUTPUT_DIR+"mf-HF-S2-out-"+IZ+"z.txt"],
-                } for IZ in Z_RANGE,
+                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 3
                 {
@@ -35,32 +37,32 @@
 
                 # STEP 4
                 {
-                    "command" : "python "+ EX_DIR_HF +"step-4-HF.py "+Prefix+" "+IZ,
+                    "command" : "python "+ EX_DIR_HF +"step-4-HF.py "+Prefix+" "+IZ+" "+IY+" "+IX,
                     "inputs"  : [OUTPUT_DIR+"mf-HF-S3-out.txt"],
                     "outputs" : [OUTPUT_DIR+"mf-HF-S4-out-"+IZ+"z.txt"],
-                } for IZ in Z_RANGE,
+                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 ## Thinning
                 # STEP 1
                 {
-                    "command" : "python "+ EX_DIR_SK +"step-1-SK.py "+Prefix+" "+IZ,
+                    "command" : "python "+ EX_DIR_SK +"step-1-SK.py "+Prefix+" "+IZ+" "+IY+" "+IX,
                     "inputs"  : [OUTPUT_DIR+"mf-HF-S4-out-"+IZ+"z.txt"],
                     "outputs" : [OUTPUT_DIR+"mf-SK-S1-out-"+IZ+"z.txt"],
-                } for IZ in Z_RANGE,
+                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 2
                 {
-                    "command" : "python "+ EX_DIR_SK +"step-2-SK.py "+Prefix+" "+IZ,
+                    "command" : "python "+ EX_DIR_SK +"step-2-SK.py "+Prefix+" "+IZ+" "+IY+" "+IX,
                     "inputs"  : [format(OUTPUT_DIR+"mf-SK-S1-out-%dz.txt", IZ) for IZ in Z_RANGE],
                     "outputs" : [OUTPUT_DIR+"mf-SK-S2-out-"+IZ+"z.txt"],
-                } for IZ in Z_RANGE,
+                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 3
                 {
-                    "command" : "python "+ EX_DIR_SK +"step-3-SK.py "+Prefix+" "+IZ,
+                    "command" : "python "+ EX_DIR_SK +"step-3-SK.py "+Prefix+" "+IZ+" "+IY+" "+IX,
                     "inputs"  : [format(OUTPUT_DIR+"mf-SK-S2-out-%dz.txt", IZ) for IZ in Z_RANGE],
                     "outputs" : [OUTPUT_DIR+"mf-SK-S3-out-"+IZ+"z.txt"],
-                } for IZ in Z_RANGE,
+                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 4
                 {

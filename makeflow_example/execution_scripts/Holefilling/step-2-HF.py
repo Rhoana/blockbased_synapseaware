@@ -8,11 +8,13 @@ from blockbased_synapseaware.hole_filling.connect import ConnectLabelsAcrossBloc
 
 
 # pass arguments
-if len(sys.argv)!=3:
-    raise ValueError(" Scripts needs exactley 2 input arguments (Prefix iz) ")
+if len(sys.argv)!=5:
+    raise ValueError(" Scripts needs exactley 2 input arguments (Prefix iz iy ix) ")
 else:
     prefix = sys.argv[1]
     iz = int(sys.argv[2])
+    iy = int(sys.argv[3])
+    ix = int(sys.argv[4])
 
 # read in the data for this block
 data = ReadMetaData(prefix)
@@ -30,9 +32,7 @@ assert (not data.HoleFillingOutputDirectory() == None)
 os.makedirs(data.HoleFillingOutputDirectory(), exist_ok=True)
 
 # compute the second step to find adjacencies between borders
-for iy in range(data.StartY(), data.EndY()):
-    for ix in range(data.StartX(), data.EndX()):
-        ConnectLabelsAcrossBlocks(data, iz, iy, ix)
+ConnectLabelsAcrossBlocks(data, iz, iy, ix)
 
 g = open(data.TempDirectory() + "mf-HF-S2-out-"+str(iz)+"z.txt", "w+")
 g.write("DONE.")
