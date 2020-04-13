@@ -1,10 +1,13 @@
 
 {
     "define" : {
-        "Z_RANGE"       : range(0,8),
-        "Y_RANGE"       : range(0,2),
-        "X_RANGE"       : range(0,2),
-        "ID_RANGE"      : range(0,10),
+        "Z_MAX"         : 10,
+        "Y_MAX"         : 1,
+        "X_MAX"         : 1,
+        "Z_RANGE"       : range(0,Z_MAX),
+        "Y_RANGE"       : range(0,Y_MAX),
+        "X_RANGE"       : range(0,X_MAX),
+        "ID_RANGE"      : range(0,15),
         "o_RANGE"       : range(0,0), # nice to have for skipping a step
         "EX_DIR_HF"     : "execution_scripts/Holefilling/",
         "EX_DIR_SK"     : "execution_scripts/Skeletonize/",
@@ -20,22 +23,29 @@
         "outp_step_3_HF": OUTPUT_DIR+"mf-HF-S3-out-allz-ally-allx.txt",
 
         "cmnd_step_4_SK": "python "+ EX_DIR_SK +"step-4-SK.py "+Prefix+" %d",
-        "outp_step_4_SK": OUTPUT_DIR+"mf-SK-S4-out-label%d.txt"
+        "outp_step_4_SK": OUTPUT_DIR+"mf-SK-S4-out-label%d.txt",
+
+        "test_file"     : "testtim.txt",
+        "test_file2"     : "2testtim.txt"
     },
 
     "rules" : [
                 ## Holefilling
                 # STEP 1
+
+                # if IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX and IX_>=0 and IX_<X_MAX
+
                 {
                     "command" : format(cmnd_tpl_HF,1,IZ,IY,IX),
-                    "inputs"  : [ ],
+                    "inputs"  : [],
                     "outputs" : [format(outp_tpl_HF,1,IZ,IY,IX)],
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 2
                 {
                     "command" : format(cmnd_tpl_HF,2,IZ,IY,IX),
-                    "inputs"  : [format(outp_tpl_HF,1,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
+                    "inputs"  : [format(outp_tpl_HF,1,IZ_,IY_,IX_) for IZ_ in [IZ-1,IZ,IZ+1] for IY_ in [IY-1,IY,IY+1] for IX_ in [IX-1,IX,IX+1]
+                                 if (IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX and IX_>=0 and IX_<X_MAX)],
                     "outputs" : [format(outp_tpl_HF,2,IZ,IY,IX)],
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
@@ -64,14 +74,16 @@
                 # STEP 2
                 {
                     "command" : format(cmnd_tpl_SK,2,IZ,IY,IX),
-                    "inputs"  : [format(outp_tpl_SK,1,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
+                    "inputs"  : [format(outp_tpl_SK,1,IZ_,IY_,IX_) for IZ_ in [IZ-1,IZ,IZ+1] for IY_ in [IY-1,IY,IY+1] for IX_ in [IX-1,IX,IX+1]
+                                 if (IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX and IX_>=0 and IX_<X_MAX)],
                     "outputs" : [format(outp_tpl_SK,2,IZ,IY,IX)],
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 3
                 {
                     "command" : format(cmnd_tpl_SK,3,IZ,IY,IX),
-                    "inputs"  : [format(outp_tpl_SK,2,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
+                    "inputs"  : [format(outp_tpl_SK,2,IZ_,IY_,IX_) for IZ_ in [IZ-1,IZ,IZ+1] for IY_ in [IY-1,IY,IY+1] for IX_ in [IX-1,IX,IX+1]
+                                 if (IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX and IX_>=0 and IX_<X_MAX)],
                     "outputs" : [format(outp_tpl_SK,3,IZ,IY,IX)],
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
