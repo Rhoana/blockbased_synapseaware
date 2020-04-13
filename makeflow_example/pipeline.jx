@@ -1,74 +1,85 @@
 
 {
     "define" : {
-        "Z_RANGE"    : range(0,8),
-        "Y_RANGE"    : range(0,2),
-        "X_RANGE"    : range(0,2),
-        "ID_RANGE"   : range(0,10),
-        "o_RANGE"    : range(0,0), # nice to have for skipping a step
-        "EX_DIR_HF"  : "execution_scripts/Holefilling/",
-        "EX_DIR_SK"  : "execution_scripts/Skeletonize/",
-        "Prefix"     : "Zebrafinch",
-        "OUTPUT_DIR" : "/n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/"
+        "Z_RANGE"       : range(0,3),
+        "Y_RANGE"       : range(0,2),
+        "X_RANGE"       : range(0,2),
+        "ID_RANGE"      : range(0,10),
+        "o_RANGE"       : range(0,0), # nice to have for skipping a step
+        "EX_DIR_HF"     : "execution_scripts/Holefilling/",
+        "EX_DIR_SK"     : "execution_scripts/Skeletonize/",
+        "Prefix"        : "Zebrafinch",
+        "OUTPUT_DIR"    : "/n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/1024x1024x128/temp_files/",
+
+        "cmnd_tpl_HF"   : "python "+EX_DIR_HF+"step-%d-HF.py "+Prefix+" %d %d %d",
+        "outp_tpl_HF"   : OUTPUT_DIR+"mf-HF-S%d-out-%dz-%dy-%dx.txt",
+        "cmnd_tpl_SK"   : "python "+EX_DIR_SK+"step-%d-SK.py "+Prefix+" %d %d %d",
+        "outp_tpl_SK"   :   OUTPUT_DIR+"mf-SK-S%d-out-%dz-%dy-%dx.txt",
+
+        "cmnd_step_3_HF": "python "+ EX_DIR_HF +"step-3-HF.py "+Prefix,
+        "outp_step_3_HF": OUTPUT_DIR+"mf-HF-S3-out.txt",
+
+        "cmnd_step_4_SK": "python "+ EX_DIR_SK +"step-4-HF.py "+Prefix+" %d",
+        "outp_step_4_SK": OUTPUT_DIR+"mf-SK-S4-out-%dlabel.txt"
     },
 
     "rules" : [
                 ## Holefilling
                 # STEP 1
                 {
-                    "command" : "python "+ EX_DIR_HF +"step-1-HF.py "+Prefix+" "+IZ+" "+IY+" "+IX,
+                    "command" : format(cmnd_tpl_HF,1,IZ,IY,IX),
                     "inputs"  : [ ],
-                    "outputs" : [OUTPUT_DIR+"mf-HF-S1-out-"+IZ+"z.txt"],
+                    "outputs" : [format(outp_tpl_HF,1,IZ,IY,IX)],
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 2
                 {
-                    "command" : "python "+ EX_DIR_HF +"step-2-HF.py "+Prefix+" "+IZ+" "+IY+" "+IX,
-                    "inputs"  : [format(OUTPUT_DIR+"mf-HF-S1-out-%dz.txt", IZ) for IZ in Z_RANGE],
-                    "outputs" : [OUTPUT_DIR+"mf-HF-S2-out-"+IZ+"z.txt"],
+                    "command" : format(cmnd_tpl_HF,2,IZ,IY,IX),
+                    "inputs"  : [format(outp_tpl_HF,1,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
+                    "outputs" : [format(outp_tpl_HF,2,IZ,IY,IX)],
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 3
                 {
-                    "command" : "python "+ EX_DIR_HF +"step-3-HF.py "+Prefix,
-                    "inputs"  : [format(OUTPUT_DIR+"mf-HF-S2-out-%dz.txt", IZ) for IZ in Z_RANGE],
-                    "outputs" : [OUTPUT_DIR+"mf-HF-S3-out.txt"],
+                    "command" : cmnd_step_3_HF,
+                    "inputs"  : [format(outp_tpl_HF,2,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
+                    "outputs" : [outp_step_3_HF],
                 },
 
                 # STEP 4
                 {
-                    "command" : "python "+ EX_DIR_HF +"step-4-HF.py "+Prefix+" "+IZ+" "+IY+" "+IX,
-                    "inputs"  : [OUTPUT_DIR+"mf-HF-S3-out.txt"],
-                    "outputs" : [OUTPUT_DIR+"mf-HF-S4-out-"+IZ+"z.txt"],
+                    "command" : format(cmnd_tpl_HF,4,IZ,IY,IX),
+                    "inputs"  : [outp_step_3_HF],
+                    "outputs" : [format(outp_tpl_HF,4,IZ,IY,IX)],
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 ## Thinning
                 # STEP 1
                 {
-                    "command" : "python "+ EX_DIR_SK +"step-1-SK.py "+Prefix+" "+IZ+" "+IY+" "+IX,
-                    "inputs"  : [OUTPUT_DIR+"mf-HF-S4-out-"+IZ+"z.txt"],
-                    "outputs" : [OUTPUT_DIR+"mf-SK-S1-out-"+IZ+"z.txt"],
+                    "command" : format(cmnd_tpl_SK,1,IZ,IY,IX),
+                    "inputs"  : [format(outp_tpl_HF,4,IZ,IY,IX)],
+                    "outputs" : [format(outp_tpl_SK,1,IZ,IY,IX)],
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 2
                 {
-                    "command" : "python "+ EX_DIR_SK +"step-2-SK.py "+Prefix+" "+IZ+" "+IY+" "+IX,
-                    "inputs"  : [format(OUTPUT_DIR+"mf-SK-S1-out-%dz.txt", IZ) for IZ in Z_RANGE],
-                    "outputs" : [OUTPUT_DIR+"mf-SK-S2-out-"+IZ+"z.txt"],
+                    "command" : format(cmnd_tpl_SK,2,IZ,IY,IX),
+                    "inputs"  : [format(outp_tpl_SK,1,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
+                    "outputs" : [format(outp_tpl_SK,2,IZ,IY,IX)],
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 3
                 {
-                    "command" : "python "+ EX_DIR_SK +"step-3-SK.py "+Prefix+" "+IZ+" "+IY+" "+IX,
-                    "inputs"  : [format(OUTPUT_DIR+"mf-SK-S2-out-%dz.txt", IZ) for IZ in Z_RANGE],
-                    "outputs" : [OUTPUT_DIR+"mf-SK-S3-out-"+IZ+"z.txt"],
+                    "command" : format(cmnd_tpl_SK,3,IZ,IY,IX),
+                    "inputs"  : [format(outp_tpl_SK,2,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
+                    "outputs" : [format(outp_tpl_SK,3,IZ,IY,IX)],
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 4
                 {
-                    "command" : "python "+ EX_DIR_SK +"step-4-SK.py "+Prefix+" "+ID,
-                    "inputs"  : [format(OUTPUT_DIR+"mf-SK-S3-out-%dz.txt", IZ) for IZ in Z_RANGE],
-                    "outputs" : [OUTPUT_DIR+"mf-SK-S4-out-"+ID+"label.txt"],
+                    "command" : format(cmnd_step_4_SK, ID),
+                    "inputs"  : [format(outp_tpl_SK,3,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
+                    "outputs" : [format(outp_step_4_SK, ID)],
                 } for ID in ID_RANGE,
 
               ]
