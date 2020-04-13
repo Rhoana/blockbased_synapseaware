@@ -1,13 +1,13 @@
 
 {
     "define" : {
-        "Z_MAX"         : 10,
-        "Y_MAX"         : 1,
-        "X_MAX"         : 1,
+        "Z_MAX"         : 8,
+        "Y_MAX"         : 2,
+        "X_MAX"         : 2,
         "Z_RANGE"       : range(0,Z_MAX),
         "Y_RANGE"       : range(0,Y_MAX),
         "X_RANGE"       : range(0,X_MAX),
-        "ID_RANGE"      : range(0,15),
+        "ID_RANGE"      : range(0,410),
         "o_RANGE"       : range(0,0), # nice to have for skipping a step
         "EX_DIR_HF"     : "execution_scripts/Holefilling/",
         "EX_DIR_SK"     : "execution_scripts/Skeletonize/",
@@ -23,10 +23,7 @@
         "outp_step_3_HF": OUTPUT_DIR+"mf-HF-S3-out-allz-ally-allx.txt",
 
         "cmnd_step_4_SK": "python "+ EX_DIR_SK +"step-4-SK.py "+Prefix+" %d",
-        "outp_step_4_SK": OUTPUT_DIR+"mf-SK-S4-out-label%d.txt",
-
-        "test_file"     : "testtim.txt",
-        "test_file2"     : "2testtim.txt"
+        "outp_step_4_SK": OUTPUT_DIR+"mf-SK-S4-out-label%d.txt"
     },
 
     "rules" : [
