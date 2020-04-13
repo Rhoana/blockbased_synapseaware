@@ -3,29 +3,26 @@ import sys
 
 from blockbased_synapseaware.utilities.constants import *
 from blockbased_synapseaware.utilities.dataIO import ReadMetaData
+from blockbased_synapseaware.makeflow_example.makeflow_helperfunctions import *
 
 from blockbased_synapseaware.hole_filling.connect import CombineAssociatedLabels
 
 
 # pass arguments
+# read passed arguments
 if len(sys.argv)!=2:
-    raise ValueError(" Script needs exactley 1 input parameter (Prefix) ")
+    raise ValueError(" Scripts needs exactley 1 input arguments (Prefix) ")
 else:
     prefix = sys.argv[1]
 
 # read in the data for this block
 data = ReadMetaData(prefix)
 
+# check that beforehand step has executed successfully
 for iz in range(data.StartZ(), data.EndZ()):
-
-    out_file_S2 = data.TempDirectory() + "mf-HF-S2-out-"+str(iz)+"z.txt"
-    inp_file = open(out_file_S2)
-    inp_text = inp_file.read()
-    inp_file.close()
-
-    if inp_text[:6]!="DONE.":
-        print(inp_text)
-        raise ValueError("Execution Stopped: Wrong Error Code (!= DONE.)")
+    for iy in range(data.StartY(), data.EndY()):
+        for ix in range(data.StartX(), data.EndX()):
+            CheckSuccessFile(data.TempDirectory(), "HF", 2, iz, iy, ix)
 
 # users must provide an output directory
 assert (not data.HoleFillingOutputDirectory() == None)
@@ -34,6 +31,5 @@ os.makedirs(data.HoleFillingOutputDirectory(), exist_ok=True)
 # compute the second step to find adjacencies between borders
 CombineAssociatedLabels(data)
 
-g = open(data.TempDirectory() + "mf-HF-S3-out.txt", "w+")
-g.write("DONE.")
-g.close
+# Create and Write Success File
+WriteSuccessFile(data.TempDirectory(), "HF", 3, "all", "all", "all")

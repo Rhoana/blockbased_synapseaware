@@ -15,7 +15,7 @@ prefix,iz,iy,ix = ReadArguments(sys.argv)
 data = ReadMetaData(prefix)
 
 # check that beforehand step has executed successfully
-CheckSuccessFile(data.TempDirectory(), "HF", 1, iz, iy, ix):
+CheckSuccessFile(data.TempDirectory(), "HF", 1, iz, iy, ix)
 
 # users must provide an output directory
 assert (not data.HoleFillingOutputDirectory() == None)

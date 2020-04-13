@@ -2,6 +2,7 @@ import sys
 
 
 # function to read in input arguments
+# (cannot be used for holefilling step 3 and skeletonize step 4)
 def ReadArguments(inp_args):
     if len(inp_args)!=5:
         raise ValueError(" Scripts needs exactley 2 input arguments (Prefix iz iy ix) ")
@@ -14,9 +15,18 @@ def ReadArguments(inp_args):
     return prefix,iz,iy,ix
 
 # fucntion that takes in parameters of a specific computation step and writes success key to file
+# (cannot be used for skeletonize step 4)
 def WriteSuccessFile(dir, stage, step, iz, iy, ix):
 
     filepath = dir + "mf-{}-S{}-out-{}z-{}y-{}x.txt".format(stage,step,iz,iy,ix)
+    g = open(filepath, "w+")
+    g.write("DONE.")
+    g.close
+
+# Write sccess file for skeletonize step 4
+def WriteSuccessFile_SK_4(dir, stage, step, label):
+
+    filepath = dir + "mf-{}-S{}-out-label{}.txt".format(stage,step,label)
     g = open(filepath, "w+")
     g.write("DONE.")
     g.close
