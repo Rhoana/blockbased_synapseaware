@@ -17,7 +17,7 @@ else:
 # read in the data for this block
 data = ReadMetaData(prefix)
 
-inp_file = open(data.TempDirectory() + "mf-HF-S3-out-"+str(iz)+"z.txt")
+inp_file = open(data.TempDirectory() + "mf-HF-S4-out-"+str(iz)+"z.txt")
 inp_text = inp_file.read()
 inp_file.close()
 

@@ -16,6 +16,9 @@ TODO
 # Ignore Mac files
 *.DS_Store
 
+# exclude makeflow logfile
+*.makeflowlog
+
 # slurm tracking files
 makeflow_example/slurm*
 

@@ -33,7 +33,7 @@
                     "outputs" : [OUTPUT_DIR+"mf-HF-S3-out.txt"],
                 },
 
-                # STEP 3
+                # STEP 4
                 {
                     "command" : "python "+ EX_DIR_HF +"step-4-HF.py "+Prefix+" "+IZ,
                     "inputs"  : [OUTPUT_DIR+"mf-HF-S3-out.txt"],
@@ -44,7 +44,7 @@
                 # STEP 1
                 {
                     "command" : "python "+ EX_DIR_SK +"step-1-SK.py "+Prefix+" "+IZ,
-                    "inputs"  : [OUTPUT_DIR+"mf-HF-S3-out-"+IZ+"z.txt"],
+                    "inputs"  : [OUTPUT_DIR+"mf-HF-S4-out-"+IZ+"z.txt"],
                     "outputs" : [OUTPUT_DIR+"mf-SK-S1-out-"+IZ+"z.txt"],
                 } for IZ in Z_RANGE,
 
