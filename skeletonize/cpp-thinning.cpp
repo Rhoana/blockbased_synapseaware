@@ -842,6 +842,9 @@ static void WriteSkeletonOutputFiles(const char *tmp_directory, long current_blo
         ++iv;
     }
 
+    // sufficiently large number to detect widths that are never updated (remain numeric_limits<float>::max()
+    float infinity = volume_size[OR_Z] * volume_size[OR_Z] + volume_size[OR_Y] * volume_size[OR_Y] + volume_size[OR_X] * volume_size[OR_X];
+
     // add in the fixed points
     std::unordered_set<long>::iterator it;
     for (it = fixed_points[current_label].begin(); it != fixed_points[current_label].end(); ++it, ++iv) {
@@ -858,6 +861,12 @@ static void WriteSkeletonOutputFiles(const char *tmp_directory, long current_blo
         global_indices[iv] = global_index;
         local_indices[iv] = local_index;
         output_widths[iv] = widths[padded_index];
+
+        // some width estimations may remain at numeric_limits<float>::max()
+        // for these, set the width estimate to zero
+        if (output_widths[iv] > infinity) {
+            output_widths[iv] = 0;
+        }
 
         // update the checksum
         checksum += (global_indices[iv] + local_indices[iv]);
