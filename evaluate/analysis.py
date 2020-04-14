@@ -1,13 +1,20 @@
 import os
+import statistics
 
 
 
-from blockbased_synapseaware.utilities.dataIO import ReadMetaData, ReadPickledData, ReadPtsFile
+import numpy as np
+import scipy.spatial
 
 
 
-def EvaluateSkeletons(prefix):
-    data = ReadMetaData(prefix)
+from blockbased_synapseaware.utilities.dataIO import PickleData, ReadAttributePtsFile, ReadMetaData, ReadPickledData, ReadPtsFile
+from blockbased_synapseaware.utilities.constants import *
+
+
+
+def EvaluateSkeletons(meta_filename):
+    data = ReadMetaData(meta_filename)
 
     # make sure a results folder is specified
     assert (not data.EvaluationDirectory() == None)
@@ -100,3 +107,234 @@ def EvaluateSkeletons(prefix):
 
     # close the file
     fd.close()
+
+
+
+def FindEndpoints(data, skeleton, somata_surface):
+    # convert the skeleton to a set for faster access
+    skeleton = set(skeleton)
+
+    # find all endpoints in the skeleton (zero or one neighbor in the skeleton)
+    endpoints = []
+
+    # iterate over all skeleton points
+    for pt in skeleton:
+        iz, iy, ix = data.GlobalIndexToIndices(pt)
+
+        # number of neighbors for this skeleton
+        nneighbors = 0
+
+        # consider the 26-connected neighborhood
+        for iw in [iz - 1, iz, iz + 1]:
+            for iv in [iy - 1, iy, iy + 1]:
+                for iu in [ix - 1, ix, ix + 1]:
+                    # skip when the same voxel
+                    if iz == iw and iy == iv and ix == iu: continue
+
+                    # get the linear index
+                    neighbor_index = data.GlobalIndicesToIndex(iw, iv, iu)
+
+                    if neighbor_index in skeleton or neighbor_index in somata_surface:
+                        nneighbors += 1
+
+        if nneighbors < 2:
+            endpoints.append(pt)
+
+    return endpoints
+
+
+
+def EvaluateNeuralReconstructionIntegrity(meta_filename):
+    data = ReadMetaData(meta_filename)
+
+    synapses_per_label = {}
+
+    # read in all of the synapses from all of the blocks
+    synapse_directory = data.SynapseDirectory()
+    for iz in range(data.StartZ(), data.EndZ()):
+        for iy in range(data.StartY(), data.EndY()):
+            for ix in range(data.StartX(), data.EndX()):
+                synapses_filename = '{}/{:04d}z-{:04d}y-{:04d}x.pts'.format(synapse_directory, iz, iy, ix)
+
+                # ignore the local coordinates
+                block_synapses, _ = ReadPtsFile(data, synapses_filename)
+
+                # add all synapses for each label in this block to the global synapses
+                for label in block_synapses.keys():
+                    if not label in synapses_per_label:
+                        synapses_per_label[label] = []
+
+                    synapses_per_label[label] += block_synapses[label]
+
+    # for each label, find if synapses correspond to endpoints
+    for label in range(1, data.NLabels()):
+        # read the refined skeleton for this synapse
+        skeleton_directory = '{}/skeletons'.format(data.SkeletonOutputDirectory())
+        skeleton_filename = '{}/{:016d}.pts'.format(skeleton_directory, label)
+
+        # skip over labels not processed
+        if not os.path.exists(skeleton_filename): continue
+
+        # get the synapses only for this one label
+        synapses = synapses_per_label[label]
+
+        # ignore the local coordinates
+        skeletons, _ = ReadPtsFile(data, skeleton_filename)
+        skeleton = skeletons[label]
+
+        # read in the somata surfaces (points on the surface should not count as endpoints)
+        somata_directory = '{}/somata_surfaces'.format(data.TempDirectory())
+        somata_filename = '{}/{:016d}.pts'.format(somata_directory, label)
+
+        # path may not exist if soma not found
+        if os.path.exists(somata_filename):
+            somata_surfaces, _ = ReadPtsFile(data, somata_filename)
+            somata_surface = set(somata_surfaces[label])
+        else:
+            somata_surface = set()
+
+        # get the endpoints in this skeleton for this label
+        endpoints = FindEndpoints(data, skeleton, somata_surface)
+
+        # TODO
+
+
+
+def EvaluateWidths(data, label):
+    # get the resolution of this data
+    resolution = data.Resolution()
+
+    # read the width attributes filename
+    widths_directory = '{}/widths'.format(data.SkeletonOutputDirectory())
+    width_filename = '{}/{:016d}.pts'.format(widths_directory, label)
+
+    # skip over labels not processed
+    if not os.path.exists(width_filename): return
+
+    # read the width attributes
+    widths, input_label = ReadAttributePtsFile(data, width_filename)
+    assert (input_label == label)
+
+    # get the surface filename
+    surfaces_filename = '{}/{:016d}.pts'.format(data.SurfacesDirectory(), label)
+
+    # read the surfaces, ignore local coordinates
+    surfaces, _ = ReadPtsFile(data, surfaces_filename)
+    surface = surfaces[label]
+    npoints = len(surface)
+
+    # conver the surface into a numpy point cloud
+    np_point_cloud = np.zeros((npoints, 3), dtype=np.int32)
+    for index, iv in enumerate(surface):
+        # convert the index into indices
+        iz, iy, ix = data.GlobalIndexToIndices(iv)
+
+        # set the point cloud value according to the resolutions
+        np_point_cloud[index,:] = (resolution[OR_Z] * iz, resolution[OR_Y] * iy, resolution[OR_X] * ix)
+
+        index += 1
+
+    # create empty dictionary for all results
+    results = {}
+
+    # keep track of all errors for this label
+    results['errors'] = []
+    results['estimates'] = 0
+    results['ground_truths'] = 0
+
+    # iterate over all skeleton points
+    for iv in widths.keys():
+        # get the estimated width at this location
+        width = widths[iv]
+
+        iz, iy, ix = data.GlobalIndexToIndices(iv)
+
+        # convert the coordinates into a 2d vector with the resolutions
+        vec = np.zeros((1, 3), dtype=np.int32)
+        vec[0,:] = (resolution[OR_Z] * iz, resolution[OR_Y] * iy, resolution[OR_X] * ix)
+
+        # get the min distance from this point to the surface (true width)
+        min_distance = scipy.spatial.distance.cdist(np_point_cloud, vec).min()
+
+        results['errors'].append(abs(width - min_distance))
+        results['estimates'] += width
+        results['ground_truths'] += min_distance
+
+    # skip over vacuous skeletons
+    if len(results['errors']) < 2: return
+
+    # output the errors, estimates, and ground truths to a pickled file
+    tmp_widths_directory = '{}/results/widths'.format(data.TempDirectory())
+    if not os.path.exists(tmp_widths_directory):
+        os.makedirs(tmp_widths_directory, exist_ok=True)
+
+    output_filename = '{}/{:016d}.pickle'.format(tmp_widths_directory, label)
+    PickleData(results, output_filename)
+
+
+
+def CombineEvaluatedWidths(data):
+    errors = []
+    estimates = 0
+    ground_truths = 0
+
+    # get the output filename
+    evaluation_directory = data.EvaluationDirectory()
+    if not os.path.exists(evaluation_directory):
+        os.makedirs(evaluation_directory, exist_ok=True)
+
+    output_filename = '{}/widths-results.txt'.format(evaluation_directory)
+    fd = open(output_filename, 'w')
+
+    # for each label, read in the surface and the widths generated
+    for label in range(1, data.NLabels()):
+        # read the generated widths
+        tmp_widths_directory = '{}/results/widths'.format(data.TempDirectory())
+        widths_filename = '{}/{:016d}.pickle'.format(tmp_widths_directory, label)
+
+        # skip over files that do not exist
+        if not os.path.exists(widths_filename): continue
+
+        results = ReadPickledData(widths_filename)
+
+        # output the results and update the average error
+        print ('Label: {}'.format(label))
+        print ('  Mean Absolute Error: {:0.4f} (\u00B1{:0.2f}) nanometers'.format(statistics.mean(results['errors']), statistics.stdev(results['errors'])))
+        print ('  Estimated Widths: {:0.4f}'.format(results['estimates']))
+        print ('  Ground Truth Widths: {:0.4f}'.format(results['ground_truths']))
+        print ('  Percent Different: {:0.2f}%'.format(100.0 * (results['estimates'] - results['ground_truths']) / results['ground_truths']))
+
+        fd.write ('Label: {}\n'.format(label))
+        fd.write ('  Mean Absolute Error: {:0.4f} (\u00B1{:0.2f}) nanometers\n'.format(statistics.mean(results['errors']), statistics.stdev(results['errors'])))
+        fd.write ('  Estimated Widths: {:0.4f}\n'.format(results['estimates']))
+        fd.write ('  Ground Truth Widths: {:0.2f}\n'.format(results['ground_truths']))
+        fd.write ('  Percent Different: {:0.2f}%\n'.format(100.0 * (results['estimates'] - results['ground_truths']) / results['ground_truths']))
+
+        # update global information
+        errors += results['errors']
+        estimates += results['estimates']
+        ground_truths += results['ground_truths']
+
+    print ('Total Volume')
+    print ('  Mean Absolute Error: {:0.4f} (\u00B1{:0.2f}) nanometers'.format(statistics.mean(errors), statistics.stdev(errors)))
+    print ('  Estimated Widths: {:0.4f}'.format(estimates))
+    print ('  Ground Truth Widths: {:0.4f}'.format(ground_truths))
+    print ('  Percent Different: {:0.2f}%'.format(100.0 * (estimates - ground_truths) / ground_truths))
+
+    fd.write ('Total Volume\n')
+    fd.write ('  Mean Absolute Error: {:0.4f} (\u00B1{:0.2f}) nanometers\n'.format(statistics.mean(errors), statistics.stdev(errors)))
+    fd.write ('  Estimated Widths: {:0.4f}\n'.format(estimates))
+    fd.write ('  Ground Truth Widths: {:0.4f}\n'.format(ground_truths))
+    fd.write ('  Percent Different: {:0.2f}%\n'.format(100.0 * (estimates - ground_truths) / ground_truths))
+
+
+
+def EvaluateWidthsSequentially(meta_filename):
+    data = ReadMetaData(meta_filename)
+
+    # iterate over all labels and generate width statistics
+    for label in range(1, data.NLabels()):
+        #EvaluateWidths(data, label)
+        pass
+
+    CombineEvaluatedWidths(data)
