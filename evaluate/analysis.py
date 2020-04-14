@@ -9,6 +9,9 @@ from blockbased_synapseaware.utilities.dataIO import ReadMetaData, ReadPickledDa
 def EvaluateSkeletons(prefix):
     data = ReadMetaData(prefix)
 
+    # make sure a results folder is specified
+    assert (not data.EvaluationDirectory() == None)
+
     # read in statistics about this data set
     statistics_directory = '{}/statistics'.format(data.TempDirectory())
     statistics_filename = '{}/combined-statistics.pickle'.format(statistics_directory)
@@ -20,7 +23,15 @@ def EvaluateSkeletons(prefix):
     total_thinned_skeleton_length = 0
     total_refined_skeleton_length = 0
 
-    for label in label_volumes:
+    # get the output filename
+    evaluation_directory = data.EvaluationDirectory()
+    if not os.path.exists(evaluation_directory):
+        os.makedirs(evaluation_directory, exist_ok=True)
+
+    output_filename = '{}/skeleton-results.txt'.format(evaluation_directory)
+    fd = open(output_filename, 'w')
+
+    for label in sorted(label_volumes):
         # read pre-refinement skeleton
         thinning_filename = '{}/skeletons/{:016d}.pts'.format(data.TempDirectory(), label)
 
@@ -57,9 +68,15 @@ def EvaluateSkeletons(prefix):
 
         print ('Label: {}'.format(label))
         print ('  Input Volume:           {:10d}'.format(volume))
-        print ('  Topological Thinning:   {:10d}    ({:05.2f}%)  {:9.2f}x'.format(thinned_skeleton_length, thinned_remaining_percent, thinning_reduction_factor))
-        print ('  Skeleton Refinement:    {:10d}    ({:05.2f}%)  {:9.2f}x'.format(refined_skeleton_length, refined_remaining_percent, refinement_reduction_factor))
-        print ('  Total:                                ({:05.2f}%)  {:9.2f}x'.format(total_skeleton_percent, total_skeleton_reduction))
+        print ('  Topological Thinning:   {:10d}    ({:05.2f}%)  {:10.2f}x'.format(thinned_skeleton_length, thinned_remaining_percent, thinning_reduction_factor))
+        print ('  Skeleton Refinement:    {:10d}    ({:05.2f}%)  {:10.2f}x'.format(refined_skeleton_length, refined_remaining_percent, refinement_reduction_factor))
+        print ('  Total:                                ({:05.2f}%)  {:10.2f}x'.format(total_skeleton_percent, total_skeleton_reduction))
+
+        fd.write ('Label: {}\n'.format(label))
+        fd.write ('  Input Volume:           {:10d}\n'.format(volume))
+        fd.write ('  Topological Thinning:   {:10d}    ({:05.2f}%)  {:10.2f}x\n'.format(thinned_skeleton_length, thinned_remaining_percent, thinning_reduction_factor))
+        fd.write ('  Skeleton Refinement:    {:10d}    ({:05.2f}%)  {:10.2f}x\n'.format(refined_skeleton_length, refined_remaining_percent, refinement_reduction_factor))
+        fd.write ('  Total:                                ({:05.2f}%)  {:10.2f}x\n'.format(total_skeleton_percent, total_skeleton_reduction))
 
     # calculate the percent and reduction of total voxels remaining
     thinned_remaining_percent = 100 * total_thinned_skeleton_length / total_volume
@@ -71,7 +88,15 @@ def EvaluateSkeletons(prefix):
     total_skeleton_percent = 100 * total_refined_skeleton_length / total_volume
     total_skeleton_reduction = total_volume / total_refined_skeleton_length
 
-    print ('Input Volume:           {:10d}'.format(total_volume))
-    print ('Topological Thinning:   {:10d}    ({:05.2f}%)  {:9.2f}x'.format(total_thinned_skeleton_length, thinned_remaining_percent, thinning_reduction_factor))
-    print ('Skeleton Refinement:    {:10d}    ({:05.2f}%)  {:9.2f}x'.format(total_refined_skeleton_length, refined_remaining_percent, refinement_reduction_factor))
-    print ('Total:                                ({:05.2f}%)  {:9.2f}x'.format(total_skeleton_percent, total_skeleton_reduction))
+    print ('Input Volume:             {:10d}'.format(total_volume))
+    print ('Topological Thinning:     {:10d}    ({:05.2f}%)  {:10.2f}x'.format(total_thinned_skeleton_length, thinned_remaining_percent, thinning_reduction_factor))
+    print ('Skeleton Refinement:      {:10d}    ({:05.2f}%)  {:10.2f}x'.format(total_refined_skeleton_length, refined_remaining_percent, refinement_reduction_factor))
+    print ('Total:                                  ({:05.2f}%)  {:10.2f}x'.format(total_skeleton_percent, total_skeleton_reduction))
+
+    fd.write ('Input Volume:             {:10d}\n'.format(total_volume))
+    fd.write ('Topological Thinning:     {:10d}    ({:05.2f}%)  {:10.2f}x\n'.format(total_thinned_skeleton_length, thinned_remaining_percent, thinning_reduction_factor))
+    fd.write ('Skeleton Refinement:      {:10d}    ({:05.2f}%)  {:10.2f}x\n'.format(total_refined_skeleton_length, refined_remaining_percent, refinement_reduction_factor))
+    fd.write ('Total:                                  ({:05.2f}%)  {:10.2f}x\n'.format(total_skeleton_percent, total_skeleton_reduction))
+
+    # close the file
+    fd.close()
