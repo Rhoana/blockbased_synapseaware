@@ -338,7 +338,7 @@ def GenerateBlockTimingPlot(data, description, n_non_zero_voxels, times, output_
     fig, ax = plt.subplots()
 
     # set the title and labels
-    ax.set_title('{} {}'.format(data.FigureDescription(), description), fontsize=14)
+    ax.set_title('{} {}'.format(data.FigureTitleDescription(), description), fontsize=14)
     ax.set_ylabel('CPU Time (s)', fontsize=10)
     ax.set_xlabel('No. Non Zero Voxels (Millions)', fontsize=10)
 

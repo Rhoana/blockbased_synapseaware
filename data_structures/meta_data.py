@@ -105,7 +105,7 @@ class MetaData:
                     self.evaluation_directory = value
                 elif comment == '# figures directory':
                     self.figures_directory = value
-                elif comment == '# figure description':
+                elif comment == '# figure title description':
                     self.figure_description = value
                 else:
                     sys.stderr.write('Unrecognized meta file attribute: {}\n'.format(comment))
@@ -284,7 +284,7 @@ class MetaData:
 
 
 
-    def FigureDescription(self):
+    def FigureTitleDescription(self):
         return self.figure_description
 
 
