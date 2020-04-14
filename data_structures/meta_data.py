@@ -31,6 +31,7 @@ class MetaData:
         self.hole_filling_output_directory = None
         self.synapse_path = None
         self.somata_path = None
+        self.surfaces_path = None
         # place to save the generated skeletons
         self.skeleton_output_directory = None
         self.figures_directory = None
@@ -56,6 +57,8 @@ class MetaData:
                     self.synapse_path = value
                 elif comment == '# path to somata':
                     self.somata_path = value
+                elif comment == '# path to surfaces':
+                    self.surfaces_path = value
 
                 ##########################
                 ### DATA SPECIFICATION ###
@@ -254,6 +257,11 @@ class MetaData:
 
 
 
+    def SurfacesDirectory(self):
+        return self.surfaces_path
+
+
+
     def HoleFillingOutputDirectory(self):
         return self.hole_filling_output_directory
 
@@ -326,6 +334,12 @@ class MetaData:
         ix = iv % self.block_sizes[OR_X]
 
         return (iz, iy, ix)
+
+
+
+    def GlobalIndicesToIndex(self, iz, iy, ix):
+        # return an index from the indices
+        return iz * self.volume_sizes[OR_Y] * self.volume_sizes[OR_X] + iy * self.volume_sizes[OR_X] + ix
 
 
 
