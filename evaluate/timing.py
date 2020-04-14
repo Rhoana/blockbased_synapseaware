@@ -338,7 +338,7 @@ def GenerateBlockTimingPlot(data, description, n_non_zero_voxels, times, output_
     fig, ax = plt.subplots()
 
     # set the title and labels
-    ax.set_title('{} {}'.format(data.prefix, description), fontsize=14)
+    ax.set_title('{} {}'.format(data.FigureDescription(), description), fontsize=14)
     ax.set_ylabel('CPU Time (s)', fontsize=10)
     ax.set_xlabel('No. Non Zero Voxels (Millions)', fontsize=10)
 
@@ -424,9 +424,9 @@ def ConductBlockTimingAnalysis(data, times):
 
 
 
-def ConductEndToEndTimingAnalysis(prefix):
+def ConductEndToEndTimingAnalysis(meta_filename):
     # run analysis for this dataset
-    data = ReadMetaData(prefix)
+    data = ReadMetaData(meta_filename)
 
     assert (not data.FiguresDirectory() == None)
 

@@ -147,9 +147,9 @@ def CombineSurfaceVoxels(data):
 
 
 
-def CollectSurfacesSequentially(prefix):
+def CollectSurfacesSequentially(meta_filename):
     # read in the data for this block
-    data = ReadMetaData(prefix)
+    data = ReadMetaData(meta_filename)
 
     assert (not data.SurfacesDirectory() == None)
 

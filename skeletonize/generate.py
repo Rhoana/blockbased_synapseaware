@@ -9,9 +9,9 @@ from blockbased_synapseaware.utilities.dataIO import ReadMetaData
 
 
 
-def SkeletonizeSequentially(prefix):
+def SkeletonizeSequentially(meta_filename):
     # read in the data for this block
-    data = ReadMetaData(prefix)
+    data = ReadMetaData(meta_filename)
 
     # users must provide an output directory
     assert (not data.SkeletonOutputDirectory() == None)

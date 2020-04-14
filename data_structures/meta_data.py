@@ -13,8 +13,8 @@ from blockbased_synapseaware.utilities.constants import *
 
 
 class MetaData:
-    def __init__(self, prefix):
-        self.prefix = prefix
+    def __init__(self, meta_filename):
+        self.meta_filename = meta_filename
         # create default variable values
         self.raw_segmentation_path = None
         self.tmp_directory = None
@@ -35,11 +35,12 @@ class MetaData:
         # place to save the generated skeletons
         self.skeleton_output_directory = None
         self.figures_directory = None
+        self.figure_description = None
         self.evaluation_directory = None
         self.resolution = None
 
         # open the meta file and read in requisite information
-        with open('meta/{}.meta'.format(prefix), 'r') as fd:
+        with open(meta_filename, 'r') as fd:
             lines = [line for line in fd.readlines() if line.strip()]
 
             # meta files have pairs of lines with comments and values
@@ -100,10 +101,12 @@ class MetaData:
 
                 elif comment == '# skeleton output directory':
                     self.skeleton_output_directory = value
-                elif comment == '# figures directory':
-                    self.figures_directory = value
                 elif comment == '# evaluation directory':
                     self.evaluation_directory = value
+                elif comment == '# figures directory':
+                    self.figures_directory = value
+                elif comment == '# figure description':
+                    self.figure_description = value
                 else:
                     sys.stderr.write('Unrecognized meta file attribute: {}\n'.format(comment))
                     exit(-1)
@@ -116,6 +119,10 @@ class MetaData:
         assert (not self.volume_sizes == None)
         assert (not self.synapse_path == None)
         assert (not self.resolution == None)
+
+        # if there will be figures, make sure there is a description
+        if not self.figures_directory == None:
+            assert (not self.figure_description == None)
 
         # create the tmp directory if it does not exist
         if not os.path.exists(self.tmp_directory):
@@ -274,6 +281,11 @@ class MetaData:
 
     def FiguresDirectory(self):
         return self.figures_directory
+
+
+
+    def FigureDescription(self):
+        return self.figure_description
 
 
 

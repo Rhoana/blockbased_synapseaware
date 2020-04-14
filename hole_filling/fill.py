@@ -10,9 +10,9 @@ from blockbased_synapseaware.utilities.constants import *
 
 
 
-def FillHolesSequentially(prefix):
+def FillHolesSequentially(meta_filename):
     # read in the data for this block
-    data = ReadMetaData(prefix)
+    data = ReadMetaData(meta_filename)
 
     # users must provide an output directory
     assert (not data.HoleFillingOutputDirectory() == None)
