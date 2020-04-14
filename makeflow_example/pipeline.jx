@@ -4,8 +4,8 @@
         "Z_MAX"         : 8,
         "Y_MAX"         : 2,
         "X_MAX"         : 2,
-        "ID_MAX"        : 50,
-        "meta_fp"       : "/n/pfister_lab2/Lab/tfranzmeyer/Data2/blockbased_synapseaware/makeflow_example/meta/Zebrafinch.meta",
+        "ID_MAX"        : 410,
+        "META_FP"       : "/n/pfister_lab2/Lab/tfranzmeyer/Data2/blockbased_synapseaware/makeflow_example/meta/Zebrafinch.meta",
         "OUTPUT_DIR"    : "/n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/checkfiles_1024x1024x128/",
         "MF_DIR"        : "/n/pfister_lab2/Lab/tfranzmeyer/Data2/blockbased_synapseaware/makeflow_example/",
 
@@ -17,15 +17,15 @@
         "X_RANGE"       : range(0,X_MAX),
         "ID_RANGE"      : range(0,ID_MAX),
 
-        "cmnd_tpl_HF"   : "python "+EX_DIR_HF+"step-%d-HF.py "+meta_fp+" %d %d %d",
+        "cmnd_tpl_HF"   : "python "+EX_DIR_HF+"step-%d-HF.py "+META_FP+" %d %d %d",
         "outp_tpl_HF"   : OUTPUT_DIR+"mf-HF-S%d-out-%dz-%dy-%dx.txt",
-        "cmnd_tpl_SK"   : "python "+EX_DIR_SK+"step-%d-SK.py "+meta_fp+" %d %d %d",
+        "cmnd_tpl_SK"   : "python "+EX_DIR_SK+"step-%d-SK.py "+META_FP+" %d %d %d",
         "outp_tpl_SK"   : OUTPUT_DIR+"mf-SK-S%d-out-%dz-%dy-%dx.txt",
 
-        "cmnd_step_3_HF": "python "+ EX_DIR_HF +"step-3-HF.py "+meta_fp,
+        "cmnd_step_3_HF": "python "+ EX_DIR_HF +"step-3-HF.py "+META_FP,
         "outp_step_3_HF": OUTPUT_DIR+"mf-HF-S3-out-allz-ally-allx.txt",
 
-        "cmnd_step_4_SK": "python "+ EX_DIR_SK +"step-4-SK.py "+meta_fp+" %d",
+        "cmnd_step_4_SK": "python "+ EX_DIR_SK +"step-4-SK.py "+META_FP+" %d",
         "outp_step_4_SK": OUTPUT_DIR+"mf-SK-S4-out-label%d.txt"
     },
 

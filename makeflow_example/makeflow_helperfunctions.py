@@ -1,6 +1,6 @@
 import sys
 
-import blockbased_synapseaware.makeflow_example.makeflow_parameters import *
+from blockbased_synapseaware.makeflow_example.makeflow_parameters import *
 
 # function to read in input arguments
 # (cannot be used for holefilling step 3 and skeletonize step 4)
