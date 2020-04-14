@@ -156,6 +156,7 @@ def CollectSurfacesSequentially(prefix):
     for iz in range(data.StartZ(), data.EndZ()):
         for iy in range(data.StartY(), data.EndY()):
             for ix in range(data.StartX(), data.EndX()):
+                print("in block {},{},{}".format(iz,iy,ix)) 
                 GenerateSurfacesPerBlock(data, iz, iy, ix)
 
     CombineSurfaceVoxels(data)

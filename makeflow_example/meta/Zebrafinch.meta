@@ -7,7 +7,7 @@
 # start block indices (x, y, z)
 0, 0, 0
 # number of blocks to skeletonize (x, y, z)
-2x2x8
+6x6x45
 # resolution in nm (x, y, z)
 18x18x20
 # temporary files directory

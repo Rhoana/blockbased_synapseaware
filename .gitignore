@@ -17,10 +17,14 @@ TODO
 *.DS_Store
 
 # exclude makeflow logfile
-makeflow_example/*.makeflowlog
+*.makeflowlog
 
 # slurm tracking files
 makeflow_example/slurm*
+makeflow_example/pipeline.jx.makeflowlog
+
+#omit the makeflow working directory
+makeflow_example/working_directory/*
 
 # Distribution / packaging
 .Python

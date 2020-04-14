@@ -1,9 +1,9 @@
 
 {
     "define" : {
-        "Z_MAX"         : 8,
-        "Y_MAX"         : 2,
-        "X_MAX"         : 2,
+        "Z_MAX"         : 45,
+        "Y_MAX"         : 6,
+        "X_MAX"         : 6,
         "ID_MAX"        : 410,
         "META_FP"       : "/n/pfister_lab2/Lab/tfranzmeyer/Data2/blockbased_synapseaware/makeflow_example/meta/Zebrafinch.meta",
         "OUTPUT_DIR"    : "/n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/checkfiles_1024x1024x128/",
