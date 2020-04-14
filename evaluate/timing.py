@@ -345,6 +345,17 @@ def GenerateBlockTimingPlot(data, description, n_non_zero_voxels, times, output_
     # show a scatter plot of voxels and times
     ax.scatter(n_non_zero_voxels, times)
 
+    # generate a best fit line
+    m, b = np.polyfit(n_non_zero_voxels, times, 1)
+
+    # create x and y chains for final plot
+    x = np.linspace(min(n_non_zero_voxels), max(n_non_zero_voxels), num=500)
+    y = m * x + b
+    ax.plot(x, y, color='#ff7d74', label='{:0.2f} seconds / million'.format(m))
+
+    # draw the legend
+    ax.legend()
+
     fig.tight_layout()
 
     # get the output filename for this block
@@ -389,23 +400,27 @@ def ConductBlockTimingAnalysis(data, times):
                 # get the the number of non zero voxels in this block (in millions)
                 n_non_zero_voxels.append(statistics['filled_n_non_zero'] / million)
 
-                # get the time for each step
-                component_times.append(times['components'][index])
-                connect_labels_times.append(times['connect-labels'][index])
-                fill_holes_times.append(times['fill-holes'][index])
+                # get the times for each step for skeleton generation
                 save_anchor_walls_times.append(times['save-anchor-walls'][index])
                 compute_anchor_points_times.append(times['compute-anchor-points'][index])
                 topological_thinning_times.append(times['topological-thinning'][index])
-
-                hole_filling_times.append(component_times[-1] + connect_labels_times[-1] + fill_holes_times[-1])
                 skeletonize_times.append(save_anchor_walls_times[-1] + compute_anchor_points_times[-1] + topological_thinning_times[-1])
-                total_times.append(hole_filling_times[-1] + skeletonize_times[-1])
+
+                # get the time for each step for hole filling
+                if not data.HoleFillingOutputDirectory() == None:
+                    component_times.append(times['components'][index])
+                    connect_labels_times.append(times['connect-labels'][index])
+                    fill_holes_times.append(times['fill-holes'][index])
+                    hole_filling_times.append(component_times[-1] + connect_labels_times[-1] + fill_holes_times[-1])
+                    total_times.append(hole_filling_times[-1] + skeletonize_times[-1])
 
                 index += 1
 
-    GenerateBlockTimingPlot(data, 'Hole Filling Time', n_non_zero_voxels, hole_filling_times, 'hole-filling-time.png')
     GenerateBlockTimingPlot(data, 'Skeleton Generation Time', n_non_zero_voxels, skeletonize_times, 'skeleton-generation-time.png')
-    GenerateBlockTimingPlot(data, 'Total Running Time', n_non_zero_voxels, total_times, 'total-running-time.png')
+
+    if not data.HoleFillingOutputDirectory() == None:
+        GenerateBlockTimingPlot(data, 'Hole Filling Time', n_non_zero_voxels, hole_filling_times, 'hole-filling-time.png')
+        GenerateBlockTimingPlot(data, 'Total Running Time', n_non_zero_voxels, total_times, 'total-running-time.png')
 
 
 
@@ -419,10 +434,11 @@ def ConductEndToEndTimingAnalysis(prefix):
     times = {}
 
     # hole filling
-    times['components'] = ConnectedComponents(data)
-    times['connect-labels'] = ConnectLabelsAcrossBlocks(data)
-    times['combine-labels'] = CombineAssociatedLabels(data)
-    times['fill-holes'] = FillHoles(data)
+    if not data.HoleFillingOutputDirectory() == None:
+        times['components'] = ConnectedComponents(data)
+        times['connect-labels'] = ConnectLabelsAcrossBlocks(data)
+        times['combine-labels'] = CombineAssociatedLabels(data)
+        times['fill-holes'] = FillHoles(data)
 
     # skeleton generation
     times['save-anchor-walls'] = SaveAnchorWalls(data)
