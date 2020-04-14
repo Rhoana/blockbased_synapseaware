@@ -12,18 +12,18 @@ from blockbased_synapseaware.skeletonize.refinement import RefineSkeleton
 if len(sys.argv)!=3:
     raise ValueError(" Scripts needs exactley 2 input arguments (Prefix label) ")
 else:
-    prefix = sys.argv[1]
+    meta_fp = sys.argv[1]
     label = int(sys.argv[2])
 
 # read in the data for this block
-data = ReadMetaData(prefix)
+data = ReadMetaData(meta_fp)
 
 for iz in range(data.StartZ(), data.EndZ()):
     for iy in range(data.StartY(), data.EndY()):
         for ix in range(data.StartX(), data.EndX()):
 
             # check that beforehand step has executed successfully
-            CheckSuccessFile(data.TempDirectory(), "SK", 3, iz, iy, ix)
+            CheckSuccessFile("SK", 3, iz, iy, ix)
 
 # users must provide an output directory
 assert (not data.SkeletonOutputDirectory() == None)
@@ -32,4 +32,4 @@ os.makedirs(data.SkeletonOutputDirectory(), exist_ok=True)
 RefineSkeleton(data,label)
 
 # Create and Write Success File
-WriteSuccessFile_SK_4(data.TempDirectory(), "SK", 4, label)
+WriteSuccessFile_SK_4("SK", 4, label)

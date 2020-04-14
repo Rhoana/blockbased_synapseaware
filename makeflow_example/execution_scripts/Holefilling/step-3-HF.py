@@ -13,16 +13,16 @@ from blockbased_synapseaware.hole_filling.connect import CombineAssociatedLabels
 if len(sys.argv)!=2:
     raise ValueError(" Scripts needs exactley 1 input arguments (Prefix) ")
 else:
-    prefix = sys.argv[1]
+    meta_fp = sys.argv[1]
 
 # read in the data for this block
-data = ReadMetaData(prefix)
+data = ReadMetaData(meta_fp)
 
 # check that beforehand step has executed successfully
 for iz in range(data.StartZ(), data.EndZ()):
     for iy in range(data.StartY(), data.EndY()):
         for ix in range(data.StartX(), data.EndX()):
-            CheckSuccessFile(data.TempDirectory(), "HF", 2, iz, iy, ix)
+            CheckSuccessFile("HF", 2, iz, iy, ix)
 
 # users must provide an output directory
 assert (not data.HoleFillingOutputDirectory() == None)
@@ -32,4 +32,4 @@ os.makedirs(data.HoleFillingOutputDirectory(), exist_ok=True)
 CombineAssociatedLabels(data)
 
 # Create and Write Success File
-WriteSuccessFile(data.TempDirectory(), "HF", 3, "all", "all", "all")
+WriteSuccessFile("HF", 3, "all", "all", "all")

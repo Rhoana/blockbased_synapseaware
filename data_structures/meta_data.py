@@ -13,8 +13,7 @@ from blockbased_synapseaware.utilities.constants import *
 
 
 class MetaData:
-    def __init__(self, prefix):
-        self.prefix = prefix
+    def __init__(self, meta_filepath):
         # create default variable values
         self.raw_segmentation_path = None
         self.tmp_directory = None
@@ -36,7 +35,7 @@ class MetaData:
         self.resolution = None
 
         # open the meta file and read in requisite information
-        with open('meta/{}.meta'.format(prefix), 'r') as fd:
+        with open(meta_filepath, 'r') as fd:
             lines = [line for line in fd.readlines() if line.strip()]
 
             # meta files have pairs of lines with comments and values
@@ -80,7 +79,7 @@ class MetaData:
                     self.nyblocks = int(nblocks[1])
                     self.nxblocks = int(nblocks[0])
                 elif comment == '# resolution in nm (x, y, z)':
-                    resolutions = value.split('x') 
+                    resolutions = value.split('x')
                     # use order 2, 1, 0 to convert from xyz to zyx
                     self.resolution = (float(resolutions[2]), float(resolutions[1]), float(resolutions[0]))
 

@@ -8,10 +8,10 @@ from blockbased_synapseaware.makeflow_example.makeflow_helperfunctions import *
 from blockbased_synapseaware.hole_filling.components import FindPerBlockConnectedComponents
 
 # read passed arguments
-prefix,iz,iy,ix = ReadArguments(sys.argv)
+meta_fp,iz,iy,ix = ReadArguments(sys.argv)
 
 # read in the data for this block
-data = ReadMetaData(prefix)
+data = ReadMetaData(meta_fp)
 
 # users must provide an output directory
 assert (not data.HoleFillingOutputDirectory() == None)
@@ -21,4 +21,4 @@ os.makedirs(data.HoleFillingOutputDirectory(), exist_ok=True)
 FindPerBlockConnectedComponents(data, iz, iy, ix)
 
 # Create and Write Success File
-WriteSuccessFile(data.TempDirectory(), "HF", 1, iz, iy, ix)
+WriteSuccessFile("HF", 1, iz, iy, ix)

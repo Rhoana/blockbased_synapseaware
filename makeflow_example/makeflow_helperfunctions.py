@@ -1,5 +1,6 @@
 import sys
 
+import blockbased_synapseaware.makeflow_example.makeflow_parameters
 
 # function to read in input arguments
 # (cannot be used for holefilling step 3 and skeletonize step 4)
@@ -16,25 +17,25 @@ def ReadArguments(inp_args):
 
 # fucntion that takes in parameters of a specific computation step and writes success key to file
 # (cannot be used for skeletonize step 4)
-def WriteSuccessFile(dir, stage, step, iz, iy, ix):
+def WriteSuccessFile(stage, step, iz, iy, ix):
 
-    filepath = dir + "mf-{}-S{}-out-{}z-{}y-{}x.txt".format(stage,step,iz,iy,ix)
+    filepath = makeflow_parameters.checkfile_folder + "mf-{}-S{}-out-{}z-{}y-{}x.txt".format(stage,step,iz,iy,ix)
     g = open(filepath, "w+")
     g.write("DONE.")
     g.close
 
 # Write sccess file for skeletonize step 4
-def WriteSuccessFile_SK_4(dir, stage, step, label):
+def WriteSuccessFile_SK_4(stage, step, label):
 
-    filepath = dir + "mf-{}-S{}-out-label{}.txt".format(stage,step,label)
+    filepath = makeflow_parameters.checkfile_folder + "mf-{}-S{}-out-label{}.txt".format(stage,step,label)
     g = open(filepath, "w+")
     g.write("DONE.")
     g.close
 
 # function that takes in parameters of a specific computation step and checks if step terminated successfully
-def CheckSuccessFile(dir, stage, step, iz, iy, ix):
+def CheckSuccessFile(stage, step, iz, iy, ix):
 
-    filepath = dir + "mf-{}-S{}-out-{}z-{}y-{}x.txt".format(stage,step,iz,iy,ix)
+    filepath = makeflow_parameters.checkfile_folder + "mf-{}-S{}-out-{}z-{}y-{}x.txt".format(stage,step,iz,iy,ix)
     inp_file = open(filepath)
     inp_text = inp_file.read()
     inp_file.close()

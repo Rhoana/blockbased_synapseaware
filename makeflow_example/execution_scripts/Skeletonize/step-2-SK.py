@@ -9,13 +9,13 @@ from blockbased_synapseaware.skeletonize.anchors import ComputeAnchorPoints
 
 
 # read passed arguments
-prefix,iz,iy,ix = ReadArguments(sys.argv)
+meta_fp,iz,iy,ix = ReadArguments(sys.argv)
 
 # read in the data for this block
-data = ReadMetaData(prefix)
+data = ReadMetaData(meta_fp)
 
 # check that beforehand step has executed successfully
-CheckSuccessFile(data.TempDirectory(), "SK", 1, iz, iy, ix)
+CheckSuccessFile("SK", 1, iz, iy, ix)
 
 # users must provide an output directory
 assert (not data.SkeletonOutputDirectory() == None)
@@ -24,4 +24,4 @@ os.makedirs(data.SkeletonOutputDirectory(), exist_ok=True)
 ComputeAnchorPoints(data, iz, iy, ix)
 
 # Create and Write Success File
-WriteSuccessFile(data.TempDirectory(), "SK", 2, iz, iy, ix)
+WriteSuccessFile("SK", 2, iz, iy, ix)

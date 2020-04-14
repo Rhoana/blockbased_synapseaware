@@ -9,13 +9,13 @@ from blockbased_synapseaware.hole_filling.connect import ConnectLabelsAcrossBloc
 
 
 # read passed arguments
-prefix,iz,iy,ix = ReadArguments(sys.argv)
+meta_fp,iz,iy,ix = ReadArguments(sys.argv)
 
 # read in the data for this block
-data = ReadMetaData(prefix)
+data = ReadMetaData(meta_fp)
 
 # check that beforehand step has executed successfully
-CheckSuccessFile(data.TempDirectory(), "HF", 1, iz, iy, ix)
+CheckSuccessFile("HF", 1, iz, iy, ix)
 
 # users must provide an output directory
 assert (not data.HoleFillingOutputDirectory() == None)
@@ -25,4 +25,4 @@ os.makedirs(data.HoleFillingOutputDirectory(), exist_ok=True)
 ConnectLabelsAcrossBlocks(data, iz, iy, ix)
 
 # Create and Write Success File
-WriteSuccessFile(data.TempDirectory(), "HF", 2, iz, iy, ix)
+WriteSuccessFile("HF", 2, iz, iy, ix)
