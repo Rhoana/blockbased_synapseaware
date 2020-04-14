@@ -33,6 +33,7 @@ class MetaData:
         self.somata_path = None
         # place to save the generated skeletons
         self.skeleton_output_directory = None
+        self.figures_directory = None
         self.resolution = None
 
         # open the meta file and read in requisite information
@@ -95,6 +96,8 @@ class MetaData:
 
                 elif comment == '# skeleton output directory':
                     self.skeleton_output_directory = value
+                elif comment == '# figures directory':
+                    self.figures_directory = value
                 else:
                     sys.stderr.write('Unrecognized meta file attribute: {}\n'.format(comment))
                     exit(-1)
@@ -255,6 +258,11 @@ class MetaData:
 
     def SkeletonOutputDirectory(self):
         return self.skeleton_output_directory
+
+
+
+    def FiguresDirectory(self):
+        return self.figures_directory
 
 
 
