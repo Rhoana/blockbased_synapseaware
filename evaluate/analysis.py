@@ -62,24 +62,67 @@ def EvaluateHoleFilling(meta_filename):
     # make sure that the keys are identical for hole sizes and the neighbor label dicts
     assert (sorted(hole_sizes.keys()) == sorted(neighbor_label_dicts.keys()))
 
+    # union find data structure to link together holes across blocks
+    class UnionFindElement:
+        def __init__(self, label):
+            self.label = label
+            self.parent = self
+            self.rank = 0
+
+    def Find(element):
+        if not element.parent == element:
+            element.parent = Find(element.parent)
+        return element.parent
+
+    def Union(element_one, element_two):
+        root_one = Find(element_one)
+        root_two = Find(element_two)
+
+        if root_one == root_two: return
+
+        if root_one.rank < root_two.rank:
+            root_one.parent = root_two
+        elif root_one.rank > root_two.rank:
+            root_two.parent = root_one
+        else:
+            root_two.parent = root_one
+            root_one.rank = root_one.rank + 1
+
+    union_find_elements = {}
+    for label in neighbor_label_dicts.keys():
+        # skip over elements that remain background
+        if not associated_label_dict[label]: continue
+
+        union_find_elements[label] = UnionFindElement(label)
+
+    for label in neighbor_label_dicts.keys():
+        # skip over elements that remain background
+        if not associated_label_dict[label]: continue
+
+        for neighbor_label in neighbor_label_dicts[label]:
+            # skip over the actual neuron label
+            if neighbor_label > 0: continue
+
+            # merge these two labels together
+            Union(union_find_elements[label], union_find_elements[neighbor_label])
+
+    root_holes_sizes = {}
+
+    # go through all labels in the union find data structure and update the hole size for the parent
+    for label in union_find_elements.keys():
+        root_label = Find(union_find_elements[label])
+
+        # create this hole if it does not already exist
+        if not root_label in root_holes_sizes:
+            root_holes_sizes[root_label] = 0
+
+        root_holes_sizes[root_label] += hole_sizes[label]
+
     hole_distribution = {}
 
     # go through all elements in neighbor label dicts
-    for label in neighbor_label_dicts.keys():
-        # ignore labels that are not holes (associated label of zero)
-        if not associated_label_dict[label]: continue
-        # to avoid overcounting holes, only consider labels that have a smaller value than all neighbors
-        if len(neighbor_label_dicts[label]) and label > min(neighbor_label_dicts[label]): continue
-
-        hole_size = hole_sizes[label]
-
-        for neighbor_label in neighbor_label_dicts[label]:
-            # make sure the neighbor and label do not share an ID
-            assert (not neighbor_label == label)
-            # skip over neighbors with positive values (neurons)
-            if neighbor_label > 0: continue
-
-            hole_size += hole_sizes[neighbor_label]
+    for root_label in root_holes_sizes.keys():
+        hole_size = root_holes_sizes[root_label]
 
         if not hole_size in hole_distribution:
             hole_distribution[hole_size] = 1
