@@ -11,6 +11,7 @@
 
         "EX_DIR_HF"     : MF_DIR+"execution_scripts/Holefilling/",
         "EX_DIR_SK"     : MF_DIR+"execution_scripts/Skeletonize/",
+        "EX_DIR_SF"     : MF_DIR+"execution_scripts/Surfaces/",
 
         "Z_RANGE"       : range(0,Z_MAX),
         "Y_RANGE"       : range(0,Y_MAX),
@@ -21,12 +22,17 @@
         "outp_tpl_HF"   : OUTPUT_DIR+"mf-HF-S%d-out-%dz-%dy-%dx.txt",
         "cmnd_tpl_SK"   : "python "+EX_DIR_SK+"step-%d-SK.py "+META_FP+" %d %d %d",
         "outp_tpl_SK"   : OUTPUT_DIR+"mf-SK-S%d-out-%dz-%dy-%dx.txt",
+        "cmnd_tpl_SF"   : "python "+EX_DIR_SF+"step-%d-SF.py "+META_FP+" %d %d %d",
+        "outp_tpl_SF"   : OUTPUT_DIR+"mf-SF-S%d-out-%dz-%dy-%dx.txt",
 
         "cmnd_step_3_HF": "python "+ EX_DIR_HF +"step-3-HF.py "+META_FP,
         "outp_step_3_HF": OUTPUT_DIR+"mf-HF-S3-out-allz-ally-allx.txt",
 
         "cmnd_step_4_SK": "python "+ EX_DIR_SK +"step-4-SK.py "+META_FP+" %d",
-        "outp_step_4_SK": OUTPUT_DIR+"mf-SK-S4-out-label%d.txt"
+        "outp_step_4_SK": OUTPUT_DIR+"mf-SK-S4-out-label%d.txt",
+
+        "cmnd_step_2_SF": "python "+ EX_DIR_SF +"step-2-SF.py "+META_FP
+
     },
 
     "rules" : [
@@ -85,11 +91,27 @@
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 4
+                #{
+                #    "command" : format(cmnd_step_4_SK, ID),
+                #     "inputs"  : [format(outp_tpl_SK,3,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
+                #    "outputs" : [format(outp_step_4_SK, ID)],
+                #} for ID in ID_RANGE,
+
+                ## Get Surfaces
+                # STEP 1
                 {
-                    "command" : format(cmnd_step_4_SK, ID),
-                    "inputs"  : [format(outp_tpl_SK,3,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
-                    "outputs" : [format(outp_step_4_SK, ID)],
-                } for ID in ID_RANGE,
+                    "command" : format(cmnd_tpl_SF,1,IZ,IY,IX),
+                    "inputs"  : [],
+                    "outputs" : [format(outp_tpl_SF,1,IZ,IY,IX)],
+                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
+
+                # STEP 3
+                {
+                    "command" : cmnd_step_2_SF,
+                    "inputs"  : [format(outp_tpl_SF,1,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
+                    "outputs" : [],
+                },
+
 
               ]
 }
