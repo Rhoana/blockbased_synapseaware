@@ -18,8 +18,6 @@
 #define OR_X 2
 #define NDIMS 3
 
-#define SOMATA_DOWNSAMPLE_RATE 8
-
 
 
 // global variables
@@ -51,6 +49,7 @@ void CppTopologicalThinning(const char *lookup_table_directory,
                             const char *synapse_directory,
                             long *segmentation,
                             long *somata,
+                            long input_somata_downsample_rate,
                             float input_resolution[3],
                             long input_volume_size[3],
                             long input_block_size[3],

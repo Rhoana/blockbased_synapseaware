@@ -1,6 +1,7 @@
 OR_Z = 0
 OR_Y = 1
 OR_X = 2
+NDIMS = 3
 
 
 

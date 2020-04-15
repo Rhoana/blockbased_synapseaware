@@ -38,6 +38,7 @@ class MetaData:
         self.figure_description = None
         self.evaluation_directory = None
         self.resolution = None
+        self.somata_downsample_rate = 0
 
         # open the meta file and read in requisite information
         with open(meta_filename, 'r') as fd:
@@ -65,8 +66,6 @@ class MetaData:
                 ### DATA SPECIFICATION ###
                 ##########################
 
-                elif comment == '# max label':
-                    self.max_label = int(value)
                 elif comment == '# block size (x, y, z)':
                     block_sizes = value.split('x')
                     # use order 2, 1, 0 to convert from xyz to zyx
@@ -89,6 +88,10 @@ class MetaData:
                     resolutions = value.split('x')
                     # use order 2, 1, 0 to convert from xyz to zyx
                     self.resolution = (float(resolutions[2]), float(resolutions[1]), float(resolutions[0]))
+                elif comment == '# max label':
+                    self.max_label = int(value)
+                elif comment == '# somata downsample rate':
+                    self.somata_downsample_rate = int(value)
 
                 ##########################
                 ### OUTPUT DIRECTORIES ###
@@ -119,6 +122,12 @@ class MetaData:
         assert (not self.volume_sizes == None)
         assert (not self.synapse_path == None)
         assert (not self.resolution == None)
+
+        # if a somata path is provided, downsample rate must be specified
+        if not self.somata_path == None:
+            assert (self.somata_downsample_rate)
+        if self.somata_downsample_rate:
+            assert (not self.somata_path == None)
 
         # if there will be figures, make sure there is a description
         if not self.figures_directory == None:
@@ -319,6 +328,11 @@ class MetaData:
             data = np.array(hf[list(hf.keys())[0]])
 
         return data
+
+
+
+    def SomataDownsampleRate(self):
+        return self.somata_downsample_rate
 
 
 

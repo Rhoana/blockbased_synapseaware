@@ -14,6 +14,7 @@ import numpy as np
 
 
 from blockbased_synapseaware.utilities.dataIO import ReadH5File
+from blockbased_synapseaware.utilities.constants import NDIMS
 
 
 
@@ -23,6 +24,7 @@ cdef extern from 'cpp-skeletonize.h':
                                 const char *synapse_directory,
                                 long *segmentation,
                                 long *somata,
+                                long input_somata_downsample_rate,
                                 float input_resolution[3],
                                 long input_volume_size[3],
                                 long input_block_size[3],
@@ -38,7 +40,13 @@ def TopologicalThinning(data, iz, iy, ix):
     read_time = time.time()
     segmentation = data.ReadSegmentationBlock(iz, iy, ix)
     somata = data.ReadSomataBlock(iz, iy, ix)
+    somata_downsample_rate = data.SomataDownsampleRate()
     read_time = time.time() - read_time
+
+    # confirm somata downsample rate is valid
+    if somata_downsample_rate:
+        for iv in range(NDIMS):
+            assert (somata.shape[iv] * somata_downsample_rate == segmentation.shape[iv])
 
     # thin each label in the block sequentially
     thinning_time = time.time()
@@ -59,8 +67,16 @@ def TopologicalThinning(data, iz, iy, ix):
 
     # transform the segmentation and somata into a c++ array
     cdef np.ndarray[long, ndim=3, mode='c'] cpp_segmentation = np.ascontiguousarray(segmentation, dtype=ctypes.c_int64)
-    cdef np.ndarray[long, ndim=3, mode='c'] cpp_somata = np.ascontiguousarray(somata, dtype=ctypes.c_int64)
+    # somata array depends on input parameters from the meta file
+    cdef np.ndarray[long, ndim=3, mode='c'] cpp_somata
 
+    # if the somata donwsample rate is non zero, the somata files exist
+    if somata_downsample_rate:
+        cpp_somata = np.ascontiguousarray(somata, dtype=ctypes.c_int64)
+    else:
+        # create vacuous (1, 1, 1) shaped zero array
+        cpp_somata = np.ascontiguousarray(np.zeros((1, 1, 1)), dtype=ctypes.c_int64)
+    exit()
     # transform other variables
     cdef np.ndarray[float, ndim=1, mode='c'] cpp_resolution = np.ascontiguousarray(data.Resolution(), dtype=ctypes.c_float)
     cdef np.ndarray[long, ndim=1, mode='c'] cpp_volume_size = np.ascontiguousarray(data.VolumeSize(), dtype=ctypes.c_int64)
@@ -77,6 +93,7 @@ def TopologicalThinning(data, iz, iy, ix):
                            synapse_directory.encode('utf-8'),
                            &(cpp_segmentation[0,0,0]),
                            &(cpp_somata[0,0,0]),
+                           somata_downsample_rate,
                            &(cpp_resolution[0]),
                            &(cpp_volume_size[0]),
                            &(cpp_block_size[0]),

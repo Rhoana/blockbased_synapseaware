@@ -8,7 +8,13 @@
 static const int lookup_table_size = 1 << 23;
 
 // lookup tables
+
 static unsigned char *lut_simple;
+
+
+// global variables
+
+static long somata_downsample_rate = 0;
 
 
 
@@ -313,7 +319,7 @@ static bool Simple26_6(unsigned int neighbors)
 static void PopulateSomata(long *somata)
 {
     // save characteristics of the downsampled volume, which are only needed and therfore defined within this function
-    const long DSP = SOMATA_DOWNSAMPLE_RATE;
+    const long DSP = somata_downsample_rate;
 
     // get the block size and padded block size for the somata data sets
     long somata_block_size[3] = {
@@ -577,17 +583,9 @@ static void CollectSurfaceVoxels(void)
                     n_surface_voxels ++;
                 }
 
-                bool border_voxel = false;
-                for (long border_dir = 0; border_dir < NTHINNING_DIRECTIONS; ++border_dir) {
-                    if (border_voxels[border_dir][current_label].find(index) != border_voxels[border_dir][current_label].end()) {
-                        border_voxel = true;
-                    }
-                }
-
-                // note this location as surface, if not on a block surface
-                if (!border_voxel) {
-                    widths[index] = 0;
-                }
+                // any of these voxels can have width zero since we already verify that
+                // the non-label neighbor is not outside the standard volume size 
+                widths[index] = 0;
 
                 break;
             }
@@ -842,9 +840,6 @@ static void WriteSkeletonOutputFiles(const char *tmp_directory, long current_blo
         ++iv;
     }
 
-    // sufficiently large number to detect widths that are never updated (remain numeric_limits<float>::max()
-    float infinity = volume_size[OR_Z] * volume_size[OR_Z] + volume_size[OR_Y] * volume_size[OR_Y] + volume_size[OR_X] * volume_size[OR_X];
-
     // add in the fixed points
     std::unordered_set<long>::iterator it;
     for (it = fixed_points[current_label].begin(); it != fixed_points[current_label].end(); ++it, ++iv) {
@@ -861,12 +856,6 @@ static void WriteSkeletonOutputFiles(const char *tmp_directory, long current_blo
         global_indices[iv] = global_index;
         local_indices[iv] = local_index;
         output_widths[iv] = widths[padded_index];
-
-        // some width estimations may remain at numeric_limits<float>::max()
-        // for these, set the width estimate to zero
-        if (output_widths[iv] > infinity) {
-            output_widths[iv] = 0;
-        }
 
         // update the checksum
         checksum += (global_indices[iv] + local_indices[iv]);
@@ -966,6 +955,7 @@ void CppTopologicalThinning(const char *lookup_table_directory,
     const char *synapse_directory,
     long *segmentation,
     long *somata,
+    long input_somata_downsample_rate,
     float input_resolution[3],
     long input_volume_size[3],
     long input_block_size[3],
@@ -979,6 +969,7 @@ void CppTopologicalThinning(const char *lookup_table_directory,
         padded_block_size[iv] = block_size[iv] + 2;
         padded_volume_size[iv] = volume_size[iv] + 2;
     }
+    somata_downsample_rate = input_somata_downsample_rate;
 
     // overwrite all global variables from previous calls to this file
     labels_in_block = std::unordered_set<long>();
@@ -995,7 +986,8 @@ void CppTopologicalThinning(const char *lookup_table_directory,
 
     // create the mappings for somata and for segmentations
     // somata should go first so to not add points from the soma to the segmentation
-    PopulateSomata(somata);
+    // only populate the somata if a somata path exists
+    if (somata_downsample_rate) PopulateSomata(somata);
     PopulateSegments(segmentation);
 
     // read in the synapses and the anchor points
