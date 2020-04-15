@@ -13,6 +13,81 @@ from blockbased_synapseaware.utilities.constants import *
 
 
 
+def EvaluateHoleFilling(meta_filename):
+    data = ReadMetaData(meta_filename)
+
+    # make sure a results folder is specified
+    assert (not data.EvaluationDirectory() == None)
+
+    hole_sizes = {}
+
+    neighbor_label_dicts = {}
+
+    # read in the hole sizes from each block
+    for iz in range(data.StartZ(), data.EndZ()):
+        for iy in range(data.StartY(), data.EndY()):
+            for ix in range(data.StartX(), data.EndX()):
+                tmp_block_directory = data.TempBlockDirectory(iz, iy, ix)
+
+                # read the saved hole sizes for this block
+                hole_sizes_filename = '{}/hole-sizes.pickle'.format(tmp_block_directory)
+
+                holes_sizes_per_block = ReadPickledData(hole_sizes_filename)
+
+                for label in holes_sizes_per_block:
+                    hole_sizes[label] = holes_sizes_per_block[label]
+
+                # any value already determined in the local step mush have no neighbors
+                associated_label_dict = ReadPickledData('{}/associated-label-set-local.pickle'.format(tmp_block_directory))
+                for label in associated_label_dict:
+                    neighbor_label_dicts[label] = []
+
+    # read in the neighbor label dictionary that maps values to its neighbors
+    tmp_directory = data.TempDirectory()
+    neighbor_label_filename = '{}/hole-filling-neighbor-label-dict-global.pickle'.format(tmp_directory)
+    neighbor_label_dict_global = ReadPickledData(neighbor_label_filename)
+    associated_label_filename = '{}/hole-filling-associated-labels.pickle'.format(tmp_directory)
+    associated_label_dict = ReadPickledData(associated_label_filename)
+
+    # make sure that the keys are identical for hole sizes and associated labels (sanity check)
+    assert (sorted(hole_sizes.keys()) == sorted(associated_label_dict.keys()))
+
+    # make sure no query component in the global dictionary occurs in the local dictionary
+    for label in neighbor_label_dict_global.keys():
+        assert (not label in neighbor_label_dicts)
+
+    # create a unified neighbor labels dictionary that combines local and global information
+    neighbor_label_dicts.update(neighbor_label_dict_global)
+
+    # make sure that the keys are identical for hole sizes and the neighbor label dicts
+    assert (sorted(hole_sizes.keys()) == sorted(neighbor_label_dicts.keys()))
+
+    hole_distribution = {}
+
+    # go through all elements in neighbor label dicts
+    for label in neighbor_label_dicts.keys():
+        # ignore labels that are not holes (associated label of zero)
+        if not associated_label_dict[label]: continue
+        # to avoid overcounting holes, only consider labels that have a smaller value than all neighbors
+        if len(neighbor_label_dicts[label]) and label > min(neighbor_label_dicts[label]): continue
+
+        hole_size = hole_sizes[label]
+
+        for neighbor_label in neighbor_label_dicts[label]:
+            # make sure the neighbor and label do not share an ID
+            assert (not neighbor_label == label)
+            # skip over neighbors with positive values (neurons)
+            if neighbor_label > 0: continue
+
+            hole_size += hole_sizes[neighbor_label]
+
+        if not hole_size in hole_distribution:
+            hole_distribution[hole_size] = 1
+        else:
+            hole_distribution[hole_size] += 1
+
+
+
 def EvaluateSkeletons(meta_filename):
     data = ReadMetaData(meta_filename)
 

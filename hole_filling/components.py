@@ -213,7 +213,7 @@ def FindBackgroundComponentsAssociatedLabels(neighbor_label_dict, undetermined_l
                             associated_label_dict[label] = neuron_neighbors[0]
                             undetermined_label_set.remove(label)
                             holes.add(label)
-                # if there are more than one neighbor it is not a hole
+                # if there are more than one neuron neighbor it is not a hole
                 else:
                     associated_label_dict[query_component] = 0
                     non_holes.add(query_component)
@@ -317,9 +317,6 @@ def FindPerBlockConnectedComponents(data, iz, iy, ix):
     neighbor_label_set = FindAdjacentLabelSetLocal(components)
     adjacency_set_time = time.time() - adjacency_set_time
 
-    # delete the components (no longer needed)
-    del components
-
     # create a dictionary of labels from the set
     background_associated_labels_time = time.time()
     neighbor_label_dict = Set2Dictionary(neighbor_label_set)
@@ -353,6 +350,23 @@ def FindPerBlockConnectedComponents(data, iz, iy, ix):
     print ('Background Components Associated Labels: {:0.2f} seconds.'.format(background_associated_labels_time))
     print ('Write Time: {:0.2f} seconds.'.format(write_time))
     print ('Total Time: {:0.2f} seconds.'.format(total_time))
+
+    # generate statistics for the holes
+    # does not count towards total computation time
+    labels, counts = np.unique(components, return_counts=True)
+
+    hole_sizes = {}
+
+    for iv, label in enumerate(labels):
+        # skip the actual neurons in the volume
+        if label > 0: continue
+        hole_sizes[label] = counts[iv]
+
+    # save the output file
+    PickleData(hole_sizes, '{}/hole-sizes.pickle'.format(tmp_directory))
+
+    # delete the components (no longer needed)
+    del components
 
     # output timing statistics
     timing_directory = '{}/connected-components'.format(data.TimingDirectory())
