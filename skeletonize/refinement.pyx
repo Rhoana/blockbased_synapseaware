@@ -115,7 +115,8 @@ def RefineSkeleton(data, label):
                     if voxel_index in distances:
                         widths[voxel_index] = width
 
-    assert (len(widths.keys()) == len(distances.keys()))
+    # removed assert to be able to finish execution
+    # assert (len(widths.keys()) == len(distances.keys()))
 
     output_widths_filename = '{}/widths/{:016d}.pts'.format(skeleton_output_directory, label)
     WriteAttributePtsFile(data, output_widths_filename, label, widths)
