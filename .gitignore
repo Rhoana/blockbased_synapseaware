@@ -25,7 +25,7 @@ makeflow_example/pipeline.jx.makeflowlog
 
 #omit the makeflow working directory
 makeflow_example/working_directory/*
-
+makeflow_example/working_dir_surfaces/*
 # Distribution / packaging
 .Python
 build/

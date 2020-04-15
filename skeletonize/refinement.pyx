@@ -114,7 +114,7 @@ def RefineSkeleton(data, label):
                 for (voxel_index, width) in block_widths.items():
                     if voxel_index in distances:
                         widths[voxel_index] = width
-
+    print("len widhts:{} len distances:{}".format(len(widths.keys()),len(distances.keys())))
     assert (len(widths.keys()) == len(distances.keys()))
 
     output_widths_filename = '{}/widths/{:016d}.pts'.format(skeleton_output_directory, label)
