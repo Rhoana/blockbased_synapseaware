@@ -76,7 +76,7 @@ def TopologicalThinning(data, iz, iy, ix):
     else:
         # create vacuous (1, 1, 1) shaped zero array
         cpp_somata = np.ascontiguousarray(np.zeros((1, 1, 1)), dtype=ctypes.c_int64)
-    exit()
+    
     # transform other variables
     cdef np.ndarray[float, ndim=1, mode='c'] cpp_resolution = np.ascontiguousarray(data.Resolution(), dtype=ctypes.c_float)
     cdef np.ndarray[long, ndim=1, mode='c'] cpp_volume_size = np.ascontiguousarray(data.VolumeSize(), dtype=ctypes.c_int64)
