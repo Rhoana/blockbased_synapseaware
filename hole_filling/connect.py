@@ -154,7 +154,7 @@ def ConnectLabelsAcrossBlocks(data, iz, iy, ix):
 
     # write the relevant files to disk
     write_time = time.time()
-    PickleData(neighbor_label_set_global, '{}/hole-filling-neighbor-label-set-global.pickle'.format(tmp_directory))
+    PickleData(neighbor_label_set_global, '{}/neighbor-label-set-global.pickle'.format(tmp_directory))
     write_time = time.time() - write_time
 
     total_time = time.time() - total_time
