@@ -1,13 +1,17 @@
 
 {
     "define" : {
-        "Z_MAX"         : 45,
-        "Y_MAX"         : 6,
-        "X_MAX"         : 6,
+        "Z_MAX"         : 3,
+        "Y_MAX"         : 3,
+        "X_MAX"         : 3,
         "ID_MAX"        : 410,
-        "META_FP"       : "/n/pfister_lab2/Lab/tfranzmeyer/Data2/blockbased_synapseaware/makeflow_example/meta/Zebrafinch.meta",
-        "OUTPUT_DIR"    : "/n/pfister_lab2/Lab/tfranzmeyer/Data2/Zebra/checkfiles_1024x1024x128/",
-        "MF_DIR"        : "/n/pfister_lab2/Lab/tfranzmeyer/Data2/blockbased_synapseaware/makeflow_example/",
+        "META_FP"       : "/n/pfister_lab2/Lab/tfranzmeyer/Code/blockbased_synapseaware/makeflow_example/working_dir_2048x2048x2048/Zebrafinch.meta",
+        "OUTPUT_DIR"    : "/n/pfister_lab2/Lab/tfranzmeyer/experiments/checkfiles/Zebrafinch/2048x2048x2048/",
+        "MF_DIR"        : "/n/pfister_lab2/Lab/tfranzmeyer/Code/blockbased_synapseaware/makeflow_example/",
+
+        ##################################################
+        ############ NO CHANGES FROM HERE ################
+        ##################################################
 
         "EX_DIR_HF"     : MF_DIR+"execution_scripts/Holefilling/",
         "EX_DIR_SK"     : MF_DIR+"execution_scripts/Skeletonize/",
@@ -20,15 +24,43 @@
 
         "cmnd_tpl_HF"   : "python "+EX_DIR_HF+"step-%d-HF.py "+META_FP+" %d %d %d",
         "outp_tpl_HF"   : OUTPUT_DIR+"mf-HF-S%d-out-%dz-%dy-%dx.txt",
-        "cmnd_tpl_SK"   : "python "+EX_DIR_SK+"step-%d-SK.py "+META_FP+" %d %d %d",
-        "outp_tpl_SK"   : OUTPUT_DIR+"mf-SK-S%d-out-%dz-%dy-%dx.txt",
-
         "cmnd_step_3_HF": "python "+ EX_DIR_HF +"step-3-HF.py "+META_FP,
         "outp_step_3_HF": OUTPUT_DIR+"mf-HF-S3-out-allz-ally-allx.txt",
 
+        "cmnd_tpl_SK"   : "python "+EX_DIR_SK+"step-%d-SK.py "+META_FP+" %d %d %d",
+        "outp_tpl_SK"   : OUTPUT_DIR+"mf-SK-S%d-out-%dz-%dy-%dx.txt",
         "cmnd_step_4_SK": "python "+ EX_DIR_SK +"step-4-SK.py "+META_FP+" %d",
         "outp_step_4_SK": OUTPUT_DIR+"mf-SK-S4-out-label%d.txt",
 
+        "cmnd_tpl_SF"   : "python "+EX_DIR_SF+"step-%d-SF.py "+META_FP+" %d %d %d",
+        "outp_tpl_SF"   : OUTPUT_DIR+"mf-SF-S%d-out-%dz-%dy-%dx.txt",
+        "cmnd_step_2_SF": "python "+ EX_DIR_SF +"step-2-SF.py "+META_FP,
+        "outp_step_2_SF": OUTPUT_DIR+"mf-SF-S2-out-allz-ally-allx.txt"
+
+    },
+
+    "categories" : {
+        "HF_S1_S4"   : {
+                            "resources" : { "cores" : 1, "memory" : 188000, "wall-time": 1000 }
+        },
+        "HF_S2_S3"     : {
+                            "resources" : { "cores" : 1, "memory" : 10000, "wall-time": 600}
+        },
+        "SK_S1_S2"     : {
+                            "resources" : { "cores" : 1, "memory" : 90000, "wall-time": 300}
+        },
+        "SK_S3"        : {
+                            "resources" : { "cores" : 1, "memory" : 90000, "wall-time": 600}
+        },
+        "SK_S4"        : {
+                            "resources" : { "cores" : 1, "memory" : 10000, "wall-time": 600}
+        },
+        "SF_S1"        : {
+                            "resources" : { "cores" : 1, "memory" : 40000, "wall-time": 600}
+        },
+        "SF_S2"        : {
+                            "resources" : { "cores" : 1, "memory" : 80000, "wall-time": 7200}
+        }
     },
 
     "rules" : [
@@ -38,6 +70,7 @@
                     "command" : format(cmnd_tpl_HF,1,IZ,IY,IX),
                     "inputs"  : [],
                     "outputs" : [format(outp_tpl_HF,1,IZ,IY,IX)],
+                    "category": "HF_S1_S4"
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 2
@@ -46,6 +79,7 @@
                     "inputs"  : [format(outp_tpl_HF,1,IZ_,IY_,IX_) for IZ_ in [IZ-1,IZ,IZ+1] for IY_ in [IY-1,IY,IY+1] for IX_ in [IX-1,IX,IX+1]
                                  if (IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX and IX_>=0 and IX_<X_MAX)],
                     "outputs" : [format(outp_tpl_HF,2,IZ,IY,IX)],
+                    "category": "HF_S2_S3"
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 3
@@ -53,6 +87,7 @@
                     "command" : cmnd_step_3_HF,
                     "inputs"  : [format(outp_tpl_HF,2,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
                     "outputs" : [outp_step_3_HF],
+                    "category": "HF_S2_S3"
                 },
 
                 # STEP 4
@@ -60,6 +95,7 @@
                     "command" : format(cmnd_tpl_HF,4,IZ,IY,IX),
                     "inputs"  : [outp_step_3_HF],
                     "outputs" : [format(outp_tpl_HF,4,IZ,IY,IX)],
+                    "category": "HF_S1_S4"
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 ## Thinning
@@ -68,6 +104,7 @@
                     "command" : format(cmnd_tpl_SK,1,IZ,IY,IX),
                     "inputs"  : [format(outp_tpl_HF,4,IZ,IY,IX)],
                     "outputs" : [format(outp_tpl_SK,1,IZ,IY,IX)],
+                    "category": "SK_S1_S2"
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 2
@@ -76,6 +113,7 @@
                     "inputs"  : [format(outp_tpl_SK,1,IZ_,IY_,IX_) for IZ_ in [IZ-1,IZ,IZ+1] for IY_ in [IY-1,IY,IY+1] for IX_ in [IX-1,IX,IX+1]
                                  if (IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX and IX_>=0 and IX_<X_MAX)],
                     "outputs" : [format(outp_tpl_SK,2,IZ,IY,IX)],
+                    "category": "SK_S1_S2"
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 3
@@ -84,6 +122,7 @@
                     "inputs"  : [format(outp_tpl_SK,2,IZ_,IY_,IX_) for IZ_ in [IZ-1,IZ,IZ+1] for IY_ in [IY-1,IY,IY+1] for IX_ in [IX-1,IX,IX+1]
                                  if (IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX and IX_>=0 and IX_<X_MAX)],
                     "outputs" : [format(outp_tpl_SK,3,IZ,IY,IX)],
+                    "category": "SK_S3"
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 4
@@ -91,7 +130,27 @@
                     "command" : format(cmnd_step_4_SK, ID),
                      "inputs"  : [format(outp_tpl_SK,3,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
                     "outputs" : [format(outp_step_4_SK, ID)],
+                    "category": "SK_S4"
+
                 } for ID in ID_RANGE,
+
+                ## Get Surfaces
+                # STEP 1
+                {
+                    "command" : format(cmnd_tpl_SF,1,IZ,IY,IX),
+                    "inputs"  : [format(outp_step_4_SK, ID) for ID in ID_RANGE],
+                    "outputs" : [format(outp_tpl_SF,1,IZ,IY,IX)],
+                    "category": "SF_S1"
+                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
+
+                # STEP 2
+                {
+                    "command" : cmnd_step_2_SF,
+                    "inputs"  : [format(outp_tpl_SF,1,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
+                    "outputs" : [outp_step_2_SF],
+                    "category": "SF_S2"
+                },
+
 
               ]
 }

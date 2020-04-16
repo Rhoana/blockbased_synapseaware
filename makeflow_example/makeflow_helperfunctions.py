@@ -24,13 +24,24 @@ def WriteSuccessFile(stage, step, iz, iy, ix):
     g.write("DONE.")
     g.close
 
-# Write sccess file for skeletonize step 4
+# Write success file for skeletonize step 4
 def WriteSuccessFile_SK_4(stage, step, label):
 
     filepath = checkfile_folder + "mf-{}-S{}-out-label{}.txt".format(stage,step,label)
     g = open(filepath, "w+")
     g.write("DONE.")
     g.close
+
+# Check success file for skeletonize step 4
+def CheckSuccessFile_SK_4(stage, step, label):
+
+    filepath = checkfile_folder + "mf-{}-S{}-out-label{}.txt".format(stage,step,label)
+    inp_file = open(filepath)
+    inp_text = inp_file.read()
+
+    if inp_text[:6]!="DONE.":
+        print(inp_text)
+        raise ValueError("Execution Stopped: Wrong Error Code (!=DONE.)")
 
 # function that takes in parameters of a specific computation step and checks if step terminated successfully
 def CheckSuccessFile(stage, step, iz, iy, ix):

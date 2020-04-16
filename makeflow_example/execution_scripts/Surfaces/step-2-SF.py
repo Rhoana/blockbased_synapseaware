@@ -17,3 +17,6 @@ data = ReadMetaData(meta_fp)
 
 # compute the first step to fill holes in each block
 CombineSurfaceVoxels(data)
+
+# Create and Write Success File
+WriteSuccessFile("SF", 2, "all", "all", "all")
