@@ -19,7 +19,7 @@ def ReadMetaData(meta_filepath):
 
 def ReadH5File(filename):
     with h5py.File(filename, 'r') as hf:
-        data = hf[list(hf.keys())[0]]
+        data = np.array(hf[list(hf.keys())[0]])
 
     return data
 
