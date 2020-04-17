@@ -49,46 +49,43 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdint>
+#include <unordered_map>
 
 namespace cc3d {
 
 template <typename T>
 class DisjointSet {
+
+private:
+  std::unordered_map<T,T> ids;
+
 public:
-  T *ids;
-  size_t length;
 
   DisjointSet () {
-    length = 65536;
-    ids = new T[length]();
+    ids = std::unordered_map<T,T>();
   }
 
-  DisjointSet (size_t len) {
-    length = len;
-    ids = new T[length]();
-  }
-
-  DisjointSet (const DisjointSet &cpy) {
+  /*DisjointSet (const DisjointSet &cpy) {
     length = cpy.length;
     ids = new T[length]();
 
     for (int i = 0; i < length; i++) {
       ids[i] = cpy.ids[i];
     }
-  }
+  }*/
 
   ~DisjointSet () {
-    delete []ids;
+    ids.clear();
   }
 
   T root (T n) {
-    T i = ids[n];
-    while (i != ids[i]) {
-      ids[i] = ids[ids[i]]; // path compression
-      i = ids[i];
+    T parent = ids[n];
+    while (parent != ids[parent]) {
+      ids[parent] = ids[ids[parent]]; // path compression
+      parent = ids[parent];
     }
 
-    return i;
+    return parent;
   }
 
   bool find (T p, T q) {
@@ -96,14 +93,14 @@ public:
   }
 
   void add(T p) {
-    if (p >= length) {
+    /*if (p >= length) {
       printf("Connected Components Error: Label %d cannot be mapped to union-find array of length %lu.\n", p, length);
       throw "maximum length exception";
     }
+    */
 
-    if (ids[p] == 0) {
-      ids[p] = p;
-    }
+    if (ids.find(p)==ids.end())
+      ids[p]=p;
   }
 
   void unify (T p, T q) {
@@ -289,7 +286,7 @@ int64_t* connected_components3d_26(
 
   max_labels = std::max(std::min(max_labels, voxels), static_cast<int64_t>(1L)); // can't allocate 0 arrays
 
-  DisjointSet<int64_t> equivalences(max_labels);
+  DisjointSet<int64_t> equivalences();
 
   if (out_labels == NULL) {
     out_labels = new int64_t[voxels]();
@@ -483,7 +480,7 @@ int64_t* connected_components3d_18(
 
   max_labels = std::max(std::min(max_labels, voxels), static_cast<int64_t>(1L)); // can't allocate 0 arrays
 
-  DisjointSet<int64_t> equivalences(max_labels);
+  DisjointSet<int64_t> equivalences();
 
   if (out_labels == NULL) {
     out_labels = new int64_t[voxels]();
@@ -628,7 +625,7 @@ int64_t* connected_components3d_6(
 
   max_labels = std::max(std::min(max_labels, voxels), static_cast<int64_t>(1L)); // can't allocate 0 arrays
 
-  DisjointSet<int64_t> equivalences(max_labels);
+  DisjointSet<int64_t> equivalences();
 
   if (out_labels == NULL) {
     out_labels = new int64_t[voxels]();

@@ -41,7 +41,7 @@
 
     "categories" : {
         "HF_S1_S4"   : {
-                            "resources" : { "cores" : 1, "memory" : 188000, "wall-time": 1000 }
+                            "resources" : { "cores" : 1, "memory" : 188000, "wall-time": 20 }
         },
         "HF_S2_S3"     : {
                             "resources" : { "cores" : 1, "memory" : 10000, "wall-time": 600}
