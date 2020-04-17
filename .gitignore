@@ -26,6 +26,7 @@ makeflow_example/pipeline.jx.makeflowlog
 
 #omit the makeflow working directory
 makeflow_example/working_dir_*/temp_files/*
+makeflow_example/working_dir_*/slurm*
 
 # Distribution / packaging
 .Python

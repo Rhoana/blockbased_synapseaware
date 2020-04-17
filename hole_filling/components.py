@@ -1,3 +1,4 @@
+
 import os
 import time
 
@@ -22,12 +23,14 @@ def ComputeConnected6Components(seg, background_start_label):
     # run connected components with 6 connectivity
     components = connected_components(seg, connectivity=6)
 
+    del seg
+
     # how many negative components are there
     n_background_components = -1 * np.min(components)
 
     # update the background_start_labels to be universally unique
-    if background_start_label != -1:
-        components[components < 0] = components[components < 0] + background_start_label
+    #if background_start_label != -1:
+    #    components[components < 0] = components[components < 0] + background_start_label
 
     return components, n_background_components
 
@@ -247,6 +250,9 @@ def PruneNeighborLabelSet(neighbor_label_set, holes, non_holes):
 
 
 def FindPerBlockConnectedComponents(data, iz, iy, ix):
+
+    print("executing find per block components")
+
     # start timing statistics
     total_time = time.time()
 
@@ -260,10 +266,14 @@ def FindPerBlockConnectedComponents(data, iz, iy, ix):
     # get the index for the background volumes
     background_start_label = -1 * block_index * block_volume
 
+    print ("Reading in Segmentation", flush=True)
+
     # read in this volume
     read_time = time.time()
     seg = data.ReadRawSegmentationBlock(iz, iy, ix)
     read_time = time.time() - read_time
+
+    print("Segmentation read in", flush=True)
 
     # make sure the block is not larger than mentioned in param file
     assert (seg.shape[OR_Z] <= data.BlockZLength())
@@ -287,12 +297,19 @@ def FindPerBlockConnectedComponents(data, iz, iy, ix):
         assert (seg.shape[OR_Y] == data.BlockYLength())
         assert (seg.shape[OR_X] == data.BlockXLength())
 
+    print("loaded segmentation, now executing cc3d", flush=True)
+
     # call connected components algorithm for this block
     components_time = time.time()
     components, n_background_components = ComputeConnected6Components(seg, background_start_label)
 
+    print("executed cc3d, now deleting original segmentation", flush=True)
+
     # delete original segmentation
-    del seg
+    # del seg
+
+    print("deleted original segmentation", flush=True)
+
 
     # save the components file to disk
     tmp_directory = data.TempBlockDirectory(iz, iy, ix)
