@@ -29,8 +29,8 @@ def ComputeConnected6Components(seg, background_start_label):
     n_background_components = -1 * np.min(components)
 
     # update the background_start_labels to be universally unique
-    #if background_start_label != -1:
-    #    components[components < 0] = components[components < 0] + background_start_label
+    if background_start_label != -1:
+        components[components < 0] = components[components < 0] + background_start_label
 
     return components, n_background_components
 
