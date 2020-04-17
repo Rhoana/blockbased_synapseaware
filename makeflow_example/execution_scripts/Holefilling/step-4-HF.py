@@ -14,7 +14,7 @@ meta_fp,iz,iy,ix = ReadArguments(sys.argv)
 data = ReadMetaData(meta_fp)
 
 # check that beforehand step has executed successfully
-CheckSuccessFile("HF", 3, "all", "all", "all")
+CheckSuccessFile(data.BlockSize(), "HF", 3, "all", "all", "all")
 
 # users must provide an output directory
 assert (not data.HoleFillingOutputDirectory() == None)
@@ -23,4 +23,4 @@ os.makedirs(data.HoleFillingOutputDirectory(), exist_ok=True)
 RemoveHoles(data, iz, iy, ix)
 
 # Create and Write Success File
-WriteSuccessFile("HF", 4, iz, iy, ix)
+WriteSuccessFile(data.BlockSize(), "HF", 4, iz, iy, ix)

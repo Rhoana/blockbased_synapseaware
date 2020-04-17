@@ -22,7 +22,7 @@ data = ReadMetaData(meta_fp)
 for iz in range(data.StartZ(), data.EndZ()):
     for iy in range(data.StartY(), data.EndY()):
         for ix in range(data.StartX(), data.EndX()):
-            CheckSuccessFile("HF", 2, iz, iy, ix)
+            CheckSuccessFile(data.BlockSize(), "HF", 2, iz, iy, ix)
 
 # users must provide an output directory
 assert (not data.HoleFillingOutputDirectory() == None)
@@ -32,4 +32,4 @@ os.makedirs(data.HoleFillingOutputDirectory(), exist_ok=True)
 CombineAssociatedLabels(data)
 
 # Create and Write Success File
-WriteSuccessFile("HF", 3, "all", "all", "all")
+WriteSuccessFile(data.BlockSize(), "HF", 3, "all", "all", "all")

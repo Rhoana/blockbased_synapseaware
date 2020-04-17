@@ -21,4 +21,4 @@ os.makedirs(data.HoleFillingOutputDirectory(), exist_ok=True)
 FindPerBlockConnectedComponents(data, iz, iy, ix)
 
 # Create and Write Success File
-WriteSuccessFile("HF", 1, iz, iy, ix)
+WriteSuccessFile(data.BlockSize(), "HF", 1, iz, iy, ix)

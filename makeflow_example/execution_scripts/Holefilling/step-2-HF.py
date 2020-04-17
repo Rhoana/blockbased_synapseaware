@@ -15,7 +15,7 @@ meta_fp,iz,iy,ix = ReadArguments(sys.argv)
 data = ReadMetaData(meta_fp)
 
 # check that beforehand step has executed successfully
-CheckSuccessFile("HF", 1, iz, iy, ix)
+CheckSuccessFile(data.BlockSize(), "HF", 1, iz, iy, ix)
 
 # users must provide an output directory
 assert (not data.HoleFillingOutputDirectory() == None)
@@ -25,4 +25,4 @@ os.makedirs(data.HoleFillingOutputDirectory(), exist_ok=True)
 ConnectLabelsAcrossBlocks(data, iz, iy, ix)
 
 # Create and Write Success File
-WriteSuccessFile("HF", 2, iz, iy, ix)
+WriteSuccessFile(data.BlockSize(), "HF", 2, iz, iy, ix)
