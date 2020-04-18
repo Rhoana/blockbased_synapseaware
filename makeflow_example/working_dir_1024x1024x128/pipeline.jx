@@ -21,6 +21,7 @@
         "Y_RANGE"       : range(0,Y_MAX),
         "X_RANGE"       : range(0,X_MAX),
         "ID_RANGE"      : range(0,ID_MAX),
+        "o_RANGE"       : range(0,0),
 
         "cmnd_tpl_HF"   : "python "+EX_DIR_HF+"step-%d-HF.py "+META_FP+" %d %d %d",
         "outp_tpl_HF"   : OUTPUT_DIR+"mf-HF-S%d-out-%dz-%dy-%dx.txt",
@@ -41,10 +42,13 @@
 
     "categories" : {
         "HF_S1_S4"   : {
-                            "resources" : { "cores" : 1, "memory" : 188000, "wall-time": 1000 }
+                            "resources" : { "cores" : 1, "memory" : 10000, "wall-time": 1000 }
         },
-        "HF_S2_S3"     : {
-                            "resources" : { "cores" : 1, "memory" : 10000, "wall-time": 600}
+        "HF_S2"     : {
+                            "resources" : { "cores" : 1, "memory" : 5000, "wall-time": 600}
+        },
+        "HF_S3"     : {
+                            "resources" : { "cores" : 1, "memory" : 15000, "wall-time": 600}
         },
         "SK_S1_S2"     : {
                             "resources" : { "cores" : 1, "memory" : 90000, "wall-time": 300}
@@ -79,7 +83,7 @@
                     "inputs"  : [format(outp_tpl_HF,1,IZ_,IY_,IX_) for IZ_ in [IZ-1,IZ,IZ+1] for IY_ in [IY-1,IY,IY+1] for IX_ in [IX-1,IX,IX+1]
                                  if (IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX and IX_>=0 and IX_<X_MAX)],
                     "outputs" : [format(outp_tpl_HF,2,IZ,IY,IX)],
-                    "category": "HF_S2_S3"
+                    "category": "HF_S2"
                 } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
 
                 # STEP 3
@@ -87,7 +91,7 @@
                     "command" : cmnd_step_3_HF,
                     "inputs"  : [format(outp_tpl_HF,2,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
                     "outputs" : [outp_step_3_HF],
-                    "category": "HF_S2_S3"
+                    "category": "HF_S3"
                 },
 
                 # STEP 4
@@ -105,7 +109,7 @@
                     "inputs"  : [format(outp_tpl_HF,4,IZ,IY,IX)],
                     "outputs" : [format(outp_tpl_SK,1,IZ,IY,IX)],
                     "category": "SK_S1_S2"
-                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
+                } for IZ in o_RANGE for IY in o_RANGE for IX in o_RANGE,
 
                 # STEP 2
                 {
@@ -114,7 +118,7 @@
                                  if (IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX and IX_>=0 and IX_<X_MAX)],
                     "outputs" : [format(outp_tpl_SK,2,IZ,IY,IX)],
                     "category": "SK_S1_S2"
-                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
+                } for IZ in o_RANGE for IY in o_RANGE for IX in o_RANGE,
 
                 # STEP 3
                 {
@@ -123,7 +127,7 @@
                                  if (IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX and IX_>=0 and IX_<X_MAX)],
                     "outputs" : [format(outp_tpl_SK,3,IZ,IY,IX)],
                     "category": "SK_S3"
-                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
+                } for IZ in o_RANGE for IY in o_RANGE for IX in o_RANGE,
 
                 # STEP 4
                 {
@@ -132,7 +136,7 @@
                     "outputs" : [format(outp_step_4_SK, ID)],
                     "category": "SK_S4"
 
-                } for ID in ID_RANGE,
+                } for ID in o_RANGE,
 
                 ## Get Surfaces
                 # STEP 1
@@ -141,15 +145,15 @@
                     "inputs"  : [format(outp_step_4_SK, ID) for ID in ID_RANGE],
                     "outputs" : [format(outp_tpl_SF,1,IZ,IY,IX)],
                     "category": "SF_S1"
-                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
+                } for IZ in o_RANGE for IY in o_RANGE for IX in o_RANGE,
 
                 # STEP 2
-                {
-                    "command" : cmnd_step_2_SF,
-                    "inputs"  : [format(outp_tpl_SF,1,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
-                    "outputs" : [outp_step_2_SF],
-                    "category": "SF_S2"
-                },
+                #{
+                #    "command" : cmnd_step_2_SF,
+                #    "inputs"  : [format(outp_tpl_SF,1,IZ,IY,IX) for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE],
+                #    "outputs" : [outp_step_2_SF],
+                #    "category": "SF_S2"
+                #},
 
 
               ]

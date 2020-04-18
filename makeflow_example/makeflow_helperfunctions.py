@@ -18,7 +18,7 @@ def ReadArguments(inp_args):
 
 # fucntion that takes in parameters of a specific computation step and writes success key to file
 # (cannot be used for skeletonize step 4)
-def WriteSuccessFile(block_size, stage, step, iz, iy, ix):
+def WriteSuccessFile(blocksize, stage, step, iz, iy, ix):
 
     filepath = checkfile_folder + "{}x{}x{}/mf-{}-S{}-out-{}z-{}y-{}x.txt".format(blocksize[OR_X],blocksize[OR_Y],blocksize[OR_Z],stage,step,iz,iy,ix)
     g = open(filepath, "w+")
@@ -26,7 +26,7 @@ def WriteSuccessFile(block_size, stage, step, iz, iy, ix):
     g.close
 
 # Write success file for skeletonize step 4
-def WriteSuccessFile_SK_4(block_size, stage, step, label):
+def WriteSuccessFile_SK_4(blocksize, stage, step, label):
 
     filepath = checkfile_folder + "{}x{}x{}/mf-{}-S{}-out-label{}.txt".format(blocksize[OR_X],blocksize[OR_Y],blocksize[OR_Z],stage,step,label)
     g = open(filepath, "w+")
@@ -34,7 +34,7 @@ def WriteSuccessFile_SK_4(block_size, stage, step, label):
     g.close
 
 # Check success file for skeletonize step 4
-def CheckSuccessFile_SK_4(block_size, stage, step, label):
+def CheckSuccessFile_SK_4(blocksize, stage, step, label):
 
     filepath = checkfile_folder + "{}x{}x{}/mf-{}-S{}-out-label{}.txt".format(blocksize[OR_X],blocksize[OR_Y],blocksize[OR_Z],stage,step,label)
     inp_file = open(filepath)
@@ -45,7 +45,7 @@ def CheckSuccessFile_SK_4(block_size, stage, step, label):
         raise ValueError("Execution Stopped: Wrong Error Code (!=DONE.)")
 
 # function that takes in parameters of a specific computation step and checks if step terminated successfully
-def CheckSuccessFile(block_size, tage, step, iz, iy, ix):
+def CheckSuccessFile(blocksize, stage, step, iz, iy, ix):
 
     filepath = checkfile_folder + "{}x{}x{}/mf-{}-S{}-out-{}z-{}y-{}x.txt".format(blocksize[OR_X],blocksize[OR_Y],blocksize[OR_Z],stage,step,iz,iy,ix)
     inp_file = open(filepath)

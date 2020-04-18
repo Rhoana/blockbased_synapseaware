@@ -22,3 +22,5 @@ FindPerBlockConnectedComponents(data, iz, iy, ix)
 
 # Create and Write Success File
 WriteSuccessFile(data.BlockSize(), "HF", 1, iz, iy, ix)
+
+raise ValueError("TestError")
