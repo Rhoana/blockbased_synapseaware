@@ -21,16 +21,21 @@ from blockbased_synapseaware.utilities.constants import *
 
 def ComputeConnected6Components(seg, background_start_label):
     # run connected components with 6 connectivity
-    components = connected_components(seg, connectivity=6)
+    components = connected_components(seg, start_label=background_start_label, connectivity=6)
 
     del seg
 
+    print("background_start_label: " + str(background_start_label))
+    print("start label real: " + str(np.max(components[components<0])))
+
     # how many negative components are there
-    n_background_components = -1 * np.min(components)
+    n_background_components = -1 * (np.min(components)-background_start_label)
+    print("n_background_components: " + str(n_background_components))
+
 
     # update the background_start_labels to be universally unique
-    if background_start_label != -1:
-        components[components < 0] = components[components < 0] + background_start_label
+    #if background_start_label != -1:
+    #    components[components < 0] = components[components < 0] + background_start_label
 
     return components, n_background_components
 
