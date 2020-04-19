@@ -50,6 +50,7 @@
 #include <cstdio>
 #include <cstdint>
 #include <unordered_map>
+#include <iostream>
 
 namespace cc3d {
 
@@ -87,6 +88,7 @@ public:
 
     if (ids.find(p)==ids.end())
       ids[p]=p;
+
   }
 
   void unify (T p, T q) {
@@ -194,13 +196,15 @@ inline void unify2d_lt(
 // modify this pass to also ensure that the output labels are
 // numbered from 1 sequentially.
 int64_t* relabel(
-    int64_t* out_labels, const int64_t voxels,
-    const int64_t num_labels, DisjointSet<int64_t> &equivalences
+    int64_t* out_labels, const int64_t voxels, int64_t start_label,
+    DisjointSet<int64_t> &equivalences
   ) {
 
   int64_t label;
-  int64_t* renumber = new int64_t[(num_labels*-1)+1]();
-  int64_t next_label = -1;
+
+  std::unordered_map<int64_t,int64_t> renumber = std::unordered_map<int64_t,int64_t>();
+
+  int64_t next_label = start_label;
 
   // Raster Scan 2: Write final labels based on equivalences
   for (int64_t loc = 0; loc < voxels; loc++) {
@@ -210,7 +214,7 @@ int64_t* relabel(
 
     label = equivalences.root(out_labels[loc]*-1)*-1;
 
-    if (renumber[label*-1]) {
+    if (renumber.find(label*-1)!=renumber.end()) {
       out_labels[loc] = renumber[label*-1]*-1;
     }
     else {
@@ -220,7 +224,7 @@ int64_t* relabel(
     }
   }
 
-  delete[] renumber;
+  renumber.clear();
 
   // double max_label = *std::max_element(out_labels, out_labels+voxels);
   // printf("Max label labels_out is: %ld\n", (long)(*std::max_element(out_labels, out_labels+voxels)));
@@ -238,7 +242,8 @@ int64_t* connected_components3d_6(
   const int64_t sxy = sx * sy;
   const int64_t voxels = sxy * sz;
 
-  DisjointSet<int64_t> equivalences();
+
+  DisjointSet<int64_t> equivalences;
 
   if (out_labels == NULL) {
     out_labels = new int64_t[voxels]();
@@ -302,15 +307,15 @@ int64_t* connected_components3d_6(
           out_labels[loc] = out_labels[loc + E];
         }
         else {
-          next_label--;
           out_labels[loc] = next_label;
           equivalences.add(out_labels[loc]*-1);
+          next_label--;
         }
       }
     }
   }
 
-  return relabel(out_labels, voxels, next_label, equivalences);
+  return relabel(out_labels, voxels, start_label, equivalences);
 }
 
 template <typename T>
@@ -322,6 +327,9 @@ int64_t* connected_components3d(
   ) {
 
   if (connectivity == 6) {
+
+
+
     return connected_components3d_6<T>(
       in_labels, sx, sy, sz,
       start_label, out_labels
