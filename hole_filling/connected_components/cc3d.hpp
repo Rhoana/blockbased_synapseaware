@@ -54,19 +54,24 @@
 
 namespace cc3d {
 
+// DisjointSet and renumber structure can either be implemented as an unordered_map or a simple array.
+// Arrays are higher in memory consumption but faster, whereas unordered_maps are lower in memory (as entries are sparse) but have a longer runtime.
+// set this bool true to use the unordered_map implementation and false to use the (original) array implementation
+bool UseUOMap = 1;
+
 template <typename T>
-class DisjointSet {
+class DisjointSet_Map {
 
 private:
   std::unordered_map<T,T> ids;
 
 public:
 
-  DisjointSet () {
+  DisjointSet_Map () {
     ids = std::unordered_map<T,T>();
   }
 
-  ~DisjointSet () {
+  ~DisjointSet_Map () {
     ids.clear();
   }
 
@@ -123,81 +128,93 @@ public:
   // Will be O(n).
 };
 
-// This is the original Wu et al decision tree but without
-// any copy operations, only union find. We can decompose the problem
-// into the z - 1 problem unified with the original 2D algorithm.
-// If literally none of the Z - 1 are filled, we can use a faster version
-// of this that uses copies.
 template <typename T>
-inline void unify2d(
-    const int64_t loc, const T cur,
-    const int64_t x, const int64_t y,
-    const int64_t sx, const int64_t sy,
-    const T* in_labels, const int64_t *out_labels,
-    DisjointSet<int64_t> &equivalences
-  ) {
+class DisjointSet_Arr {
+public:
+  T *ids;
+  size_t length;
 
-  if (y > 0 && cur == in_labels[loc - sx]) {
-    equivalences.unify(out_labels[loc], out_labels[loc - sx]);
+  DisjointSet_Arr () {
+    length = 65536;
+    ids = new T[length]();
   }
-  else if (x > 0 && cur == in_labels[loc - 1]) {
-    equivalences.unify(out_labels[loc], out_labels[loc - 1]);
 
-    if (x < sx - 1 && y > 0 && cur == in_labels[loc + 1 - sx]) {
-      equivalences.unify(out_labels[loc], out_labels[loc + 1 - sx]);
+  DisjointSet_Arr (size_t len) {
+    length = len;
+    ids = new T[length]();
+  }
+
+  ~DisjointSet_Arr () {
+    delete []ids;
+  }
+
+  T root (T n) {
+    T parent = ids[n];
+    while (parent != ids[parent]) {
+      ids[parent] = ids[ids[parent]]; // path compression
+      parent = ids[parent];
+    }
+
+    return parent;
+  }
+
+  bool find (T p, T q) {
+    return root(p) == root(q);
+  }
+
+  void add(T p) {
+    if (p >= length) {
+      //printf("Connected Components Error: Label %d cannot be mapped to union-find array of length %d.\n", p, length);
+      throw "maximum length exception";
+    }
+
+    if (ids[p] == 0) {
+      ids[p] = p;
     }
   }
-  else if (x > 0 && y > 0 && cur == in_labels[loc - 1 - sx]) {
-    equivalences.unify(out_labels[loc], out_labels[loc - 1 - sx]);
 
-    if (x < sx - 1 && y > 0 && cur == in_labels[loc + 1 - sx]) {
-      equivalences.unify(out_labels[loc], out_labels[loc + 1 - sx]);
+  void unify (T p, T q) {
+    if (p == q) {
+      return;
     }
-  }
-  else if (x < sx - 1 && y > 0 && cur == in_labels[loc + 1 - sx]) {
-    equivalences.unify(out_labels[loc], out_labels[loc + 1 - sx]);
-  }
-}
 
-template <typename T>
-inline void unify2d_rt(
-    const int64_t loc, const T cur,
-    const int64_t x, const int64_t y,
-    const int64_t sx, const int64_t sy,
-    const T* in_labels, const int64_t *out_labels,
-    DisjointSet<int64_t> &equivalences
-  ) {
+    T i = root(p);
+    T j = root(q);
 
-  if (x < sx - 1 && y > 0 && cur == in_labels[loc + 1 - sx]) {
-    equivalences.unify(out_labels[loc], out_labels[loc + 1 - sx]);
-  }
-}
+    if (i == 0) {
+      add(p);
+      i = p;
+    }
 
-template <typename T>
-inline void unify2d_lt(
-    const int64_t loc, const T cur,
-    const int64_t x, const int64_t y,
-    const int64_t sx, const int64_t sy,
-    const T* in_labels, const int64_t *out_labels,
-    DisjointSet<int64_t> &equivalences
-  ) {
+    if (j == 0) {
+      add(q);
+      j = q;
+    }
 
-  if (x > 0 && cur == in_labels[loc - 1]) {
-    equivalences.unify(out_labels[loc], out_labels[loc - 1]);
+    ids[i] = j;
   }
-  else if (x > 0 && y > 0 && cur == in_labels[loc - 1 - sx]) {
-    equivalences.unify(out_labels[loc], out_labels[loc - 1 - sx]);
+
+  void print() {
+    for (int i = 0; i < 15; i++) {
+      printf("%d, ", ids[i]);
+    }
+    printf("\n");
   }
-}
+
+  // would be easy to write remove.
+  // Will be O(n).
+};
+
 
 // This is the second raster pass of the two pass algorithm family.
 // The input array (output_labels) has been assigned provisional
 // labels and this resolves them into their final labels. We
 // modify this pass to also ensure that the output labels are
 // numbered from 1 sequentially.
-int64_t* relabel(
+
+int64_t* relabel_Map(
     int64_t* out_labels, const int64_t voxels, int64_t start_label,
-    DisjointSet<int64_t> &equivalences
+    DisjointSet_Map<int64_t> &equivalences
   ) {
 
   int64_t label;
@@ -226,14 +243,46 @@ int64_t* relabel(
 
   renumber.clear();
 
-  // double max_label = *std::max_element(out_labels, out_labels+voxels);
-  // printf("Max label labels_out is: %ld\n", (long)(*std::max_element(out_labels, out_labels+voxels)));
+  return out_labels;
+}
+
+int64_t* relabel_Arr(
+    int64_t* out_labels, const int64_t voxels, int64_t start_label,
+    int64_t max_label, DisjointSet_Arr<int64_t> &equivalences
+  ) {
+
+  int64_t label;
+  int64_t num_labels = -1*max_label;
+  int64_t* renumber = new int64_t[num_labels+1]();
+  int64_t next_label = 0;
+
+  std::cout << "executing relabel_Arr" << std::endl << std::flush;
+  std::cout << "label at 0: " << out_labels[0] << std::endl << std::flush;
+  // Raster Scan 2: Write final labels based on equivalences
+  for (int64_t loc = 0; loc < voxels; loc++) {
+    if (out_labels[loc]>0) {
+      continue;
+    }
+
+    label = equivalences.root(out_labels[loc]*-1)*-1;
+
+    if (renumber[label*-1]) {
+      out_labels[loc] = renumber[label*-1]*-1+start_label;
+    }
+    else {
+      renumber[label*-1] = next_label*-1;
+      out_labels[loc] = next_label+start_label;
+      next_label--;
+    }
+  }
+
+  delete[] renumber;
 
   return out_labels;
 }
 
 template <typename T>
-int64_t* connected_components3d_6(
+int64_t* connected_components3d_6_Map(
     T* in_labels,
     const int64_t sx, const int64_t sy, const int64_t sz,
     int64_t start_label, int64_t *out_labels = NULL
@@ -242,8 +291,7 @@ int64_t* connected_components3d_6(
   const int64_t sxy = sx * sy;
   const int64_t voxels = sxy * sz;
 
-
-  DisjointSet<int64_t> equivalences;
+  DisjointSet_Map<int64_t> equivalences;
 
   if (out_labels == NULL) {
     out_labels = new int64_t[voxels]();
@@ -315,7 +363,92 @@ int64_t* connected_components3d_6(
     }
   }
 
-  return relabel(out_labels, voxels, start_label, equivalences);
+  return relabel_Map(out_labels, voxels, start_label, equivalences);
+}
+
+template <typename T>
+int64_t* connected_components3d_6_Arr(
+    T* in_labels,
+    const int64_t sx, const int64_t sy, const int64_t sz,
+    int64_t start_label, int64_t *out_labels = NULL
+  ) {
+
+  const int64_t sxy = sx * sy;
+  const int64_t voxels = sxy * sz;
+
+  DisjointSet_Arr<int64_t> equivalences(voxels);
+
+  if (out_labels == NULL) {
+    out_labels = new int64_t[voxels]();
+  }
+
+  /*
+    Layout of forward pass mask (which faces backwards).
+    N is the current location.
+
+    z = -1     z = 0
+    A B C      J K L   y = -1
+    D E F      M N     y =  0
+    G H I              y = +1
+   -1 0 +1    -1 0   <-- x axis
+  */
+
+  // Z - 1
+  const int64_t E = -sxy;
+
+  // Current Z
+  const int64_t K = -sx;
+  const int64_t M = -1;
+  // N = 0;
+
+  int64_t loc = 0;
+  int64_t next_label = -1;
+
+  // Raster Scan 1: Set temporary labels and
+  // record equivalences in a disjoint set.
+
+  for (int64_t z = 0; z < sz; z++) {
+    for (int64_t y = 0; y < sy; y++) {
+      for (int64_t x = 0; x < sx; x++) {
+        loc = x + sx * (y + sy * z);
+
+        const T cur = in_labels[loc];
+
+        if (cur > 0) {
+          out_labels[loc]=cur;
+          continue;
+        }
+
+        if (x > 0 && cur == in_labels[loc + M]) {
+          out_labels[loc] = out_labels[loc + M];
+
+          if (y > 0 && cur == in_labels[loc + K]) {
+            equivalences.unify(out_labels[loc]*-1, out_labels[loc + K]*-1);
+          }
+          if (z > 0 && cur == in_labels[loc + E]) {
+            equivalences.unify(out_labels[loc]*-1, out_labels[loc + E]*-1);
+          }
+        }
+        else if (y > 0 && cur == in_labels[loc + K]) {
+          out_labels[loc] = out_labels[loc + K];
+
+          if (z > 0 && cur == in_labels[loc + E]) {
+            equivalences.unify(out_labels[loc]*-1, out_labels[loc + E]*-1);
+          }
+        }
+        else if (z > 0 && cur == in_labels[loc + E]) {
+          out_labels[loc] = out_labels[loc + E];
+        }
+        else {
+          out_labels[loc] = next_label;
+          equivalences.add(out_labels[loc]*-1);
+          next_label--;
+        }
+      }
+    }
+  }
+
+  return relabel_Arr(out_labels, voxels, start_label, next_label, equivalences);
 }
 
 template <typename T>
@@ -328,12 +461,18 @@ int64_t* connected_components3d(
 
   if (connectivity == 6) {
 
-
-
-    return connected_components3d_6<T>(
-      in_labels, sx, sy, sz,
-      start_label, out_labels
-    );
+    if (UseUOMap){
+      return connected_components3d_6_Map<T>(
+        in_labels, sx, sy, sz,
+        start_label, out_labels
+      );
+    }
+    else {
+      return connected_components3d_6_Arr<T>(
+        in_labels, sx, sy, sz,
+        start_label, out_labels
+      );
+    }
   }
   else {
     throw "Only 6 connectivity is supported!";
