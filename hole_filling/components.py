@@ -25,12 +25,22 @@ def ComputeConnected6Components(seg, background_start_label):
 
     del seg
 
-    #print("background_start_label: " + str(background_start_label))
-    #print("start label real: " + str(np.max(components[components<0])))
+    print("background_start_label: " + str(background_start_label))
+    print("start label real: " + str(np.max(components[components<0])))
 
-    # update the background_start_labels to be universally unique
-    #if background_start_label != -1:
-    #    components[components < 0] = components[components < 0] + background_start_label
+    print("min:")
+    print(np.min(components))
+    print("max:")
+    print(np.max(components))
+    print("unique:")
+    unq_values = np.unique(components)
+    checksum = 0
+    for val in unq_values:
+        if val>(-10+background_start_label) and val<(10+background_start_label):
+            print(val)
+        checksum += val
+
+    print("Unique value checksum: " + str(checksum))
 
     return components
 

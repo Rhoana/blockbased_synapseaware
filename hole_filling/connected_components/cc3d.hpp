@@ -234,6 +234,7 @@ int64_t* relabel_Map(
     if (renumber.find(label*-1)!=renumber.end()) {
       out_labels[loc] = renumber[label*-1]*-1;
     }
+
     else {
       renumber[label*-1] = next_label*-1;
       out_labels[loc] = next_label;
@@ -252,9 +253,9 @@ int64_t* relabel_Arr(
   ) {
 
   int64_t label;
-  int64_t num_labels = -1*max_label;
+  int64_t num_labels = -1*max_label - 1;
   int64_t* renumber = new int64_t[num_labels+1]();
-  int64_t next_label = 0;
+  int64_t next_label = -1;
 
   std::cout << "executing relabel_Arr" << std::endl << std::flush;
   std::cout << "label at 0: " << out_labels[0] << std::endl << std::flush;
@@ -267,11 +268,11 @@ int64_t* relabel_Arr(
     label = equivalences.root(out_labels[loc]*-1)*-1;
 
     if (renumber[label*-1]) {
-      out_labels[loc] = renumber[label*-1]*-1+start_label;
+      out_labels[loc] = renumber[label*-1]*-1+start_label+1;
     }
     else {
       renumber[label*-1] = next_label*-1;
-      out_labels[loc] = next_label+start_label;
+      out_labels[loc] = next_label+start_label+1;
       next_label--;
     }
   }
@@ -363,6 +364,8 @@ int64_t* connected_components3d_6_Map(
     }
   }
 
+  std::cout << "next_label final: " << next_label << std::endl;
+
   return relabel_Map(out_labels, voxels, start_label, equivalences);
 }
 
@@ -447,6 +450,8 @@ int64_t* connected_components3d_6_Arr(
       }
     }
   }
+
+  std::cout << "next_label final: " << next_label << std::endl;
 
   return relabel_Arr(out_labels, voxels, start_label, next_label, equivalences);
 }
