@@ -20,27 +20,8 @@ from blockbased_synapseaware.utilities.constants import *
 
 
 def ComputeConnected6Components(seg, background_start_label):
-    # run connected components with 6 connectivity
+    # run connected components with 6 connectivity and according background_start_label
     components = connected_components(seg, start_label=background_start_label, connectivity=6)
-
-    del seg
-
-    print("background_start_label: " + str(background_start_label))
-    print("start label real: " + str(np.max(components[components<0])))
-
-    print("min:")
-    print(np.min(components))
-    print("max:")
-    print(np.max(components))
-    print("unique:")
-    unq_values = np.unique(components)
-    checksum = 0
-    for val in unq_values:
-        if val>(-10+background_start_label) and val<(10+background_start_label):
-            print(val)
-        checksum += val
-
-    print("Unique value checksum: " + str(checksum))
 
     return components
 
@@ -261,8 +242,6 @@ def PruneNeighborLabelSet(neighbor_label_set, holes, non_holes):
 
 def FindPerBlockConnectedComponents(data, iz, iy, ix):
 
-    print("executing find per block components")
-
     # start timing statistics
     total_time = time.time()
 
@@ -276,14 +255,10 @@ def FindPerBlockConnectedComponents(data, iz, iy, ix):
     # get the index for the background volumes
     background_start_label = -1 - (block_index * block_volume)
 
-    print ("Reading in Segmentation", flush=True)
-
     # read in this volume
     read_time = time.time()
     seg = data.ReadRawSegmentationBlock(iz, iy, ix)
     read_time = time.time() - read_time
-
-    print("Segmentation read in", flush=True)
 
     # make sure the block is not larger than mentioned in param file
     assert (seg.shape[OR_Z] <= data.BlockZLength())
@@ -307,21 +282,13 @@ def FindPerBlockConnectedComponents(data, iz, iy, ix):
         assert (seg.shape[OR_Y] == data.BlockYLength())
         assert (seg.shape[OR_X] == data.BlockXLength())
 
-    print("loaded segmentation, now executing cc3d", flush=True)
-
     # call connected components algorithm for this block
     components_time = time.time()
 
-    cc3d_time = time.time()
     components = ComputeConnected6Components(seg, background_start_label)
-    print("cc3d_time: " + str(time.time()-cc3d_time))
-    print("executed cc3d, now deleting original segmentation", flush=True)
 
     # delete original segmentation
-    # del seg
-
-    print("deleted original segmentation", flush=True)
-
+    del seg
 
     # save the components file to disk
     tmp_directory = data.TempBlockDirectory(iz, iy, ix)

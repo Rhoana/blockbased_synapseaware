@@ -57,7 +57,7 @@ namespace cc3d {
 // DisjointSet and renumber structure can either be implemented as an unordered_map or a simple array.
 // Arrays are higher in memory consumption but faster, whereas unordered_maps are lower in memory (as entries are sparse) but have a longer runtime.
 // set this bool true to use the unordered_map implementation and false to use the (original) array implementation
-bool UseUOMap = 1;
+bool UseUOMap = 0;
 
 template <typename T>
 class DisjointSet_Map {
@@ -257,8 +257,6 @@ int64_t* relabel_Arr(
   int64_t* renumber = new int64_t[num_labels+1]();
   int64_t next_label = -1;
 
-  std::cout << "executing relabel_Arr" << std::endl << std::flush;
-  std::cout << "label at 0: " << out_labels[0] << std::endl << std::flush;
   // Raster Scan 2: Write final labels based on equivalences
   for (int64_t loc = 0; loc < voxels; loc++) {
     if (out_labels[loc]>0) {
@@ -364,8 +362,6 @@ int64_t* connected_components3d_6_Map(
     }
   }
 
-  std::cout << "next_label final: " << next_label << std::endl;
-
   return relabel_Map(out_labels, voxels, start_label, equivalences);
 }
 
@@ -450,8 +446,6 @@ int64_t* connected_components3d_6_Arr(
       }
     }
   }
-
-  std::cout << "next_label final: " << next_label << std::endl;
 
   return relabel_Arr(out_labels, voxels, start_label, next_label, equivalences);
 }
