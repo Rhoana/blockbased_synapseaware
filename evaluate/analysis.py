@@ -4,7 +4,12 @@ import statistics
 
 
 import numpy as np
-import scipy.spatial
+import scipy.spatial, scipy.optimize
+
+
+
+import matplotlib
+from matplotlib import pyplot as plt
 
 
 
@@ -129,6 +134,11 @@ def EvaluateHoleFilling(meta_filename):
         else:
             hole_distribution[hole_size] += 1
 
+    sizes = sorted(hole_distribution.keys())
+
+    for size in sizes:
+        print ('{}: {}'.format(size, hole_distribution[size]))
+
 
 
 def EvaluateSkeletons(meta_filename):
@@ -240,7 +250,8 @@ def FindEndpoints(data, skeleton, somata_surface):
         iz, iy, ix = data.GlobalIndexToIndices(pt)
 
         # number of neighbors for this skeleton
-        nneighbors = 0
+        nskeleton_neighbors = 0
+        nsomata_surface_neighbors = 0
 
         # consider the 26-connected neighborhood
         for iw in [iz - 1, iz, iz + 1]:
@@ -252,13 +263,70 @@ def FindEndpoints(data, skeleton, somata_surface):
                     # get the linear index
                     neighbor_index = data.GlobalIndicesToIndex(iw, iv, iu)
 
-                    if neighbor_index in skeleton or neighbor_index in somata_surface:
-                        nneighbors += 1
+                    # keep track of the number of skeleton and somata surface neighbors separately
+                    if neighbor_index in skeleton:
+                        nskeleton_neighbors += 1
+                    if neighbor_index in somata_surface:
+                        nsomata_surface_neighbors += 1
 
-        if nneighbors < 2:
+        # something is an enpoint if it has less than two neighbors (skeleton + somata) or it only has
+        # somata surface neighbors (synapses on the surface)
+        if (nskeleton_neighbors + nsomata_surface_neighbors < 2) or (not nskeleton_neighbors):
             endpoints.append(pt)
 
     return endpoints
+
+
+
+# max_distance is in nanometers
+def CalculateNeuralReconstructionIntegrityScore(data, synapses, endpoints, max_distance = 800):
+    # get the resolution for this dataset
+    resolution = data.Resolution()
+
+    # create numpy arrays for the synapses and endpoints
+    nsynapses = len(synapses)
+    nendpoints = len(endpoints)
+
+    synapse_pts = np.zeros((nsynapses, 3), dtype=np.int64)
+    endpoint_pts = np.zeros((nendpoints, 3), dtype=np.int64)
+
+    # populate the numpy array for synapses
+    for pt, voxel_index in enumerate(synapses):
+        iz, iy, ix = data.GlobalIndexToIndices(voxel_index)
+
+        synapse_pts[pt,:] = (resolution[OR_Z] * iz, resolution[OR_Y] * iy, resolution[OR_X] * ix)
+
+    # populate the numpy array for endpoints
+    for pt, voxel_index in enumerate(endpoints):
+        iz, iy, ix = data.GlobalIndexToIndices(voxel_index)
+
+        endpoint_pts[pt,:] = (resolution[OR_Z] * iz, resolution[OR_Y] * iy, resolution[OR_X] * ix)
+
+    # create the distances between all pairs of synapses and endpoints
+    cost_matrix = scipy.spatial.distance.cdist(synapse_pts, endpoint_pts)
+    matching = scipy.optimize.linear_sum_assignment(cost_matrix)
+
+    valid_matches = set()
+    for match in zip(matching[0], matching[1]):
+        # valid pairs must be withing max_distance (in nanometers)
+        if cost_matrix[match[0], match[1]] > max_distance: continue
+
+        valid_matches.add(match)
+
+    # get the number of matches, added synapses, and missed synapses
+    ncorrect_synapses = len(valid_matches)
+    nadded_synapses = nendpoints - len(valid_matches)
+    nmissed_synapses = nsynapses - len(valid_matches)
+
+    # the number of true positives is the number of paths between the valid locations
+    true_positives = ncorrect_synapses * (ncorrect_synapses - 1) // 2
+    # the number of false positives is every pair of paths between true and added synapses
+    false_positives = ncorrect_synapses * nadded_synapses
+    # the number of false negatives is every synapse pair that is divided
+    false_negatives = ncorrect_synapses * nmissed_synapses
+
+    # return the number of true positives, false positives and false negatives
+    return true_positives, false_positives, false_negatives
 
 
 
@@ -283,6 +351,19 @@ def EvaluateNeuralReconstructionIntegrity(meta_filename):
                         synapses_per_label[label] = []
 
                     synapses_per_label[label] += block_synapses[label]
+
+    # get the output filename
+    evaluation_directory = data.EvaluationDirectory()
+    if not os.path.exists(evaluation_directory):
+        os.makedirs(evaluation_directory, exist_ok=True)
+
+    output_filename = '{}/nri-results.txt'.format(evaluation_directory)
+    fd = open(output_filename, 'w')
+
+    # keep track of global statistics
+    total_true_positives = 0
+    total_false_positives = 0
+    total_false_negatives = 0
 
     # for each label, find if synapses correspond to endpoints
     for label in range(1, data.NLabels()):
@@ -314,7 +395,51 @@ def EvaluateNeuralReconstructionIntegrity(meta_filename):
         # get the endpoints in this skeleton for this label
         endpoints = FindEndpoints(data, skeleton, somata_surface)
 
-        # TODO
+        true_positives, false_positives, false_negatives = CalculateNeuralReconstructionIntegrityScore(data, synapses, endpoints)
+
+
+        # if there are no true positives the NRI score is 0
+        if true_positives == 0:
+            nri_score = 0
+        else:
+            precision = true_positives / float(true_positives + false_positives)
+            recall = true_positives / float(true_positives + false_negatives)
+
+            nri_score = 2 * (precision * recall) / (precision + recall)
+
+        print ('Label: {}'.format(label))
+        print ('  True Positives:  {:10d}'.format(true_positives))
+        print ('  False Positives: {:10d}'.format(false_positives))
+        print ('  False Negatives: {:10d}'.format(false_negatives))
+        print ('  NRI Score:           {:0.4f}'.format(nri_score))
+
+        fd.write ('Label: {}\n'.format(label))
+        fd.write ('  True Positives:  {:10d}\n'.format(true_positives))
+        fd.write ('  False Positives: {:10d}\n'.format(false_positives))
+        fd.write ('  False Negatives: {:10d}\n'.format(false_negatives))
+        fd.write ('  NRI Score:           {:0.4f}\n'.format(nri_score))
+
+        # update the global stats
+        total_true_positives += true_positives
+        total_false_positives += false_positives
+        total_false_negatives += false_negatives
+
+    precision = total_true_positives / float(total_true_positives + total_false_positives)
+    recall = total_true_positives / float(total_true_positives + total_false_negatives)
+
+    nri_score = 2 * (precision * recall) / (precision + recall)
+
+    print ('Total Volume'.format(label))
+    print ('  True Positives:  {:10d}'.format(total_true_positives))
+    print ('  False Positives: {:10d}'.format(total_false_positives))
+    print ('  False Negatives: {:10d}'.format(total_false_negatives))
+    print ('  NRI Score:           {:0.4f}'.format(nri_score))
+
+    fd.write ('Total Volume\n'.format(label))
+    fd.write ('  True Positives:  {:10d}\n'.format(total_true_positives))
+    fd.write ('  False Positives: {:10d}\n'.format(total_false_positives))
+    fd.write ('  False Negatives: {:10d}\n'.format(total_false_negatives))
+    fd.write ('  NRI Score:           {:0.4f}\n'.format(nri_score))
 
 
 
@@ -452,7 +577,6 @@ def EvaluateWidthsSequentially(meta_filename):
 
     # iterate over all labels and generate width statistics
     for label in range(1, data.NLabels()):
-        #EvaluateWidths(data, label)
-        pass
+        EvaluateWidths(data, label)
 
     CombineEvaluatedWidths(data)
