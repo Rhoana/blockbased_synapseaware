@@ -12,8 +12,9 @@ from blockbased_synapseaware.data_structures.meta_data import MetaData
 
 
 
-def ReadMetaData(meta_filepath):
-    return MetaData(meta_filepath)
+
+def ReadMetaData(meta_filename):
+    return MetaData(meta_filename)
 
 
 

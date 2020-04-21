@@ -44,29 +44,29 @@ def RefineSkeleton(data, label):
     # make sure the skeleton output directory exists
     skeleton_output_directory = data.SkeletonOutputDirectory()
     if not os.path.exists(skeleton_output_directory):
-        os.makedirs(skeleton_output_directory, exist_ok = True)
+        os.makedirs(skeleton_output_directory, exist_ok=True)
 
     # create tmp directories for somata surfaces, synapses, and skeletons
     tmp_somata_surface_directory = '{}/somata_surfaces'.format(tmp_directory)
     if not os.path.exists(tmp_somata_surface_directory):
-        os.makedirs(tmp_somata_surface_directory, exist_ok = True)
+        os.makedirs(tmp_somata_surface_directory, exist_ok=True)
     tmp_synapse_surface_directory = '{}/synapses'.format(tmp_directory)
     if not os.path.exists(tmp_synapse_surface_directory):
-        os.makedirs(tmp_synapse_surface_directory, exist_ok = True)
+        os.makedirs(tmp_synapse_surface_directory, exist_ok=True)
     tmp_skeletons_directory = '{}/skeletons'.format(tmp_directory)
     if not os.path.exists(tmp_skeletons_directory):
-        os.makedirs(tmp_skeletons_directory, exist_ok = True)
+        os.makedirs(tmp_skeletons_directory, exist_ok=True)
 
     # create final output directories for skeletons, distances, and widths
     skeletons_directory = '{}/skeletons'.format(skeleton_output_directory)
     if not os.path.exists(skeletons_directory):
-        os.makedirs(skeletons_directory, exist_ok = True)
+        os.makedirs(skeletons_directory, exist_ok=True)
     distances_directory = '{}/distances'.format(skeleton_output_directory)
     if not os.path.exists(distances_directory):
-        os.makedirs(distances_directory, exist_ok = True)
+        os.makedirs(distances_directory, exist_ok=True)
     widths_directory = '{}/widths'.format(skeleton_output_directory)
     if not os.path.exists(widths_directory):
-        os.makedirs(widths_directory, exist_ok = True)
+        os.makedirs(widths_directory, exist_ok=True)
 
     # transform other variables
     cdef np.ndarray[float, ndim=1, mode='c'] cpp_resolution = np.ascontiguousarray(data.Resolution(), dtype=ctypes.c_float)

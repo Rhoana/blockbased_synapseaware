@@ -44,6 +44,8 @@ def SaveAnchorWalls(data, iz, iy, ix):
 
     # get the temp directory for this block
     tmp_directory = data.TempBlockDirectory(iz, iy, ix)
+    if not os.path.exists(tmp_directory):
+        os.makedirs(tmp_directory, exist_ok=True)
 
     WriteH5File(segmentation[0,:,:], '{}/z-min-anchor-points.h5'.format(tmp_directory))
     WriteH5File(segmentation[-1,:,:], '{}/z-max-anchor-points.h5'.format(tmp_directory))

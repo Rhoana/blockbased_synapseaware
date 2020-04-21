@@ -141,14 +141,13 @@ def CombineStatistics(data):
 
 
 
-def CalculateBlockStatisticsSequentially(prefix):
-    data = ReadMetaData(prefix)
+def CalculateBlockStatisticsSequentially(meta_filename):
+    data = ReadMetaData(meta_filename)
 
     # iterate over all blocks
     for iz in range(data.StartZ(), data.EndZ()):
         for iy in range(data.StartY(), data.EndY()):
             for ix in range(data.StartX(), data.EndX()):
-                #CalculatePerBlockStatistics(data, iz, iy, ix)
-                pass
+                CalculatePerBlockStatistics(data, iz, iy, ix)
 
     CombineStatistics(data)

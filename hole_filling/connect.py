@@ -230,6 +230,8 @@ def CombineAssociatedLabels(data):
     # write only one associated labels dictionary for all blocks
     tmp_directory = data.TempDirectory()
     PickleNumbaData(associated_label_dict, '{}/hole-filling-associated-labels.pickle'.format(tmp_directory))
+    # save the neighbor label dict global which has linked background components across all blocks
+    PickleNumbaData(neighbor_label_dict_global, '{}/hole-filling-neighbor-label-dict-global.pickle'.format(tmp_directory))
     write_time = time.time() - write_time
 
     total_time = time.time() - total_time

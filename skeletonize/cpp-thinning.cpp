@@ -8,7 +8,13 @@
 static const int lookup_table_size = 1 << 23;
 
 // lookup tables
+
 static unsigned char *lut_simple;
+
+
+// global variables
+
+static long somata_downsample_rate = 0;
 
 
 
@@ -313,7 +319,7 @@ static bool Simple26_6(unsigned int neighbors)
 static void PopulateSomata(long *somata)
 {
     // save characteristics of the downsampled volume, which are only needed and therfore defined within this function
-    const long DSP = SOMATA_DOWNSAMPLE_RATE;
+    const long DSP = somata_downsample_rate;
 
     // get the block size and padded block size for the somata data sets
     long somata_block_size[3] = {
@@ -577,17 +583,9 @@ static void CollectSurfaceVoxels(void)
                     n_surface_voxels ++;
                 }
 
-                bool border_voxel = false;
-                for (long border_dir = 0; border_dir < NTHINNING_DIRECTIONS; ++border_dir) {
-                    if (border_voxels[border_dir][current_label].find(index) != border_voxels[border_dir][current_label].end()) {
-                        border_voxel = true;
-                    }
-                }
-
-                // note this location as surface, if not on a block surface
-                if (!border_voxel) {
-                    widths[index] = 0;
-                }
+                // any of these voxels can have width zero since we already verify that
+                // the non-label neighbor is not outside the standard volume size
+                widths[index] = 0;
 
                 break;
             }
@@ -957,6 +955,7 @@ void CppTopologicalThinning(const char *lookup_table_directory,
     const char *synapse_directory,
     long *segmentation,
     long *somata,
+    long input_somata_downsample_rate,
     float input_resolution[3],
     long input_volume_size[3],
     long input_block_size[3],
@@ -970,6 +969,7 @@ void CppTopologicalThinning(const char *lookup_table_directory,
         padded_block_size[iv] = block_size[iv] + 2;
         padded_volume_size[iv] = volume_size[iv] + 2;
     }
+    somata_downsample_rate = input_somata_downsample_rate;
 
     // overwrite all global variables from previous calls to this file
     labels_in_block = std::unordered_set<long>();
@@ -986,7 +986,8 @@ void CppTopologicalThinning(const char *lookup_table_directory,
 
     // create the mappings for somata and for segmentations
     // somata should go first so to not add points from the soma to the segmentation
-    PopulateSomata(somata);
+    // only populate the somata if a somata path exists
+    if (somata_downsample_rate) PopulateSomata(somata);
     PopulateSegments(segmentation);
 
     // read in the synapses and the anchor points

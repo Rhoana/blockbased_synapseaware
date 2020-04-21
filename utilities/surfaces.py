@@ -114,8 +114,7 @@ def CombineSurfaceVoxels(data):
     total_time = time.time()
 
     # create new directory for the surfaces
-    tmp_directory = data.TempDirectory()
-    surface_directory = '{}/surfaces'.format(tmp_directory)
+    surface_directory = data.SurfacesDirectory()
     if not os.path.exists(surface_directory):
         os.makedirs(surface_directory, exist_ok=True)
 
@@ -148,9 +147,11 @@ def CombineSurfaceVoxels(data):
 
 
 
-def CollectSurfacesSequentially(prefix):
+def CollectSurfacesSequentially(meta_filename):
     # read in the data for this block
-    data = ReadMetaData(prefix)
+    data = ReadMetaData(meta_filename)
+
+    assert (not data.SurfacesDirectory() == None)
 
     # compute the first step to save the walls of each file
     for iz in range(data.StartZ(), data.EndZ()):

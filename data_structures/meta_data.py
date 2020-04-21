@@ -13,7 +13,9 @@ from blockbased_synapseaware.utilities.constants import *
 
 
 class MetaData:
-    def __init__(self, meta_filepath):
+
+    def __init__(self, meta_filename):
+        self.meta_filename = meta_filename
         # create default variable values
         self.raw_segmentation_path = None
         self.tmp_directory = None
@@ -30,12 +32,18 @@ class MetaData:
         self.hole_filling_output_directory = None
         self.synapse_path = None
         self.somata_path = None
+        self.surfaces_path = None
         # place to save the generated skeletons
         self.skeleton_output_directory = None
+        self.figures_directory = None
+        self.figure_description = None
+        self.evaluation_directory = None
         self.resolution = None
+        self.somata_downsample_rate = 0
 
         # open the meta file and read in requisite information
-        with open(meta_filepath, 'r') as fd:
+
+        with open(meta_filename, 'r') as fd:
             lines = [line for line in fd.readlines() if line.strip()]
 
             # meta files have pairs of lines with comments and values
@@ -53,13 +61,13 @@ class MetaData:
                     self.synapse_path = value
                 elif comment == '# path to somata':
                     self.somata_path = value
+                elif comment == '# path to surfaces':
+                    self.surfaces_path = value
 
                 ##########################
                 ### DATA SPECIFICATION ###
                 ##########################
 
-                elif comment == '# max label':
-                    self.max_label = int(value)
                 elif comment == '# block size (x, y, z)':
                     block_sizes = value.split('x')
                     # use order 2, 1, 0 to convert from xyz to zyx
@@ -82,6 +90,10 @@ class MetaData:
                     resolutions = value.split('x')
                     # use order 2, 1, 0 to convert from xyz to zyx
                     self.resolution = (float(resolutions[2]), float(resolutions[1]), float(resolutions[0]))
+                elif comment == '# max label':
+                    self.max_label = int(value)
+                elif comment == '# somata downsample rate':
+                    self.somata_downsample_rate = int(value)
 
                 ##########################
                 ### OUTPUT DIRECTORIES ###
@@ -94,6 +106,12 @@ class MetaData:
 
                 elif comment == '# skeleton output directory':
                     self.skeleton_output_directory = value
+                elif comment == '# evaluation directory':
+                    self.evaluation_directory = value
+                elif comment == '# figures directory':
+                    self.figures_directory = value
+                elif comment == '# figure title description':
+                    self.figure_description = value
                 else:
                     sys.stderr.write('Unrecognized meta file attribute: {}\n'.format(comment))
                     exit(-1)
@@ -106,6 +124,16 @@ class MetaData:
         assert (not self.volume_sizes == None)
         assert (not self.synapse_path == None)
         assert (not self.resolution == None)
+
+        # if a somata path is provided, downsample rate must be specified
+        if not self.somata_path == None:
+            assert (self.somata_downsample_rate)
+        if self.somata_downsample_rate:
+            assert (not self.somata_path == None)
+
+        # if there will be figures, make sure there is a description
+        if not self.figures_directory == None:
+            assert (not self.figure_description == None)
 
         # create the tmp directory if it does not exist
         if not os.path.exists(self.tmp_directory):
@@ -247,6 +275,11 @@ class MetaData:
 
 
 
+    def SurfacesDirectory(self):
+        return self.surfaces_path
+
+
+
     def HoleFillingOutputDirectory(self):
         return self.hole_filling_output_directory
 
@@ -254,6 +287,21 @@ class MetaData:
 
     def SkeletonOutputDirectory(self):
         return self.skeleton_output_directory
+
+
+
+    def FiguresDirectory(self):
+        return self.figures_directory
+
+
+
+    def FigureTitleDescription(self):
+        return self.figure_description
+
+
+
+    def EvaluationDirectory(self):
+        return self.evaluation_directory
 
 
 
@@ -285,6 +333,11 @@ class MetaData:
 
 
 
+    def SomataDownsampleRate(self):
+        return self.somata_downsample_rate
+
+
+
     def LocalIndicesToGlobalIndex(self, iz, iy, ix, block_index):
         # get the coordinates in global space
         global_iz = iz + block_index[OR_Z] * self.block_sizes[OR_Z]
@@ -309,6 +362,12 @@ class MetaData:
         ix = iv % self.block_sizes[OR_X]
 
         return (iz, iy, ix)
+
+
+
+    def GlobalIndicesToIndex(self, iz, iy, ix):
+        # return an index from the indices
+        return iz * self.volume_sizes[OR_Y] * self.volume_sizes[OR_X] + iy * self.volume_sizes[OR_X] + ix
 
 
 
