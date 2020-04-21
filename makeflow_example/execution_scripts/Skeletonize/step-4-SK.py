@@ -23,7 +23,7 @@ for iz in range(data.StartZ(), data.EndZ()):
         for ix in range(data.StartX(), data.EndX()):
 
             # check that beforehand step has executed successfully
-            CheckSuccessFile("SK", 3, iz, iy, ix)
+            CheckSuccessFile(data.BlockSize(), "SK", 3, iz, iy, ix)
 
 # users must provide an output directory
 assert (not data.SkeletonOutputDirectory() == None)
@@ -32,4 +32,4 @@ os.makedirs(data.SkeletonOutputDirectory(), exist_ok=True)
 RefineSkeleton(data,label)
 
 # Create and Write Success File
-WriteSuccessFile_SK_4("SK", 4, label)
+WriteSuccessFile_SK_4(data.BlockSize(), "SK", 4, label)

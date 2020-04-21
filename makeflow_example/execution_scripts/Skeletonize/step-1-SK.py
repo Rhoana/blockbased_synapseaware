@@ -15,7 +15,7 @@ meta_fp,iz,iy,ix = ReadArguments(sys.argv)
 data = ReadMetaData(meta_fp)
 
 # check that beforehand step has executed successfully
-CheckSuccessFile("HF", 4, iz, iy, ix)
+CheckSuccessFile(data.BlockSize(), "HF", 4, iz, iy, ix)
 
 # users must provide an output directory
 assert (not data.SkeletonOutputDirectory() == None)
@@ -24,4 +24,4 @@ os.makedirs(data.SkeletonOutputDirectory(), exist_ok=True)
 SaveAnchorWalls(data, iz, iy, ix)
 
 # Create and Write Success File
-WriteSuccessFile("SK", 1, iz, iy, ix)
+WriteSuccessFile(data.BlockSize(), "SK", 1, iz, iy, ix)
