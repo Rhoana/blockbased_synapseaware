@@ -17,7 +17,7 @@ def MapSynapsesAndSurfaces(input_meta_filename, output_meta_filename):
 
     # create the output synapse directory if it does not exist
     if not os.path.exists(output_synapse_directory):
-        os.makedirs(output_synapse_directory, exist_ok = True)
+        os.makedirs(output_synapse_directory, exist_ok=True)
 
     # read in all of the input syanpses
     input_synapses = {}
@@ -84,7 +84,7 @@ def MapSynapsesAndSurfaces(input_meta_filename, output_meta_filename):
 
     # create the output synapse directory if it does not exist
     if not os.path.exists(output_surfaces_directory):
-        os.makedirs(output_surfaces_directory, exist_ok = True)
+        os.makedirs(output_surfaces_directory, exist_ok=True)
 
     # iterate over all labels
     for label in range(1, input_data.NLabels()):
