@@ -13,6 +13,9 @@ meta_fp,iz,iy,ix = ReadArguments(sys.argv)
 # read in the data for this block
 data = ReadMetaData(meta_fp)
 
+# Redirect stdout and stderr
+RedirectOutStreams(data.BlockSize(), "HF", 4, iz, iy, ix)
+
 # check that beforehand step has executed successfully
 CheckSuccessFile(data.BlockSize(), "HF", 3, "all", "all", "all")
 

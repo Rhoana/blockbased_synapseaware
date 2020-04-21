@@ -8,9 +8,11 @@
         "Y_MAX"         : @$Y_MAX$@,
         "X_MAX"         : @$X_MAX$@,
         "ID_MAX"        : @$ID_MAX$@,
-        "META_FP"       : @$META_FP$@,
-        "OUTPUT_DIR"    : @$OUTPUT_DIR$@,
-        "MF_DIR"        : @$MF_DIR$@,
+
+        "META_FP"       : "@$META_FP$@",
+        "OUTPUT_DIR"    : "@$OUTPUT_DIR$@",
+        "MF_DIR"        : "@$MF_DIR$@",
+
         "RAM_HF_S1_S4"  : @$RAM_HF_S1_S4$@,
         "RAM_HF_S2"     : @$RAM_HF_S2$@,
         "RAM_HF_S3"     : @$RAM_HF_S3$@,
@@ -51,30 +53,14 @@
     },
 
     "categories" : {
-        "HF_S1_S4"   : {
-                            "resources" : { "cores" : 1, "memory" : RAM_HF_S1_S4}
-        },
-        "HF_S2     : {
-                            "resources" : { "cores" : 1, "memory" : RAM_HF_S2}
-        },
-        "HF_S3"     : {
-                            "resources" : { "cores" : 1, "memory" : RAM_HF_S3}
-        },
-        "SK_S1_S2"     : {
-                            "resources" : { "cores" : 1, "memory" : RAM_SK_S1_S2}
-        },
-        "SK_S3"        : {
-                            "resources" : { "cores" : 1, "memory" : RAM_SK_S4}
-        },
-        "SK_S4"        : {
-                            "resources" : { "cores" : 1, "memory" : RAM_SK_S4}
-        },
-        "SF_S1"        : {
-                            "resources" : { "cores" : 1, "memory" : RAM_SF_S1}
-        },
-        "SF_S2"        : {
-                            "resources" : { "cores" : 1, "memory" : RAM_SF_S2}
-        }
+        "HF_S1_S4"      : {"resources" : { "cores" : 1, "memory" : RAM_HF_S1_S4}},
+        "HF_S2"          : {"resources" : { "cores" : 1, "memory" : RAM_HF_S2}},
+        "HF_S3"         : {"resources" : { "cores" : 1, "memory" : RAM_HF_S3}},
+        "SK_S1_S2"      : {"resources" : { "cores" : 1, "memory" : RAM_SK_S1_S2}},
+        "SK_S3"         : {"resources" : { "cores" : 1, "memory" : RAM_SK_S4}},
+        "SK_S4"         : {"resources" : { "cores" : 1, "memory" : RAM_SK_S4}},
+        "SF_S1"         : {"resources" : { "cores" : 1, "memory" : RAM_SF_S1}},
+        "SF_S2"         : {"resources" : { "cores" : 1, "memory" : RAM_SF_S2}}
     },
 
     "rules" : [

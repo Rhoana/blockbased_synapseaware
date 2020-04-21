@@ -15,6 +15,9 @@ else:
 # read in the data for this block
 data = ReadMetaData(meta_fp)
 
+# Redirect stdout and stderr
+RedirectOutStreams(data.BlockSize(), "SF", 2, iz, iy, ix)
+
 # compute the first step to fill holes in each block
 CombineSurfaceVoxels(data)
 

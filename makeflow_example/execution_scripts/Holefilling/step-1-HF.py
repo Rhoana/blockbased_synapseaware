@@ -13,6 +13,9 @@ meta_fp,iz,iy,ix = ReadArguments(sys.argv)
 # read in the data for this block
 data = ReadMetaData(meta_fp)
 
+# Redirect stdout and stderr
+RedirectOutStreams(data.BlockSize(), "HF", 1, iz, iy, ix)
+
 # users must provide an output directory
 assert (not data.HoleFillingOutputDirectory() == None)
 os.makedirs(data.HoleFillingOutputDirectory(), exist_ok=True)

@@ -1,0 +1,23 @@
+#!/bin/bash
+#SBATCH -p @$CLUSTER_PARTITION$@                                                  # use the COX partition
+#SBATCH -n 1                                                                    # Number of cores
+#SBATCH -N 1                                                                    # Ensure that all cores are on one matching
+#SBATCH --mem=10000                                                             # CPU memory in MBs
+#SBATCH -t 0-24:00                                                              # time in dd-hh:mm to run the code for
+#SBATCH --mail-type=ALL                                                         # send all email types (start, end, error, etc.)
+#SBATCH --mail-user=tfranzmeyer@g.harvard.edu                                   # email address to send to
+#SBATCH -o @$WORKING_DIR$@/pipeline_batch.out                                   # where to write the log files
+#SBATCH -e @$WORKING_DIR$@/pipeline_batch.err                                   # where to write the error files
+#SBATCH -J @$JOB_NAME$@                                                         # jobname given to job
+
+module load Anaconda3/5.0.1-fasrc02
+
+source activate fillholes
+
+export PYTHONPATH="/n/pfister_lab2/Lab/tfranzmeyer/exp_code/"
+
+cd @$TEMP_DIR$@
+
+stdbuf -oL -eL makeflow -T slurm -B "-p @$CLUSTER_PARTITION$@ -t @$JOB_TIME$@" --max-local=1 --max-remote=@$MAX_REMOTE$@ --retry-count=1 --jx ../pipeline.jx
+
+echo "DONE"

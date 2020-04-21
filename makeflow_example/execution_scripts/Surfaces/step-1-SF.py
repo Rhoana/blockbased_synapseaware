@@ -13,6 +13,9 @@ meta_fp,iz,iy,ix = ReadArguments(sys.argv)
 # read in the data for this block
 data = ReadMetaData(meta_fp)
 
+# Redirect stdout and stderr
+RedirectOutStreams(data.BlockSize(), "SF", 1, iz, iy, ix)
+
 for label in range(data.NLabels()):
             # check that beforehand step has executed successfully
             CheckSuccessFile_SK_4("SF", 3, label)

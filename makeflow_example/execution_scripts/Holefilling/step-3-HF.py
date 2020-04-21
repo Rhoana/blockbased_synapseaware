@@ -18,6 +18,9 @@ else:
 # read in the data for this block
 data = ReadMetaData(meta_fp)
 
+# Redirect stdout and stderr
+RedirectOutStreams(data.BlockSize(), "HF", 3, iz, iy, ix)
+
 # check that beforehand step has executed successfully
 for iz in range(data.StartZ(), data.EndZ()):
     for iy in range(data.StartY(), data.EndY()):

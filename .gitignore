@@ -22,7 +22,7 @@ TODO
 # slurm tracking files
 makeflow_example/slurm*
 makeflow_example/pipeline.jx.makeflowlog
-
+makeflow_example/working_directories/*
 #omit the makeflow working directory
 makeflow_example/working_dir_*/temp_files/*
 makeflow_example/working_dir_*/slurm*
