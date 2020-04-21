@@ -1,10 +1,31 @@
-# Byte-compiled / optimized / DLL files
+#Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
 # C extensions
 *.so
+
+# Ignore local TODO file
+TODO
+
+# Ignore .dot and .png output files
+*.dot
+*.png
+
+# Ignore Mac files
+*.DS_Store
+
+# exclude makeflow logfile
+*.makeflowlog
+
+# slurm tracking files
+makeflow_example/slurm*
+makeflow_example/pipeline.jx.makeflowlog
+
+#omit the makeflow working directory
+makeflow_example/working_dir_*/temp_files/*
+makeflow_example/working_dir_*/slurm*
 
 # Distribution / packaging
 .Python

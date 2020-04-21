@@ -1,3 +1,4 @@
+
 import os
 import time
 
@@ -19,17 +20,10 @@ from blockbased_synapseaware.utilities.constants import *
 
 
 def ComputeConnected6Components(seg, background_start_label):
-    # run connected components with 6 connectivity
-    components = connected_components(seg, connectivity=6)
+    # run connected components with 6 connectivity and according background_start_label
+    components = connected_components(seg, start_label=background_start_label, connectivity=6)
 
-    # how many negative components are there
-    n_background_components = -1 * np.min(components)
-
-    # update the background_start_labels to be universally unique
-    if background_start_label != -1:
-        components[components < 0] = components[components < 0] + background_start_label
-
-    return components, n_background_components
+    return components
 
 
 
@@ -247,6 +241,7 @@ def PruneNeighborLabelSet(neighbor_label_set, holes, non_holes):
 
 
 def FindPerBlockConnectedComponents(data, iz, iy, ix):
+
     # start timing statistics
     total_time = time.time()
 
@@ -258,7 +253,7 @@ def FindPerBlockConnectedComponents(data, iz, iy, ix):
     block_index = data.IndexFromIndices(iz, iy, ix)
 
     # get the index for the background volumes
-    background_start_label = -1 * block_index * block_volume
+    background_start_label = -1 - (block_index * block_volume)
 
     # read in this volume
     read_time = time.time()
@@ -289,7 +284,8 @@ def FindPerBlockConnectedComponents(data, iz, iy, ix):
 
     # call connected components algorithm for this block
     components_time = time.time()
-    components, n_background_components = ComputeConnected6Components(seg, background_start_label)
+
+    components = ComputeConnected6Components(seg, background_start_label)
 
     # delete original segmentation
     del seg

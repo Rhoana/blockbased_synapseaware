@@ -13,6 +13,7 @@ from blockbased_synapseaware.utilities.constants import *
 
 
 class MetaData:
+
     def __init__(self, meta_filename):
         self.meta_filename = meta_filename
         # create default variable values
@@ -41,6 +42,7 @@ class MetaData:
         self.somata_downsample_rate = 0
 
         # open the meta file and read in requisite information
+
         with open(meta_filename, 'r') as fd:
             lines = [line for line in fd.readlines() if line.strip()]
 
