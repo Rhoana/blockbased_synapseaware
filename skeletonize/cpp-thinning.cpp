@@ -584,7 +584,7 @@ static void CollectSurfaceVoxels(void)
                 }
 
                 // any of these voxels can have width zero since we already verify that
-                // the non-label neighbor is not outside the standard volume size 
+                // the non-label neighbor is not outside the standard volume size
                 widths[index] = 0;
 
                 break;
