@@ -34,6 +34,21 @@ def replaceStrings(filename_in, filename_out, replacements):
     fin.write(data)
     fin.close()
 
+def copyParamFile(working_dir):
+
+    filename_in = mf_param.makeflow_directory+"makeflow_parameters.py"
+    filename_out = working_dir+"mf_parameters_used.txt"
+
+    # read in file
+    fin = open(filename_in, "r")
+    data = fin.read()
+    fin.close()
+
+    # write file
+    fin = open(filename_out, "w")
+    fin.write(data)
+    fin.close()
+
 def writePipelineFile(working_dir, data, meta_fp):
 
     ## read in pipeline template, replace parameters and write to working directory
@@ -106,3 +121,6 @@ if __name__ == "__main__":
     # write pipeline and batch deploy file
     writePipelineFile(working_dir, data, meta_fp)
     writeBatchFile(working_dir, data)
+
+    # copy makeflow parameters file into working directory
+    copyParamFile(working_dir)
