@@ -13,6 +13,6 @@ RAM_SK_S4     = 6000
 RAM_ST_S1     = 6000
 RAM_ST_S2     = 6000
 
-cluster_partition = "holyseasgpu"
+cluster_partition = "test"
 job_time = "0-00:59"
-max_remote = 15
+max_remote = 5
