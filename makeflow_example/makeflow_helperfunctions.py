@@ -23,6 +23,14 @@ def RedirectOutStreams(blocksize, stage, step, iz, iy, ix):
     sys.stdout = open(stdout_fp, 'w+')
     sys.stderr = open(stderr_fp, 'w+')
 
+# redirect output streams for skeletonize step 4
+def RedirectOutStreams_SK_4(blocksize, stage, step, label):
+    stdout_fp = stdout_folder + "{:04d}x{:04d}x{:04d}/mf-{}-S{}-out-label{}.out".format(blocksize[OR_X],blocksize[OR_Y],blocksize[OR_Z],stage,step,label)
+    stderr_fp = stderr_folder + "{:04d}x{:04d}x{:04d}/mf-{}-S{}-out-label{}.err".format(blocksize[OR_X],blocksize[OR_Y],blocksize[OR_Z],stage,step,label)
+
+    sys.stdout = open(stdout_fp, 'w+')
+    sys.stderr = open(stderr_fp, 'w+')
+
 # fucntion that takes in parameters of a specific computation step and writes success key to file
 # (cannot be used for skeletonize step 4)
 def WriteSuccessFile(blocksize, stage, step, iz, iy, ix):
@@ -35,7 +43,7 @@ def WriteSuccessFile(blocksize, stage, step, iz, iy, ix):
 # Write success file for skeletonize step 4
 def WriteSuccessFile_SK_4(blocksize, stage, step, label):
 
-    filepath = checkfile_folder + "{:04d}x{:04d}x{:04d}/mf--S{}-out-label{}.txt".format(blocksize[OR_X],blocksize[OR_Y],blocksize[OR_Z],stage,step,label)
+    filepath = checkfile_folder + "{:04d}x{:04d}x{:04d}/mf-{}-S{}-out-label{}.txt".format(blocksize[OR_X],blocksize[OR_Y],blocksize[OR_Z],stage,step,label)
     g = open(filepath, "w+")
     g.write("DONE.")
     g.close

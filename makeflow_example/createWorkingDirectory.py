@@ -24,8 +24,8 @@ replacements_pipeline = [    ("RAM_HF_S1_S4"  ,mf_param.RAM_HF_S1_S4),
                     ("RAM_SK_S1_S2"  ,mf_param.RAM_SK_S1_S2),
                     ("RAM_SK_S3"     ,mf_param.RAM_SK_S3),
                     ("RAM_SK_S4"     ,mf_param.RAM_SK_S4),
-                    ("RAM_SF_S1"     ,mf_param.RAM_SF_S1),
-                    ("RAM_SF_S2"     ,mf_param.RAM_SF_S2),
+                    ("RAM_ST_S1"     ,mf_param.RAM_ST_S1),
+                    ("RAM_ST_S2"     ,mf_param.RAM_ST_S2),
 
                     ("Z_START"       ,data.StartZ()),
                     ("Y_START"       ,data.StartY()),
@@ -46,8 +46,10 @@ replacements_pipeline = [    ("RAM_HF_S1_S4"  ,mf_param.RAM_HF_S1_S4),
 working_dir             = mf_param.makeflow_directory+"/working_directories/working_dir_{:04d}x{:04d}x{:04d}/".format(blocksize[OR_X],blocksize[OR_Y],blocksize[OR_Z])
 temp_file_dir           = working_dir+"temp_files/"
 
-os.mkdir(working_dir)
-os.mkdir(temp_file_dir)
+if not os.path.exists(working_dir):
+    os.mkdir(working_dir)
+if not os.path.exists(temp_file_dir):
+    os.mkdir(temp_file_dir)
 
 ## read in pipeline template, replace parameters and write to working directory
 pipeline_template_fp    = mf_param.makeflow_directory+"pipeline_template.jx"

@@ -5,7 +5,9 @@ from blockbased_synapseaware.utilities.constants import *
 from blockbased_synapseaware.utilities.dataIO import ReadMetaData
 from blockbased_synapseaware.makeflow_example.makeflow_helperfunctions import *
 
-from blockbased_synapseaware.utilities.surfaces import CombineSurfaceVoxels
+from blockbased_synapseaware.evaluate.statistics import CombineStatistics
+
+CombineStatistics
 
 if len(sys.argv)!=2:
     raise ValueError(" Scripts needs exactley 1 input arguments (Prefix) ")
@@ -16,10 +18,16 @@ else:
 data = ReadMetaData(meta_fp)
 
 # Redirect stdout and stderr
-RedirectOutStreams(data.BlockSize(), "SF", 2, iz, iy, ix)
+RedirectOutStreams(data.BlockSize(), "ST", 2, "all", "all", "all")
+
+# check that beforehand step has executed successfully
+for iz in range(data.StartZ(), data.EndZ()):
+    for iy in range(data.StartY(), data.EndY()):
+        for ix in range(data.StartX(), data.EndX()):
+            CheckSuccessFile(data.BlockSize(), "ST", 1, iz, iy, ix)
 
 # compute the first step to fill holes in each block
-CombineSurfaceVoxels(data)
+CombineStatistics(data)
 
 # Create and Write Success File
-WriteSuccessFile("SF", 2, "all", "all", "all")
+WriteSuccessFile(data.BlockSize(), "ST", 2, "all", "all", "all")

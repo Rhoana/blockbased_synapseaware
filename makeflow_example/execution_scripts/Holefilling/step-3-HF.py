@@ -19,7 +19,7 @@ else:
 data = ReadMetaData(meta_fp)
 
 # Redirect stdout and stderr
-RedirectOutStreams(data.BlockSize(), "HF", 3, iz, iy, ix)
+RedirectOutStreams(data.BlockSize(), "HF", 3, "all", "all", "all")
 
 # check that beforehand step has executed successfully
 for iz in range(data.StartZ(), data.EndZ()):

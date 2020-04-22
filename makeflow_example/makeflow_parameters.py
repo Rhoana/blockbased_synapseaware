@@ -10,8 +10,8 @@ RAM_HF_S3     = 6000
 RAM_SK_S1_S2  = 6000
 RAM_SK_S3     = 6000
 RAM_SK_S4     = 6000
-RAM_SF_S1     = 6000
-RAM_SF_S2     = 6000
+RAM_ST_S1     = 6000
+RAM_ST_S2     = 6000
 
 cluster_partition = "holyseasgpu"
 job_time = "0-00:59"

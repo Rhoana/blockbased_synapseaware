@@ -6,8 +6,8 @@
 #SBATCH -t 0-24:00                                                              # time in dd-hh:mm to run the code for
 #SBATCH --mail-type=ALL                                                         # send all email types (start, end, error, etc.)
 #SBATCH --mail-user=tfranzmeyer@g.harvard.edu                                   # email address to send to
-#SBATCH -o @$WORKING_DIR$@/pipeline_batch.out                                   # where to write the log files
-#SBATCH -e @$WORKING_DIR$@/pipeline_batch.err                                   # where to write the error files
+#SBATCH -o @$WORKING_DIR$@/batch_pipeline.out                                   # where to write the log files
+#SBATCH -e @$WORKING_DIR$@/batch_pipeline.err                                   # where to write the error files
 #SBATCH -J @$JOB_NAME$@                                                         # jobname given to job
 
 module load Anaconda3/5.0.1-fasrc02

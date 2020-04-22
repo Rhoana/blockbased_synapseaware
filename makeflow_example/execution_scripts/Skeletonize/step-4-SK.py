@@ -19,7 +19,7 @@ else:
 data = ReadMetaData(meta_fp)
 
 # Redirect stdout and stderr
-RedirectOutStreams(data.BlockSize(), "SK", 4, iz, iy, ix)
+RedirectOutStreams_SK_4(data.BlockSize(), "SK", 4, label)
 
 for iz in range(data.StartZ(), data.EndZ()):
     for iy in range(data.StartY(), data.EndY()):
