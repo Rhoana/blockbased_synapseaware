@@ -19,7 +19,8 @@ def ReadArguments(inp_args):
 def RedirectOutStreams(blocksize, stage, step, iz, iy, ix):
     stdout_fp = stdout_folder + "{:04d}x{:04d}x{:04d}/mf-{}-S{}-out-{}z-{}y-{}x.out".format(blocksize[OR_X],blocksize[OR_Y],blocksize[OR_Z],stage,step,iz,iy,ix)
     stderr_fp = stderr_folder + "{:04d}x{:04d}x{:04d}/mf-{}-S{}-out-{}z-{}y-{}x.err".format(blocksize[OR_X],blocksize[OR_Y],blocksize[OR_Z],stage,step,iz,iy,ix)
-
+    print("redirecting stdout to: " + stdout_fp)
+    print("redirecting stderr to: " + stderr_fp)
     sys.stdout = open(stdout_fp, 'w+')
     sys.stderr = open(stderr_fp, 'w+')
 

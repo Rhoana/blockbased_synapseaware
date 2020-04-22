@@ -57,7 +57,7 @@
         "HF_S2"          : {"resources" : { "cores" : 1, "memory" : RAM_HF_S2}},
         "HF_S3"         : {"resources" : { "cores" : 1, "memory" : RAM_HF_S3}},
         "SK_S1_S2"      : {"resources" : { "cores" : 1, "memory" : RAM_SK_S1_S2}},
-        "SK_S3"         : {"resources" : { "cores" : 1, "memory" : RAM_SK_S4}},
+        "SK_S3"         : {"resources" : { "cores" : 1, "memory" : RAM_SK_S3}},
         "SK_S4"         : {"resources" : { "cores" : 1, "memory" : RAM_SK_S4}},
         "ST_S1"         : {"resources" : { "cores" : 1, "memory" : RAM_ST_S1}},
         "ST_S2"         : {"resources" : { "cores" : 1, "memory" : RAM_ST_S2}}
