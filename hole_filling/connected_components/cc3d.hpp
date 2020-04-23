@@ -133,14 +133,18 @@ class DisjointSet_Arr {
 public:
   T *ids;
   size_t length;
+  size_t voxels;
 
   DisjointSet_Arr () {
     length = 65536;
+
     ids = new T[length]();
   }
 
-  DisjointSet_Arr (size_t len) {
-    length = len;
+  DisjointSet_Arr (size_t voxels_) {
+    //length = voxels_/1000;
+    length = 2;
+    voxels = voxels_;
     ids = new T[length]();
   }
 
@@ -164,13 +168,30 @@ public:
 
   void add(T p) {
     if (p >= length) {
-      //printf("Connected Components Error: Label %d cannot be mapped to union-find array of length %d.\n", p, length);
-      throw "maximum length exception";
+      resize(p);
     }
 
     if (ids[p] == 0) {
       ids[p] = p;
     }
+  }
+
+  void resize (T p){
+
+    size_t new_length = p * 2;
+    if (new_length>voxels) new_length = voxels;
+    T* new_ids = new T[new_length];
+
+    for (int i = 0; i++; i<length){
+      new_ids[i]=ids[i];
+    }
+
+    delte[] ids;
+    ids = new_ids;
+
+    std::out << "resized array from " << length << " to " << new_length << std::endl;
+
+    length = new_length;
   }
 
   void unify (T p, T q) {
