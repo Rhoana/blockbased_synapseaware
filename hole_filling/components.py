@@ -22,7 +22,7 @@ from blockbased_synapseaware.utilities.constants import *
 def ComputeConnected6Components(seg, background_start_label):
     # run connected components with 6 connectivity and according background_start_label
     components = connected_components(seg, start_label=background_start_label, connectivity=6)
-
+ 
     return components
 
 

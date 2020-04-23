@@ -142,8 +142,7 @@ public:
   }
 
   DisjointSet_Arr (size_t voxels_) {
-    //length = voxels_/1000;
-    length = 2;
+    length = voxels_/1000;
     voxels = voxels_;
     ids = new T[length]();
   }
@@ -179,17 +178,21 @@ public:
   void resize (T p){
 
     size_t new_length = p * 2;
-    if (new_length>voxels) new_length = voxels;
-    T* new_ids = new T[new_length];
 
-    for (int i = 0; i++; i<length){
-      new_ids[i]=ids[i];
+    std::cout << "resizing equivalences array from " << length << " to " << new_length << std::endl << std::flush;
+
+    if (new_length>=voxels) new_length = voxels;
+    T* old_ids = ids;
+    ids = new T[new_length]();
+
+
+    for (size_t i = 0; i<length; i++){
+      ids[i]=old_ids[i];
     }
 
-    delte[] ids;
-    ids = new_ids;
+    delete[] old_ids;
 
-    std::out << "resized array from " << length << " to " << new_length << std::endl;
+    std::cout << "resized array" << std::endl << std::flush;
 
     length = new_length;
   }
