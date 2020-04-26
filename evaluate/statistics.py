@@ -44,10 +44,12 @@ def CalculatePerBlockStatistics(data, iz, iy, ix):
     # calculate raw block statistics
     raw_seg = data.ReadRawSegmentationBlock(iz, iy, ix)
     raw_n_non_zero, raw_nlabels, raw_voxel_counts = BlockStatistics(raw_seg)
-
+    del raw_seg
     # calculate filled block statistics
     seg = data.ReadSegmentationBlock(iz, iy, ix)
     filled_n_non_zero, filled_nlabels, filled_voxel_counts = BlockStatistics(seg)
+    del seg
+    
     assert (filled_nlabels == raw_nlabels)
 
     nfilled_voxels = filled_n_non_zero - raw_n_non_zero
