@@ -1,8 +1,8 @@
 
 makeflow_directory  = "/n/pfister_lab2/Lab/tfranzmeyer/exp_code/blockbased_synapseaware/makeflow_example/"
-checkfile_folder    = "/n/pfister_lab2/Lab/tfranzmeyer/exp/output_files/check_files/Zebrafinch/"
-stdout_folder       = "/n/pfister_lab2/Lab/tfranzmeyer/exp/output_files/stdout_files/Zebrafinch/"
-stderr_folder       = "/n/pfister_lab2/Lab/tfranzmeyer/exp/output_files/stderr_files/Zebrafinch/"
+checkfile_folder    = "/n/pfister_lab2/Lab/tfranzmeyer/exp/output_files_kimi/check_files/Zebrafinch/"
+stdout_folder       = "/n/pfister_lab2/Lab/tfranzmeyer/exp/output_files_kimi/stdout_files/Zebrafinch/"
+stderr_folder       = "/n/pfister_lab2/Lab/tfranzmeyer/exp/output_files_kimi/stderr_files/Zebrafinch/"
 
 blockconsumption = 512*512*512*8/1000/1000
 

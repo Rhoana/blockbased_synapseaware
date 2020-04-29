@@ -1,3 +1,4 @@
+
 # LISTING 1: Producing Skeletons from a labeled image.
 import h5py
 import kimimaro
@@ -71,6 +72,7 @@ def readSkelFromFile(fname, bz, by, bx, bsize, anisotropy):
     skel_read.transform = np.array([[1,0,0,x_offset],
                                     [0,1,0,y_offset],
                                     [0,0,1,z_offset]])
+    print("transform: " + str(skel_read.transform))
 
     # print("xmin, xmax: " + str(np.min(skel_read.vertices[:,0])) + ", " + str(np.max(skel_read.vertices[:,0])))
     # print("ymin, ymax: " + str(np.min(skel_read.vertices[:,1])) + ", " + str(np.max(skel_read.vertices[:,1])))

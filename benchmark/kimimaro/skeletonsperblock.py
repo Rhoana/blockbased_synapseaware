@@ -6,11 +6,6 @@ import time
 
 import numpy as np
 
-
-
-from numba import jit, types
-from numba.typed import Dict
-
 from blockbased_synapseaware.utilities.constants import *
 
 import kimimaro
@@ -43,12 +38,21 @@ def getSkeleton(labels, anisotropy_):
     )
 
 def writeSkeletonsToFile(skeletons, output_folder, iz, iy, ix):
+
     for ID in skeletons.keys():
-        fname = output_folder + "skel_out-label{:09d}-{:04d}z-{:04d}y-{:04d}x.swc".format(ID,iz,iy,ix)
+        fname = output_folder + "/skel_out-label{:09d}-{:04d}z-{:04d}y-{:04d}x.swc".format(ID,iz,iy,ix)
+
+        # revert order from z y x to x y z
+        vertices_copy = skeletons[ID].vertices.copy()
+        skeletons[ID].vertices[:,0] = vertices_copy[:,2]
+        skeletons[ID].vertices[:,2] = vertices_copy[:,0]
+
         with open(fname, 'w') as f:
             f.write(skeletons[ID].to_swc())
 
         print("Skeleton written to " + fname + " with "+ str(len(skeletons[ID].vertices))+ " vertices")
+
+    del skeletons
 
 def ComputeSkeletonsPerBlock(data, iz, iy, ix):
 
@@ -98,7 +102,7 @@ def ComputeSkeletonsPerBlock(data, iz, iy, ix):
 
     # execute kimimaro skeletonize
     skeletonize_time = time.time()
-    skels_out = getSkeleton(labels, data.resolution())
+    skels_out = getSkeleton(seg, data.Resolution())
     skeletonize_time = time.time() - skeletonize_time
 
     # write skeletons to files

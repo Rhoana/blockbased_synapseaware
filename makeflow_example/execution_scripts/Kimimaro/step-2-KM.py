@@ -5,7 +5,7 @@ from blockbased_synapseaware.utilities.constants import *
 from blockbased_synapseaware.utilities.dataIO import ReadMetaData
 from blockbased_synapseaware.makeflow_example.makeflow_helperfunctions import *
 
-from blockbased_synapseaware.benchmark.kimimaro import ConnectSkeletons
+from blockbased_synapseaware.benchmark.kimimaro.connectskeletons import ConnectSkeletons
 
 
 # pass arguments

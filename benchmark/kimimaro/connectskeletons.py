@@ -1,10 +1,7 @@
 import os
 import time
+import numpy as np
 
-
-
-from numba import jit, types
-from numba.typed import Dict
 
 from blockbased_synapseaware.utilities.constants import *
 
@@ -20,6 +17,11 @@ def readSkelFromFile(fname, iz, iy, ix, bsize, anisotropy):
 
     skel_read = PrecomputedSkeleton.from_swc(inp_swc)
 
+    # revert order from x y z to z y x
+    vertices_copy = skel_read.vertices.copy()
+    skel_read.vertices[:,0] = vertices_copy[:,2]
+    skel_read.vertices[:,2] = vertices_copy[:,0]
+
     x_offset = ix*bsize[OR_X]*anisotropy[OR_X]
     y_offset = iy*bsize[OR_Y]*anisotropy[OR_Y]
     z_offset = iz*bsize[OR_Z]*anisotropy[OR_Z]
@@ -28,9 +30,9 @@ def readSkelFromFile(fname, iz, iy, ix, bsize, anisotropy):
                             [0,1,0,0],
                             [0,0,1,0]])
 
-    transform_[OR_Z,3] = z_offset
-    transform_[OR_Y,3] = y_offset
-    transform_[OR_X,3] = x_offset
+    transform_[0,3] = z_offset
+    transform_[1,3] = y_offset
+    transform_[2,3] = x_offset
 
     skel_read.transform = transform_
 
@@ -45,9 +47,9 @@ def readSkelFromFile(fname, iz, iy, ix, bsize, anisotropy):
 def writeFinalSkeletonToFile(skeleton, label, output_folder):
 
     # revert order from z y x to x y z
-    skeleton.vertices[:,0] = skeleton.vertices[:,OR_X]
-    skeleton.vertices[:,1] = skeleton.vertices[:,OR_Y]
-    skeleton.vertices[:,2] = skeleton.vertices[:,OR_Z]
+    vertices_copy = skeleton.vertices.copy()
+    skeleton.vertices[:,0] = vertices_copy[:,2]
+    skeleton.vertices[:,2] = vertices_copy[:,0]
 
     fname = output_folder + "skel_out-final-label{:09d}.swc".format(label)
     with open(fname, 'w') as f:
@@ -73,12 +75,16 @@ def ConnectSkeletons(data):
                     # get the location for the temporary directory
                     tmp_directory = data.TempBlockDirectory(iz, iy, ix)
 
-                    fname = tmp_directory + "skel_out-label{:09d}-{:04d}z-{:04d}y-{:04d}x.swc".format(label,bz,by,bx)
+                    fname = tmp_directory + "/skel_out-label{:09d}-{:04d}z-{:04d}y-{:04d}x.swc".format(label,iz,iy,ix)
                     if os.path.exists(fname):
                         skel_read = readSkelFromFile(fname, iz, iy, ix, data.BlockSize(), data.Resolution())
                         all_skels.insert(0, skel_read)
+                        print("Adding part from block " + str((iz,iy,ix)) + " with " + str(len(skel_read.vertices)) + " vertices")
 
         read_time = time.time() - read_time
+
+        # if label not present, skip
+        if len(all_skels)==0: continue
 
         # join skeleton components to one skeleton
         join_time = time.time()
@@ -105,7 +111,7 @@ def ConnectSkeletons(data):
         print ('Total Time: {:0.2f} seconds.'.format(total_time))
 
         # output timing statistics
-        timing_directory = '{}/skeleton-refinement'.format(data.TimingDirectory())
+        timing_directory = '{}/skeletons-combine'.format(data.TimingDirectory())
         if not os.path.exists(timing_directory):
             os.makedirs(timing_directory, exist_ok=True)
         timing_filename = '{}/{:016d}.txt'.format(timing_directory, label)
