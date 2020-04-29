@@ -463,8 +463,12 @@ def ComputeParallelStatistics(data, times):
     nzblocks, nyblocks, nxblocks = data.NBlocks()
     nblocks = nzblocks * nyblocks * nxblocks
 
+    cpus = [cpu for cpu in range(1, nblocks, nblocks // 10)]
+    if not nblocks in cpus:
+        cpus.append(nblocks)
+
     # calculate the amount of time needed with a naive heuristic (FIFO)
-    for m_cpus in range(1, nblocks + 1):
+    for m_cpus in cpus:
         print ('No. CPUs: {}'.format(m_cpus))
 
         wall_time = WallTime(data, times, m_cpus, strategy = 'FIFO')
