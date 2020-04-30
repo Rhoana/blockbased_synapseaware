@@ -44,14 +44,14 @@ def readSkelFromFile(fname, iz, iy, ix, bsize, anisotropy):
 
     return skel_read
 
-def writeFinalSkeletonToFile(skeleton, label, output_folder):
+def writeSkeletonToFile(skeleton, label, output_folder, name):
 
     # revert order from z y x to x y z
     vertices_copy = skeleton.vertices.copy()
     skeleton.vertices[:,0] = vertices_copy[:,2]
     skeleton.vertices[:,2] = vertices_copy[:,0]
 
-    fname = output_folder + "skel_out-final-label{:09d}.swc".format(label)
+    fname = output_folder + "skel_out-{}-label{:09d}.swc".format(name, label)
     with open(fname, 'w') as f:
         f.write(skeleton.to_swc())
 
@@ -88,10 +88,14 @@ def ConnectSkeletons(data):
         # if label not present, skip
         if len(all_skels)==0: continue
 
+        # output directory for final skeletons
+        out_dir = data.SkeletonOutputDirectory()
+
         # join skeleton components to one skeleton
         join_time = time.time()
         skel_joined = kimimaro.join_close_components(all_skels, radius=1500) # 1500 units threshold
         join_time = time.time() - join_time
+        writeSkeletonToFile(skel_joined, label, out_dir, "joined")
 
         # postprocess and connect skeleton parts
         postprocess_time = time.time()
@@ -103,8 +107,7 @@ def ConnectSkeletons(data):
 
         # write final skeleton to file
         write_time = time.time()
-        out_dir = data.SkeletonOutputDirectory()
-        writeFinalSkeletonToFile(skel_final, label, out_dir)
+        writeSkeletonToFile(skel_final, label, out_dir, "final")
         write_time = time.time() - write_time
 
         total_time = time.time() - total_time

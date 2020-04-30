@@ -16,7 +16,7 @@ from blockbased_synapseaware.utilities.constants import BORDER_CONTACT
 
 
 # suppress deprecation warnings (future use will require typed.Set - not implemented)
-from numba.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
+from numba.core.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
 import warnings
 
 warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
