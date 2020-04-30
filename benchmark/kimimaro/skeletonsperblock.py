@@ -7,11 +7,11 @@ import time
 import numpy as np
 
 from blockbased_synapseaware.utilities.constants import *
-
+from blockbased_synapseaware.utilities.dataIO import ReadPtsFile
 import kimimaro
 from cloudvolume import PrecomputedSkeleton
 
-def getSkeleton(labels, anisotropy_):
+def getSkeleton(labels, anisotropy_, targets_before_, targets_after_):
     return kimimaro.skeletonize(
       labels,
       teasar_params={
@@ -26,8 +26,8 @@ def getSkeleton(labels, anisotropy_):
         'max_paths': 50, # default None
       },
       # object_ids=[ ... ], # process only the specified labels
-      # extra_targets_before=[ (27,33,100), (44,45,46) ], # target points in voxels
-      # extra_targets_after=[ (27,33,100), (44,45,46) ], # target points in voxels
+      extra_targets_before=targets_before_, # target points in voxels
+      extra_targets_after=targets_after_, # target points in voxels
       dust_threshold=1000, # skip connected components with fewer than this many voxels
       anisotropy=anisotropy_, # default True
       fix_branching=True, # default True
@@ -53,6 +53,23 @@ def writeSkeletonsToFile(skeletons, output_folder, iz, iy, ix):
         print("Skeleton written to " + fname + " with "+ str(len(skeletons[ID].vertices))+ " vertices")
 
     del skeletons
+
+def ReadSynpasestoList(data, iz, iy, ix):
+
+    # read in synapses for this block
+    synapse_coordinates = []
+
+    fname_synapses = '{}/{:04d}z-{:04d}y-{:04d}x.pts'.format(data.SynapseDirectory(), iz, iy, ix)
+    _, synapse_local_indices = ReadPtsFile(data, fname_synapses)
+
+    for ID in synapse_local_indices.keys():
+        for index in synapse_local_indices[ID]:
+            synapse_coordinates.insert(0, data.LocalIndexToIndices(index))
+
+    print("inserted {} synapses".format(len(synapse_coordinates)))
+
+    return synapse_coordinates
+
 
 def ComputeSkeletonsPerBlock(data, iz, iy, ix):
 
@@ -100,9 +117,15 @@ def ComputeSkeletonsPerBlock(data, iz, iy, ix):
     if not os.path.exists(tmp_directory):
         os.makedirs(tmp_directory, exist_ok=True)
 
+    # read in this volume
+    read_time_synapses = time.time()
+    # read in synapses for respective block and save coordinates in list which can be passed to skeletonize algorithm
+    synapse_coordinates = ReadSynpasestoList(data, iz, iy, ix)
+    read_time_synapses = time.time() - read_time_synapses
+
     # execute kimimaro skeletonize
     skeletonize_time = time.time()
-    skels_out = getSkeleton(seg, data.Resolution())
+    skels_out = getSkeleton(seg, data.Resolution(), [], synapse_coordinates)
     skeletonize_time = time.time() - skeletonize_time
 
     # write skeletons to files
@@ -113,6 +136,7 @@ def ComputeSkeletonsPerBlock(data, iz, iy, ix):
     total_time = time.time() - total_time
 
     print ('Read Time: {:0.2f} seconds.'.format(read_time))
+    print ('Read Time Synapses: {:0.2f} seconds.'.format(read_time_synapses))
     print ('Skeletonize Time: {:0.2f} seconds.'.format(skeletonize_time))
     print ('Write Time: {:0.2f} seconds.'.format(write_time))
     print ('Total Time: {:0.2f} seconds.'.format(total_time))
@@ -124,6 +148,7 @@ def ComputeSkeletonsPerBlock(data, iz, iy, ix):
     timing_filename = '{}/{:04d}z-{:04d}y-{:04d}x.txt'.format(timing_directory, iz, iy, ix)
     with open(timing_filename, 'w') as fd:
         fd.write ('Read Time: {:0.2f} seconds.\n'.format(read_time))
+        fd.write ('Read Time Synapses: {:0.2f} seconds.\n'.format(read_time_synapses))
         fd.write ('Skeletonize Time: {:0.2f} seconds.\n'.format(skeletonize_time))
         fd.write ('Write Time: {:0.2f} seconds.\n'.format(write_time))
         fd.write ('Total Time: {:0.2f} seconds.\n'.format(total_time))

@@ -61,6 +61,8 @@ def ConnectSkeletons(data):
 
     for label in range(0,data.NLabels()):
 
+        print("--------------------- \n processing label {}".format(label))
+
         # start timing statistics
         total_time = time.time()
 
@@ -95,6 +97,9 @@ def ConnectSkeletons(data):
         postprocess_time = time.time()
         skel_final = kimimaro.postprocess(skel_joined, dust_threshold=1000, tick_threshold=3500)
         postprocess_time = time.time() - postprocess_time
+
+        # check if it actually contains vertices
+        if skel_final.vertices.shape[1]==0: continue
 
         # write final skeleton to file
         write_time = time.time()
