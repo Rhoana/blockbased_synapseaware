@@ -417,5 +417,16 @@ def ConductEndToEndTimingAnalysis(meta_filename):
         fd.write('Topological Thinning Time: {:0.2f} seconds\n'.format(topological_thinning_time))
         fd.write('Skeleton Refinement Time: {:0.2f} seconds\n'.format(refinement_time))
 
+        if not data.HoleFillingOutputDirectory() == None:
+            total_time = hole_filling_time + skeletonization_time
+        else:
+            total_time = skeletonization_time
+
+        print ('Total Time: {:0.2f} seconds'.format(total_time))
+
+        print ()
+
+        fd.write('Total Time: {:0.2f} seconds\n'.format(total_time))
+
     ComputeParallelStatistics(data, times)
     #ConductBlockTimingAnalysis(data, times)
