@@ -369,5 +369,53 @@ def ConductEndToEndTimingAnalysis(meta_filename):
     # close the timing file
     fd.close()
 
+    timing_filename = '{}/timing-statistics-aggregates.txt'.format(figures_directory)
+    with open(timing_filename, 'w') as fd:
+
+        print ()
+
+        if not data.HoleFillingOutputDirectory() == None:
+            components_time = sum(times['components'])
+            connect_labels_time = sum(times['connect-labels'])
+            combine_labels_time = sum(times['combine-labels'])
+            fill_holes_time = sum(times['fill-holes'])
+
+            hole_filling_time = components_time + connect_labels_time + combine_labels_time + fill_holes_time
+
+            print ('Hole Filling Time: {:0.2f} seconds'.format(hole_filling_time))
+            print ('  Components Time: {:0.2f} seconds'.format(components_time))
+            print ('  Connect Labels Time: {:0.2f} seconds'.format(connect_labels_time))
+            print ('  Combine Labels Time: {:0.2f} seconds'.format(combine_labels_time))
+            print ('  Fill Holes Time: {:0.2f} seconds'.format(fill_holes_time))
+
+            print ()
+
+            fd.write('Hole Filling Time: {:0.2f} seconds\n'.format(hole_filling_time))
+            fd.write('Components Time: {:0.2f} seconds\n'.format(components_time))
+            fd.write('Connect Labels Time: {:0.2f} seconds\n'.format(connect_labels_time))
+            fd.write('Combine Labels Time: {:0.2f} seconds\n'.format(combine_labels_time))
+            fd.write('Fill Holes Time: {:0.2f} seconds\n'.format(fill_holes_time))
+
+        save_anchor_walls_time = sum(times['save-anchor-walls'])
+        compute_anchor_points_time = sum(times['compute-anchor-points'])
+        topological_thinning_time = sum(times['topological-thinning'])
+        refinement_time = sum(times['skeleton-refinement'])
+
+        skeletonization_time = save_anchor_walls_time + compute_anchor_points_time + topological_thinning_time + refinement_time
+
+        print ('Skeletonization Time: {:0.2f} seconds'.format(skeletonization_time))
+        print ('  Save Anchor Walls Time: {:0.2f} seconds'.format(save_anchor_walls_time))
+        print ('  Compute Anchor Points Time: {:0.2f} seconds'.format(compute_anchor_points_time))
+        print ('  Topological Thinning Time: {:0.2f} seconds'.format(topological_thinning_time))
+        print ('  Skeleton Refinement Time: {:0.2f} seconds'.format(refinement_time))
+
+        print ()
+
+        fd.write('Skeletonization Time: {:0.2f} seconds\n'.format(skeletonization_time))
+        fd.write('Save Anchor Walls Time: {:0.2f} seconds\n'.format(save_anchor_walls_time))
+        fd.write('Compute Anchor Points Time: {:0.2f} seconds\n'.format(compute_anchor_points_time))
+        fd.write('Topological Thinning Time: {:0.2f} seconds\n'.format(topological_thinning_time))
+        fd.write('Skeleton Refinement Time: {:0.2f} seconds\n'.format(refinement_time))
+
     ComputeParallelStatistics(data, times)
     #ConductBlockTimingAnalysis(data, times)
