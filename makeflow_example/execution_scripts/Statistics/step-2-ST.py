@@ -7,7 +7,6 @@ from blockbased_synapseaware.makeflow_example.makeflow_helperfunctions import *
 
 from blockbased_synapseaware.evaluate.statistics import CombineStatistics
 
-CombineStatistics
 
 if len(sys.argv)!=2:
     raise ValueError(" Scripts needs exactley 1 input arguments (Prefix) ")
