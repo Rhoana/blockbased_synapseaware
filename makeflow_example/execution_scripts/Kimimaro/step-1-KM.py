@@ -14,7 +14,7 @@ meta_fp,iz,iy,ix = ReadArguments(sys.argv)
 data = ReadMetaData(meta_fp)
 
 # Redirect stdout and stderr
-# RedirectOutStreams(data.BlockSize(), "KM", 1, iz, iy, ix)
+RedirectOutStreams(data.BlockSize(), "KM", 1, iz, iy, ix)
 
 # users must provide an output directory
 assert (not data.HoleFillingOutputDirectory() == None)
