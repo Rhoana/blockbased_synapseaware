@@ -13,7 +13,7 @@ from blockbased_synapseaware.utilities.constants import *
 
 
 
-def ConvertSynapsesAndProject(meta_filename, input_synapse_directory, xyz, downsample_rate):
+def ConvertSynapsesAndProject(meta_filename, input_synapse_directory, xyz, conversion_rate):
     data = ReadMetaData(meta_filename)
 
     resolution = data.Resolution()
@@ -25,7 +25,7 @@ def ConvertSynapsesAndProject(meta_filename, input_synapse_directory, xyz, downs
     for label in range(1, data.NLabels()):
         # read the surfaces for this label
         surface_filename = '{}/{:016d}.pts'.format(data.SurfacesDirectory(), label)
-        # some surfaces (i.e., labels) will not exist in the volume 
+        # some surfaces (i.e., labels) will not exist in the volume
         if not os.path.exists(surface_filename): continue
 
         # read in the surface points, ignore the local coordinates
@@ -43,6 +43,9 @@ def ConvertSynapsesAndProject(meta_filename, input_synapse_directory, xyz, downs
         # create an empty array for the synapses
         synapses[label] = []
 
+        projected = 0
+        missed = 0
+
         # read in the original synapses
         input_synapse_filename = '{}/syn_{:04}.txt'.format(input_synapse_directory, label)
         with open(input_synapse_filename, 'r') as fd:
@@ -51,13 +54,13 @@ def ConvertSynapsesAndProject(meta_filename, input_synapse_directory, xyz, downs
                 coordinates = line.strip().split()
 
                 if xyz:
-                    ix = int(coordinates[0]) // downsample_rate[OR_X]
-                    iy = int(coordinates[1]) // downsample_rate[OR_Y]
-                    iz = int(coordinates[2]) // downsample_rate[OR_Z]
+                    ix = round(int(coordinates[0]) / conversion_rate[OR_X])
+                    iy = round(int(coordinates[1]) / conversion_rate[OR_Y])
+                    iz = round(int(coordinates[2]) / conversion_rate[OR_Z])
                 else:
-                    iz = int(coordinates[0]) // downsample_rate[OR_Z]
-                    iy = int(coordinates[1]) // downsample_rate[OR_Y]
-                    ix = int(coordinates[2]) // downsample_rate[OR_X]
+                    iz = round(int(coordinates[0]) / conversion_rate[OR_Z])
+                    iy = round(int(coordinates[1]) / conversion_rate[OR_Y])
+                    ix = round(int(coordinates[2]) / conversion_rate[OR_X])
 
                 # create a 2D vector for this point
                 vec = np.zeros((1, 3), dtype=np.int32)
@@ -74,10 +77,16 @@ def ConvertSynapsesAndProject(meta_filename, input_synapse_directory, xyz, downs
                 distance = math.sqrt(deltaz * deltaz + deltay * deltay + deltax * deltax)
 
                 # skip distances that are clearly off (over 200 nanometers)
-                max_deviation = 200
+                max_deviation = 800
                 if distance < max_deviation:
                     # add to the list of valid synapses
                     synapses[label].append(closest_point)
+                    projected += 1
+                else:
+                    missed += 1
+
+            print ('Projected: {}'.format(projected))
+            print ('Missed: {}'.format(missed))
 
     # divide all synapses into blocks
     synapses_per_block = {}
@@ -109,6 +118,9 @@ def ConvertSynapsesAndProject(meta_filename, input_synapse_directory, xyz, downs
 
     # write all of the synapse block files
     synapse_directory = data.SynapseDirectory()
+    if not os.path.exists(synapse_directory):
+        os.makedirs(synapse_directory, exist_ok=True)
+
     for iz in range(data.StartZ(), data.EndZ()):
         for iy in range(data.StartY(), data.EndY()):
             for ix in range(data.StartX(), data.EndX()):
