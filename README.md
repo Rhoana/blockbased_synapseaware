@@ -44,5 +44,5 @@ Skeletons are written to the folder which is specified under *# skeleton output 
 ## Execution
 ### Bash
 TODO
-### Parallelizatinon on SLURM cluster
+### Parallelization on SLURM cluster
 TODO
