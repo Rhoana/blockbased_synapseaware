@@ -34,7 +34,7 @@ E.g., the segmentation for the block with indices iz=5, iy=10 and ix=4 must be n
 ### Synapse Locations
 Synapse position are saved using point files. For each synapse, its 3D coordinate and its label must be known. Point files are explained in section *File Types/ Point Files*.
 The folder in which the synapse files are saved must be given under *# path to synapses* in the meta file.
-Files are named similar to segmentation files, but with a “.pts” ending. Hence, the point file for all synapses present in the block with indices iz=44, iy=3 and ix=2 must be named *‘0044z-0003y-0002x.pts’*.
+Files are named similar to segmentation files, but with a *.pts* ending. Hence, the point file for all synapses present in the block with indices iz=44, iy=3 and ix=2 must be named *‘0044z-0003y-0002x.pts’*.
 ### Somata Segmentation
 The Somata segmentation is saved very similarly to the input segmentation of neurite data. All somata voxels are labeled with their respective ID while all remaining voxels are labeled 0. The somata segmentation can be saved with a downsampled resolution, where the downsampling factor has to be given under *# somata downsample rate* in the meta file. The folder in which the somata segmentation files are saved must be specified under *# path to somata* in the meta file. The somata segmentation files are then named equivalently to the input segmentation files, as specified in *Input Files/ Neurite Segmentation". Somata detection can be skipped by omitting the sections *# somata downsample rate* and *# path to somata* in the meta file.
 ## Output Files
