@@ -29,8 +29,7 @@ The meta file must be adjusted according to the given folder structure and data 
 ### Neurite Segmentation
 The segmentation volume can be cut in multiple blocks, which allows for volumes of almost arbitrary size. Concatenating all blocks along the respective axes must yield the original volume. Each block is saved as an h5 file, using gzip compression. 
 The folder location for the raw segmentation must be given in the meta file, under *# path to raw segmentation*.
-The file for each block must be named as following:
-*‘{:04d}z-{:04d}y-{:04d}x.h5'.format(iz, iy, ix)*, where iz corresponds to the block index in z direction, iy to the block index in y direction and ix to the block index in x direction.
+   The file for each block must be named as following: *‘{:04d}z-{:04d}y-{:04d}x.h5'.format(iz, iy, ix)*, where iz corresponds to the block index in z direction, iy to the block index in y direction and ix to the block index in x direction.
 E.g., the segmentation for the block with indices iz=5, iy=10 and ix=4 must be named *‘0005z-0010y-0004x.h5’*.
 ### Synapse Locations
 Synapse position are saved using point files. For each synapse, its 3D coordinate and its label must be known. Point files are explained in section *File Types/ Point Files*.
