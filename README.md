@@ -1,5 +1,4 @@
-# block_based_synapse_aware
-Block-Based Synapse Aware Skeleton Generation
+# Block-Based Synapse Aware Skeleton Generation
 This README is under contruction. It will be completed once this work is published.
 ## Methodology Overview
 This repository provides an end-to-end pipeline for skeleton generation of neural circuits. As input, it takes segmented neural data and the locations and labels of all synapses present in the volume. The input volume can be of almost arbitrary size, as it can be saved and processed in blocks, using a MapReduce approach. Additionally, a somata (cell body) segmentation can be utilized to speed up computation and improve skeleton quality.
