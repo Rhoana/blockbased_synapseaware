@@ -27,7 +27,7 @@ All parameters needed are specified in the meta file. An example meta file is gi
 ### Meta File
 The meta file must be adjusted according to the given folder structure and data specifications. Parameters are explained in *Parameter Specification*.
 ### Neurite Segmentation
-The segmentation volume can be cut in multiple blocks, which allows for volumes for almost arbitrary size. Concatenating all blocks along the respective axes must yield the original volume. Each block is saved as an h5 file, using gzip compression. 
+The segmentation volume can be cut in multiple blocks, which allows for volumes of almost arbitrary size. Concatenating all blocks along the respective axes must yield the original volume. Each block is saved as an h5 file, using gzip compression. 
 The folder location for the raw segmentation must be given in the meta file, under *# path to raw segmentation*.
 The file for each block must be named as following:
 *‘{:04d}z-{:04d}y-{:04d}x.h5'.format(iz, iy, ix)*, where iz corresponds to the block index in z direction, iy to the block index in y direction and ix to the block index in x direction.
