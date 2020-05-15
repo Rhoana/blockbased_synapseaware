@@ -14,8 +14,8 @@ TODO
 ## File Types
 ### Point Files
 Point coordinates (x,y,z) are generally saved as linear indices. 
-All oints are saved with both their local and global linear indices. The local index gives the position in the coordinate system of the block that they belong to, while the global index gives the position in the volume coordinate system.
-The conversion functions from coordinates to indices, as well as from local to global are given in *data_structures/meta_data.py*.
+All oints are saved with both their local and global linear indices. The local index gives the position in the coordinate system of the block that the point lies in, while the global index gives the position in the volume coordinate system.
+The conversion functions from coordinates to indices, as well as from local to global are given in *data_structures/meta_data.py*.   
 Point files are saved in binary format, with a size of 8bits per entry.
 Each point file contains a header which specifies the volumesize, blocksize and number of labels saved in this point file.
 Subsequently, the label ID, followed by the global and local indices of the respective points, are written for all labels. 
