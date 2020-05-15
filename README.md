@@ -16,11 +16,11 @@ All points are saved with both their local and global linear indices. The local 
 The conversion functions from coordinates to indices, as well as from local to global are given in *data_structures/meta_data.py*.   
 Point files are saved in binary format, with a size of 8 bits per entry.
 Each point file contains a header which specifies the volumesize, blocksize and number of labels saved in this point file.
-Below, local and global indices for all points are written, topped by the accoring label ID.
-The last entry in the file is a checksum. This checksum is computed as the sum over all global and local indices written to this file, irrespective of the label ID.
+Below, local and global indices for all points are written, topped by the accoring label.
+The last entry in the file is a checksum. This checksum is computed as the sum over all global and local indices written to this file, irrespective of the label.
 An exact description of the point file structure is given in (TODO add visual).
 ### Segmentation Files
-The segmentation is generally saved as a 3D array, where each entry corresponds to a voxel, whose size is given by the data resolution, which is specified in the meta file under *# resolution in nm (x, y, z)*. Entries in this array are unsigned integers of 64 bit size. If an entry is 0, it indicates that at the respective position there is no neuron present, which is referred to as background. An entry larger than 0 indicates that the respective voxel is occupied by the corresponding ID. Logically, each voxel can only be occupied by a single neuron. Segmentation data are expected to have an axes ordering of z,y,x.
+The segmentation is generally saved as a 3D array, where each entry corresponds to a voxel, whose size is given by the data resolution, which is specified in the meta file under *# resolution in nm (x, y, z)*. Entries in this array are unsigned integers of 64 bit size. If an entry is 0, it indicates that at the respective position there is no neuron present, which is referred to as background. An entry larger than 0 indicates that the respective voxel is occupied by a neuron with the corresponding label. Logically, each voxel can only be occupied by a single neuron. Segmentation data are expected to have an axes ordering of z,y,x.
 ## Parameter Specification
 All parameters needed are specified in the meta file. An example meta file is given in (TODO add example meta file and explain all parameters needed).
 ## Input Files
