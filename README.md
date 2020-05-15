@@ -28,7 +28,7 @@ An exact description of the point file structure is given in (TODO add visual).
 ### Segmentation Files
 The segmentation is generally saved as a 3D array, where each entry corresponds to a voxel, whose size is given by the data resolution, which is specified in the meta file under *# resolution in nm (x, y, z)*. Entries in this array are unsigned integers of 64 bit size. If an entry is 0, it indicates that at the respective position there is no neuron present, which is referred to as background. An entry larger than 0 indicates that the respective voxel is occupied by the corresponding ID. Logically, each voxel can only be occupied by a single neuron. Segmentation data are expected to have an axes ordering of z,y,x.
 ## Parameter Specification
-All parameters needed are specified in the meta file. An example meta file is given in (TODO add example meta file).
+All parameters needed are specified in the meta file. An example meta file is given in (TODO add example meta file and explain all parameters needed).
 ## Input Files
 ### Meta File
 The meta file must be adjusted according to the given folder structure and data specifications. Parameters are explained in *Parameter Specification*.
