@@ -10,6 +10,7 @@ from blockbased_synapseaware.utilities.constants import *
 from blockbased_synapseaware.utilities.dataIO import ReadPtsFile
 import kimimaro
 from cloudvolume import PrecomputedSkeleton
+import blockbased_synapseaware.makeflow_example.makeflow_parameters as mf_param
 
 def getSkeleton(labels, anisotropy_, targets_before_, targets_after_):
     return kimimaro.skeletonize(
@@ -120,7 +121,10 @@ def ComputeSkeletonsPerBlock(data, iz, iy, ix):
     # read in this volume
     read_time_synapses = time.time()
     # read in synapses for respective block and save coordinates in list which can be passed to skeletonize algorithm
-    synapse_coordinates = ReadSynpasestoList(data, iz, iy, ix)
+    if mf_param.kimi_load_synapses:
+        synapse_coordinates = ReadSynpasestoList(data, iz, iy, ix)
+    else:
+        synapse_coordinates = []
     read_time_synapses = time.time() - read_time_synapses
 
     # execute kimimaro skeletonize

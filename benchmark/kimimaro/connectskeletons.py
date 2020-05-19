@@ -4,6 +4,7 @@ import numpy as np
 
 
 from blockbased_synapseaware.utilities.constants import *
+import blockbased_synapseaware.makeflow_example.makeflow_parameters as mf_param
 
 import kimimaro
 from cloudvolume import PrecomputedSkeleton
@@ -55,13 +56,11 @@ def writeSkeletonToFile(skeleton, label, output_folder, name):
     with open(fname, 'w') as f:
         f.write(skeleton.to_swc())
 
-    del skeleton
-
 def ConnectSkeletons(data):
 
     for label in range(0,data.NLabels()):
 
-        print("--------------------- \n processing label {}".format(label))
+        # print("--------------------- \n processing label {}".format(label))
 
         # start timing statistics
         total_time = time.time()
@@ -81,7 +80,7 @@ def ConnectSkeletons(data):
                     if os.path.exists(fname):
                         skel_read = readSkelFromFile(fname, iz, iy, ix, data.BlockSize(), data.Resolution())
                         all_skels.insert(0, skel_read)
-                        print("Adding part from block " + str((iz,iy,ix)) + " with " + str(len(skel_read.vertices)) + " vertices")
+                        # print("Adding part from block " + str((iz,iy,ix)) + " with " + str(len(skel_read.vertices)) + " vertices")
 
         read_time = time.time() - read_time
 
@@ -95,11 +94,11 @@ def ConnectSkeletons(data):
         join_time = time.time()
         skel_joined = kimimaro.join_close_components(all_skels, radius=1500) # 1500 units threshold
         join_time = time.time() - join_time
-        writeSkeletonToFile(skel_joined, label, out_dir, "joined")
+        # writeSkeletonToFile(skel_joined, label, out_dir, "joined")
 
         # postprocess and connect skeleton parts
         postprocess_time = time.time()
-        skel_final = kimimaro.postprocess(skel_joined, dust_threshold=1000, tick_threshold=3500)
+        skel_final = kimimaro.postprocess(skel_joined, dust_threshold=1000, tick_threshold=0)
         postprocess_time = time.time() - postprocess_time
 
         # check if it actually contains vertices
