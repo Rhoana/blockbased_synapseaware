@@ -1,6 +1,9 @@
 # Block-Based Synapse Aware Skeleton Generation
 This README is under contruction. It will be completed once this work is published.
 ## Methodology Overview
+
+![](https://github.com/Rhoana/blockbased_synapseaware/blob/master/figures/Figure1.png) **Figure 1** Left: Small example input segmentation, different colors indicating different labels. Right: Output centerlines (skeletons) for a small part of a single neuron. Neuron shown in green, centerlines in black. Synapses are indicated by the balck spheres. Black boxes show zoom ins.
+
 This repository provides an end-to-end pipeline for skeleton generation of neural circuits. As input, it takes segmented neural data and the locations and labels of all synapses present in the volume. The input volume can be of almost arbitrary size, as it can be saved and processed in blocks, using a MapReduce approach. Additionally, a somata (cell body) segmentation can be utilized to speed up computation and improve skeleton quality.
 The pipeline consists of two main stages: Holefilling and Skeletonization.
 ### Holefilling
