@@ -26,35 +26,36 @@
         ############ NO CHANGES FROM HERE ################
         ##################################################
 
-        "EX_DIR_HF"     : MF_DIR+"execution_scripts/Holefilling/",
-        "EX_DIR_SK"     : MF_DIR+"execution_scripts/Skeletonize/",
-        "EX_DIR_ST"     : MF_DIR+"execution_scripts/Statistics/",
+        "EX_DIR_HF"     : MF_DIR+"/execution_scripts/Holefilling/",
+        "EX_DIR_SK"     : MF_DIR+"/execution_scripts/Skeletonize/",
+        "EX_DIR_ST"     : MF_DIR+"/execution_scripts/Statistics/",
 
         "Z_RANGE"       : range(Z_START,Z_MAX),
         "Y_RANGE"       : range(Y_START,Y_MAX),
         "X_RANGE"       : range(X_START,X_MAX),
         "ID_RANGE"      : range(0,ID_MAX),
 
-        "cmnd_tpl_HF"   : "python "+EX_DIR_HF+"step-%d-HF.py "+META_FP+" %d %d %d",
-        "outp_tpl_HF"   : OUTPUT_DIR+"mf-HF-S%d-out-%dz-%dy-%dx.txt",
+        "cmnd_tpl_HF"   : "python "+EX_DIR_HF+"step-%d-HF.py "+META_FP+" %d %d",
+        "outp_tpl_HF"   : OUTPUT_DIR+"/mf-HF-S%d-out-%dz-%dy-%dx.txt",
         "cmnd_step_3_HF": "python "+ EX_DIR_HF +"step-3-HF.py "+META_FP,
-        "outp_step_3_HF": OUTPUT_DIR+"mf-HF-S3-out-allz-ally-allx.txt",
+        "outp_step_3_HF": OUTPUT_DIR+"/mf-HF-S3-out-allz-ally-allx.txt",
 
-        "cmnd_tpl_SK"   : "python "+EX_DIR_SK+"step-%d-SK.py "+META_FP+" %d %d %d",
-        "outp_tpl_SK"   : OUTPUT_DIR+"mf-SK-S%d-out-%dz-%dy-%dx.txt",
+        "cmnd_tpl_SK"   : "python "+EX_DIR_SK+"step-%d-SK.py "+META_FP+" %d %d",
+        "cmnd_tpl_S3_SK": "python "+EX_DIR_SK+"step-%d-SK.py "+META_FP+" %d %d %d",
+        "outp_tpl_SK"   : OUTPUT_DIR+"/mf-SK-S%d-out-%dz-%dy-%dx.txt",
         "cmnd_step_4_SK": "python "+ EX_DIR_SK +"step-4-SK.py "+META_FP+" %d",
-        "outp_step_4_SK": OUTPUT_DIR+"mf-SK-S4-out-label%d.txt",
+        "outp_step_4_SK": OUTPUT_DIR+"/mf-SK-S4-out-label%d.txt",
 
-        "cmnd_tpl_ST"   : "python "+EX_DIR_ST+"step-%d-ST.py "+META_FP+" %d %d %d",
-        "outp_tpl_ST"   : OUTPUT_DIR+"mf-ST-S%d-out-%dz-%dy-%dx.txt",
+        "cmnd_tpl_ST"   : "python "+EX_DIR_ST+"step-%d-ST.py "+META_FP+" %d %d",
+        "outp_tpl_ST"   : OUTPUT_DIR+"/mf-ST-S%d-out-%dz-%dy-%dx.txt",
         "cmnd_step_2_ST": "python "+ EX_DIR_ST +"step-2-ST.py "+META_FP,
-        "outp_step_2_ST": OUTPUT_DIR+"mf-ST-S2-out-allz-ally-allx.txt"
+        "outp_step_2_ST": OUTPUT_DIR+"/mf-ST-S2-out-allz-ally-allx.txt"
 
     },
 
     "categories" : {
         "HF_S1_S4"      : {"resources" : { "cores" : 1, "memory" : RAM_HF_S1_S4}},
-        "HF_S2"          : {"resources" : { "cores" : 1, "memory" : RAM_HF_S2}},
+        "HF_S2"         : {"resources" : { "cores" : 1, "memory" : RAM_HF_S2}},
         "HF_S3"         : {"resources" : { "cores" : 1, "memory" : RAM_HF_S3}},
         "SK_S1_S2"      : {"resources" : { "cores" : 1, "memory" : RAM_SK_S1_S2}},
         "SK_S3"         : {"resources" : { "cores" : 1, "memory" : RAM_SK_S3}},
@@ -67,20 +68,20 @@
                 ## Holefilling
                 # STEP 1
                 {
-                    "command" : format(cmnd_tpl_HF,1,IZ,IY,IX),
+                    "command" : format(cmnd_tpl_HF,1,IZ,IY),
                     "inputs"  : [],
-                    "outputs" : [format(outp_tpl_HF,1,IZ,IY,IX)],
+                    "outputs" : [format(outp_tpl_HF,1,IZ,IY,IX) for IX in X_RANGE],
                     "category": "HF_S1_S4"
-                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
+                } for IZ in Z_RANGE for IY in Y_RANGE,
 
                 # STEP 2
                 {
-                    "command" : format(cmnd_tpl_HF,2,IZ,IY,IX),
-                    "inputs"  : [format(outp_tpl_HF,1,IZ_,IY_,IX_) for IZ_ in [IZ-1,IZ,IZ+1] for IY_ in [IY-1,IY,IY+1] for IX_ in [IX-1,IX,IX+1]
-                                 if (IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX and IX_>=0 and IX_<X_MAX)],
-                    "outputs" : [format(outp_tpl_HF,2,IZ,IY,IX)],
+                    "command" : format(cmnd_tpl_HF,2,IZ,IY),
+                    "inputs"  : [format(outp_tpl_HF,1,IZ_,IY_,IX_) for IZ_ in [IZ-1,IZ,IZ+1] for IY_ in [IY-1,IY,IY+1] for IX_ in X_RANGE
+                                 if (IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX)],
+                    "outputs" : [format(outp_tpl_HF,2,IZ,IY,IX) for IX in X_RANGE],
                     "category": "HF_S2"
-                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
+                } for IZ in Z_RANGE for IY in Y_RANGE,
 
                 # STEP 3
                 {
@@ -92,33 +93,33 @@
 
                 # STEP 4
                 {
-                    "command" : format(cmnd_tpl_HF,4,IZ,IY,IX),
+                    "command" : format(cmnd_tpl_HF,4,IZ,IY),
                     "inputs"  : [outp_step_3_HF],
-                    "outputs" : [format(outp_tpl_HF,4,IZ,IY,IX)],
+                    "outputs" : [format(outp_tpl_HF,4,IZ,IY,IX) for IX in X_RANGE],
                     "category": "HF_S1_S4"
-                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
+                } for IZ in Z_RANGE for IY in Y_RANGE,
 
                 ## Thinning
                 # STEP 1
                 {
-                    "command" : format(cmnd_tpl_SK,1,IZ,IY,IX),
-                    "inputs"  : [format(outp_tpl_HF,4,IZ,IY,IX)],
-                    "outputs" : [format(outp_tpl_SK,1,IZ,IY,IX)],
+                    "command" : format(cmnd_tpl_SK,1,IZ,IY),
+                    "inputs"  : [format(outp_tpl_HF,4,IZ,IY,IX) for IX in X_RANGE],
+                    "outputs" : [format(outp_tpl_SK,1,IZ,IY,IX) for IX in X_RANGE],
                     "category": "SK_S1_S2"
-                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
+                } for IZ in Z_RANGE for IY in Y_RANGE,
 
                 # STEP 2
                 {
-                    "command" : format(cmnd_tpl_SK,2,IZ,IY,IX),
-                    "inputs"  : [format(outp_tpl_SK,1,IZ_,IY_,IX_) for IZ_ in [IZ-1,IZ,IZ+1] for IY_ in [IY-1,IY,IY+1] for IX_ in [IX-1,IX,IX+1]
-                                 if (IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX and IX_>=0 and IX_<X_MAX)],
-                    "outputs" : [format(outp_tpl_SK,2,IZ,IY,IX)],
+                    "command" : format(cmnd_tpl_SK,2,IZ,IY),
+                    "inputs"  : [format(outp_tpl_SK,1,IZ_,IY_,IX_) for IZ_ in [IZ-1,IZ,IZ+1] for IY_ in [IY-1,IY,IY+1] for IX_ in X_RANGE
+                                 if (IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX)],
+                    "outputs" : [format(outp_tpl_SK,2,IZ,IY,IX) for IX in X_RANGE],
                     "category": "SK_S1_S2"
-                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
+                } for IZ in Z_RANGE for IY in Y_RANGE,
 
                 # STEP 3
                 {
-                    "command" : format(cmnd_tpl_SK,3,IZ,IY,IX),
+                    "command" : format(cmnd_tpl_S3_SK,3,IZ,IY,IX),
                     "inputs"  : [format(outp_tpl_SK,2,IZ_,IY_,IX_) for IZ_ in [IZ-1,IZ,IZ+1] for IY_ in [IY-1,IY,IY+1] for IX_ in [IX-1,IX,IX+1]
                                  if (IZ_>=0 and IZ_<Z_MAX and IY_>=0 and IY_<Y_MAX and IX_>=0 and IX_<X_MAX)],
                     "outputs" : [format(outp_tpl_SK,3,IZ,IY,IX)],
@@ -137,11 +138,11 @@
                 ## Run statistics
                 # STEP 1
                 {
-                    "command" : format(cmnd_tpl_ST,1,IZ,IY,IX),
+                    "command" : format(cmnd_tpl_ST,1,IZ,IY),
                     "inputs"  : [format(outp_step_4_SK, ID) for ID in ID_RANGE],
-                    "outputs" : [format(outp_tpl_ST,1,IZ,IY,IX)],
+                    "outputs" : [format(outp_tpl_ST,1,IZ,IY,IX)for IX in X_RANGE],
                     "category": "ST_S1"
-                } for IZ in Z_RANGE for IY in Y_RANGE for IX in X_RANGE,
+                } for IZ in Z_RANGE for IY in Y_RANGE,
 
                 # STEP 2
                 {

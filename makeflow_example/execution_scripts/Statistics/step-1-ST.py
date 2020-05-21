@@ -8,24 +8,27 @@ from blockbased_synapseaware.makeflow_example.makeflow_helperfunctions import *
 from blockbased_synapseaware.evaluate.statistics import CalculatePerBlockStatistics
 
 # read passed arguments
-meta_fp,iz,iy,ix = ReadArguments(sys.argv)
+meta_fp,iz,iy = ReadArguments_Short(sys.argv)
 
 # read in the data for this block
 data = ReadMetaData(meta_fp)
 
-# Redirect stdout and stderr
-RedirectOutStreams(data.BlockSize(), "ST", 1, iz, iy, ix)
+# iterate over x blocks, preventing very short jobs on the cluster
+for ix in range(data.StartX(), data.EndX()):
 
-for label in range(data.NLabels()):
-        # check that beforehand step has executed successfully
-        CheckSuccessFile_SK_4(data.BlockSize(), "SK", 4, label)
+    # Redirect stdout and stderr
+    RedirectOutStreams(data, "ST", 1, iz, iy, ix)
 
-# users must provide an output directory
-assert (not data.HoleFillingOutputDirectory() == None)
-os.makedirs(data.HoleFillingOutputDirectory(), exist_ok=True)
+    for label in range(data.NLabels()):
+            # check that beforehand step has executed successfully
+            CheckSuccessFile_SK_4(data, "SK", 4, label)
 
-# compute the first step to fill holes in each block
-CalculatePerBlockStatistics(data, iz, iy, ix)
+    # users must provide an output directory
+    assert (not data.HoleFillingOutputDirectory() == None)
+    os.makedirs(data.HoleFillingOutputDirectory(), exist_ok=True)
 
-# Create and Write Success File
-WriteSuccessFile(data.BlockSize(), "ST", 1, iz, iy, ix)
+    # compute the first step to fill holes in each block
+    CalculatePerBlockStatistics(data, iz, iy, ix)
+
+    # Create and Write Success File
+    WriteSuccessFile(data, "ST", 1, iz, iy, ix)

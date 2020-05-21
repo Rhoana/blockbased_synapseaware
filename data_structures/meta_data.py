@@ -40,6 +40,11 @@ class MetaData:
         self.evaluation_directory = None
         self.resolution = None
         self.somata_downsample_rate = 0
+        # directories needed for makeflow execution
+        self.mf_code_directory = None
+        self.mf_checkfile_directory = None
+        self.mf_stdout_directory = None
+        self.mf_stderr_directory = None
 
         # open the meta file and read in requisite information
 
@@ -112,6 +117,20 @@ class MetaData:
                     self.figures_directory = value
                 elif comment == '# figure title description':
                     self.figure_description = value
+
+                ##########################
+                ### Makeflow Execution ###
+                ##########################
+
+                elif comment == '# makeflow code directory':
+                    self.mf_code_directory = value
+                elif comment == '# makeflow checkfile directory':
+                    self.mf_checkfile_directory = value
+                elif comment == '# makeflow stdout directory':
+                    self.mf_stdout_directory = value
+                elif comment == '# makeflow stderr directory':
+                    self.mf_stderr_directory = value
+
                 else:
                     sys.stderr.write('Unrecognized meta file attribute: {}\n'.format(comment))
                     exit(-1)
@@ -302,6 +321,26 @@ class MetaData:
 
     def EvaluationDirectory(self):
         return self.evaluation_directory
+
+
+
+    def MFCodeDirectory(self):
+        return self.mf_code_directory
+
+
+
+    def MFCheckfileDirectory(self):
+        return self.mf_checkfile_directory
+
+
+
+    def MFStdoutDirectory(self):
+        return self.mf_stdout_directory
+
+
+
+    def MFStderrDirectory(self):
+        return self.mf_stderr_directory
 
 
 

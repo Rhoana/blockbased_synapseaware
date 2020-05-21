@@ -15,10 +15,10 @@ meta_fp,iz,iy,ix = ReadArguments(sys.argv)
 data = ReadMetaData(meta_fp)
 
 # Redirect stdout and stderr
-RedirectOutStreams(data.BlockSize(), "SK", 3, iz, iy, ix)
+RedirectOutStreams(data, "SK", 3, iz, iy, ix)
 
 # check that beforehand step has executed successfully
-CheckSuccessFile(data.BlockSize(), "SK", 2, iz, iy, ix)
+CheckSuccessFile(data, "SK", 2, iz, iy, ix)
 
 # users must provide an output directory
 assert (not data.SkeletonOutputDirectory() == None)
@@ -27,4 +27,4 @@ os.makedirs(data.SkeletonOutputDirectory(), exist_ok=True)
 TopologicalThinning(data, iz, iy, ix)
 
 # Create and Write Success File
-WriteSuccessFile(data.BlockSize(), "SK", 3, iz, iy, ix)
+WriteSuccessFile(data, "SK", 3, iz, iy, ix)
