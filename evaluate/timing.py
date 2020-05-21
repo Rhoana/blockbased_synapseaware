@@ -313,7 +313,11 @@ def ComputeParallelStatistics(data, times):
     nzblocks, nyblocks, nxblocks = data.NBlocks()
     nblocks = nzblocks * nyblocks * nxblocks
 
-    cpus = [cpu for cpu in range(1, nblocks, nblocks // 10)]
+    # get the frequency of cpus
+    freq = nblocks // 10
+    if not freq: freq = 1
+
+    cpus = [cpu for cpu in range(1, nblocks, freq)]
     if not nblocks in cpus:
         cpus.append(nblocks)
 
