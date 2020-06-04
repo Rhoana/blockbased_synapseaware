@@ -48,45 +48,46 @@ def ConvertSynapsesAndProject(meta_filename, input_synapse_directory, xyz, conve
 
         # read in the original synapses
         input_synapse_filename = '{}/syn_{:04}.txt'.format(input_synapse_directory, label)
-        with open(input_synapse_filename, 'r') as fd:
-            for line in fd:
-                # separate the line into coordinates
-                coordinates = line.strip().split()
+        if os.path.exists(input_synapse_filename):
+            with open(input_synapse_filename, 'r') as fd:
+                for line in fd:
+                    # separate the line into coordinates
+                    coordinates = line.strip().split()
+                    print (coordinates)
+                    if xyz:
+                        ix = round(int(coordinates[0]) / conversion_rate[OR_X])
+                        iy = round(int(coordinates[1]) / conversion_rate[OR_Y])
+                        iz = round(int(coordinates[2]) / conversion_rate[OR_Z])
+                    else:
+                        iz = round(int(coordinates[0]) / conversion_rate[OR_Z])
+                        iy = round(int(coordinates[1]) / conversion_rate[OR_Y])
+                        ix = round(int(coordinates[2]) / conversion_rate[OR_X])
 
-                if xyz:
-                    ix = round(int(coordinates[0]) / conversion_rate[OR_X])
-                    iy = round(int(coordinates[1]) / conversion_rate[OR_Y])
-                    iz = round(int(coordinates[2]) / conversion_rate[OR_Z])
-                else:
-                    iz = round(int(coordinates[0]) / conversion_rate[OR_Z])
-                    iy = round(int(coordinates[1]) / conversion_rate[OR_Y])
-                    ix = round(int(coordinates[2]) / conversion_rate[OR_X])
+                    # create a 2D vector for this point
+                    vec = np.zeros((1, 3), dtype=np.int32)
+                    vec[0,:] = (iz * resolution[OR_Z], iy * resolution[OR_Y], ix * resolution[OR_X])
 
-                # create a 2D vector for this point
-                vec = np.zeros((1, 3), dtype=np.int32)
-                vec[0,:] = (iz * resolution[OR_Z], iy * resolution[OR_Y], ix * resolution[OR_X])
+                    closest_point = surface[scipy.spatial.distance.cdist(surface_point_cloud, vec).argmin()]
 
-                closest_point = surface[scipy.spatial.distance.cdist(surface_point_cloud, vec).argmin()]
+                    closest_iz, closest_iy, closest_ix = data.GlobalIndexToIndices(closest_point)
 
-                closest_iz, closest_iy, closest_ix = data.GlobalIndexToIndices(closest_point)
+                    deltaz = resolution[OR_Z] * (iz - closest_iz)
+                    deltay = resolution[OR_Y] * (iy - closest_iy)
+                    deltax = resolution[OR_X] * (ix - closest_ix)
 
-                deltaz = resolution[OR_Z] * (iz - closest_iz)
-                deltay = resolution[OR_Y] * (iy - closest_iy)
-                deltax = resolution[OR_X] * (ix - closest_ix)
+                    distance = math.sqrt(deltaz * deltaz + deltay * deltay + deltax * deltax)
 
-                distance = math.sqrt(deltaz * deltaz + deltay * deltay + deltax * deltax)
+                    # skip distances that are clearly off (over 200 nanometers)
+                    max_deviation = 800
+                    if distance < max_deviation:
+                        # add to the list of valid synapses
+                        synapses[label].append(closest_point)
+                        projected += 1
+                    else:
+                        missed += 1
 
-                # skip distances that are clearly off (over 200 nanometers)
-                max_deviation = 800
-                if distance < max_deviation:
-                    # add to the list of valid synapses
-                    synapses[label].append(closest_point)
-                    projected += 1
-                else:
-                    missed += 1
-
-            print ('Projected: {}'.format(projected))
-            print ('Missed: {}'.format(missed))
+                print ('Synapses within {} nanometers from surface: {}'.format(max_deviation, projected))
+                print ('Synapses over {} nanometers from surface: {}'.format(max_deviation, missed))
 
     # divide all synapses into blocks
     synapses_per_block = {}
