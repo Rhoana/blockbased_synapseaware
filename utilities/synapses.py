@@ -53,7 +53,7 @@ def ConvertSynapsesAndProject(meta_filename, input_synapse_directory, xyz, conve
                 for line in fd:
                     # separate the line into coordinates
                     coordinates = line.strip().split()
-                    print (coordinates)
+                    
                     if xyz:
                         ix = round(int(coordinates[0]) / conversion_rate[OR_X])
                         iy = round(int(coordinates[1]) / conversion_rate[OR_Y])
