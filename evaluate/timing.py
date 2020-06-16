@@ -7,6 +7,10 @@ import numpy as np
 
 
 
+import scipy.stats
+
+
+
 import matplotlib
 from matplotlib import pyplot as plt
 
@@ -15,7 +19,7 @@ plt.style.use('seaborn-white')
 
 
 
-from blockbased_synapseaware.utilities.dataIO import ReadMetaData, ReadPickledData
+from blockbased_synapseaware.utilities.dataIO import ReadMetaData, ReadPickledData, PickleData
 
 
 
@@ -45,7 +49,7 @@ def ConnectedComponents(data, wfd):
     adjacency_set_times = []
     background_components_associated_labels_times = []
     write_times = []
-    total_times = []
+    total_times = {}
 
     for iz in range(data.StartZ(), data.EndZ()):
         for iy in range(data.StartY(), data.EndY()):
@@ -58,7 +62,7 @@ def ConnectedComponents(data, wfd):
                     adjacency_set_times.append(ParseLine(rfd.readline()))
                     background_components_associated_labels_times.append(ParseLine(rfd.readline()))
                     write_times.append(ParseLine(rfd.readline()))
-                    total_times.append(ParseLine(rfd.readline()))
+                    total_times[(iz, iy, ix)] = ParseLine(rfd.readline())
 
     print ('Connected Components')
     wfd.write('Connected Components\n')
@@ -68,7 +72,7 @@ def ConnectedComponents(data, wfd):
     PrintStatistics('Adjacency Set Time', adjacency_set_times, wfd)
     PrintStatistics('Background Components Associated Labels Time', background_components_associated_labels_times, wfd)
     PrintStatistics('Write Time', write_times, wfd)
-    PrintStatistics('Total Time', total_times, wfd)
+    PrintStatistics('Total Time', total_times.values(), wfd)
 
     return total_times
 
@@ -79,7 +83,7 @@ def ConnectLabelsAcrossBlocks(data, wfd):
 
     adjacency_set_times = []
     write_times = []
-    total_times = []
+    total_times = {}
 
     for iz in range(data.StartZ(), data.EndZ()):
         for iy in range(data.StartY(), data.EndY()):
@@ -89,14 +93,14 @@ def ConnectLabelsAcrossBlocks(data, wfd):
                 with open(timing_filename, 'r') as rfd:
                     adjacency_set_times.append(ParseLine(rfd.readline()))
                     write_times.append(ParseLine(rfd.readline()))
-                    total_times.append(ParseLine(rfd.readline()))
+                    total_times[(iz, iy, ix)] = ParseLine(rfd.readline())
 
     print ('Connect Labels Across Blocks')
     wfd.write('Connect Labels Across Blocks\n')
 
     PrintStatistics('Adjacency Set Time', adjacency_set_times, wfd)
     PrintStatistics('Write Time', write_times, wfd)
-    PrintStatistics('Total Time', total_times, wfd)
+    PrintStatistics('Total Time', total_times.values(), wfd)
 
     return total_times
 
@@ -125,7 +129,7 @@ def CombineAssociatedLabels(data, wfd):
     wfd.write('  {:45s} {:10.2f} seconds\n'.format('Write Time', write_time))
     wfd.write('  {:45s} {:10.2f} seconds\n'.format('Total Time', total_time))
 
-    return [total_time]
+    return {'Total': total_time}
 
 
 
@@ -135,7 +139,7 @@ def FillHoles(data, wfd):
     read_times = []
     hole_fill_times = []
     write_times = []
-    total_times = []
+    total_times = {}
 
     for iz in range(data.StartZ(), data.EndZ()):
         for iy in range(data.StartY(), data.EndY()):
@@ -146,7 +150,7 @@ def FillHoles(data, wfd):
                     read_times.append(ParseLine(rfd.readline()))
                     hole_fill_times.append(ParseLine(rfd.readline()))
                     write_times.append(ParseLine(rfd.readline()))
-                    total_times.append(ParseLine(rfd.readline()))
+                    total_times[(iz, iy, ix)] = ParseLine(rfd.readline())
 
     print ('Fill Holes')
     wfd.write('Fill Holes\n')
@@ -154,7 +158,7 @@ def FillHoles(data, wfd):
     PrintStatistics('Read Time', read_times, wfd)
     PrintStatistics('Hole Fill Time', hole_fill_times, wfd)
     PrintStatistics('Write Time', write_times, wfd)
-    PrintStatistics('Total Time', total_times, wfd)
+    PrintStatistics('Total Time', total_times.values(), wfd)
 
     return total_times
 
@@ -165,7 +169,7 @@ def SaveAnchorWalls(data, wfd):
 
     read_times = []
     write_times = []
-    total_times = []
+    total_times = {}
 
     for iz in range(data.StartZ(), data.EndZ()):
         for iy in range(data.StartY(), data.EndY()):
@@ -175,14 +179,14 @@ def SaveAnchorWalls(data, wfd):
                 with open(timing_filename, 'r') as rfd:
                     read_times.append(ParseLine(rfd.readline()))
                     write_times.append(ParseLine(rfd.readline()))
-                    total_times.append(ParseLine(rfd.readline()))
+                    total_times[(iz, iy, ix)] = ParseLine(rfd.readline())
 
     print ('Save Anchor Walls')
     wfd.write('Save Anchor Walls\n')
 
     PrintStatistics('Read Time', read_times, wfd)
     PrintStatistics('Write Time', write_times, wfd)
-    PrintStatistics('Total Time', total_times, wfd)
+    PrintStatistics('Total Time', total_times.values(), wfd)
 
     return total_times
 
@@ -194,7 +198,7 @@ def ComputeAnchorPoints(data, wfd):
     z_anchor_computation_times = []
     y_anchor_computation_times = []
     x_anchor_computation_times = []
-    total_times = []
+    total_times = {}
 
     for iz in range(data.StartZ(), data.EndZ()):
         for iy in range(data.StartY(), data.EndY()):
@@ -205,7 +209,7 @@ def ComputeAnchorPoints(data, wfd):
                     z_anchor_computation_times.append(ParseLine(rfd.readline()))
                     y_anchor_computation_times.append(ParseLine(rfd.readline()))
                     x_anchor_computation_times.append(ParseLine(rfd.readline()))
-                    total_times.append(ParseLine(rfd.readline()))
+                    total_times[(iz, iy, ix)] = ParseLine(rfd.readline())
 
     print ('Compute Anchor Points')
     wfd.write('Compute Anchor Points\n')
@@ -213,7 +217,7 @@ def ComputeAnchorPoints(data, wfd):
     PrintStatistics('Z Anchor Computation Time', z_anchor_computation_times, wfd)
     PrintStatistics('Y Anchor Computation Time', y_anchor_computation_times, wfd)
     PrintStatistics('X Anchor Computation Time', x_anchor_computation_times, wfd)
-    PrintStatistics('Total Time', total_times, wfd)
+    PrintStatistics('Total Time', total_times.values(), wfd)
 
     return total_times
 
@@ -224,7 +228,7 @@ def TopologicalThinning(data, wfd):
 
     read_times = []
     thinning_times = []
-    total_times = []
+    total_times = {}
 
     for iz in range(data.StartZ(), data.EndZ()):
         for iy in range(data.StartY(), data.EndY()):
@@ -234,14 +238,14 @@ def TopologicalThinning(data, wfd):
                 with open(timing_filename, 'r') as rfd:
                     read_times.append(ParseLine(rfd.readline()))
                     thinning_times.append(ParseLine(rfd.readline()))
-                    total_times.append(ParseLine(rfd.readline()))
+                    total_times[(iz, iy, ix)] = ParseLine(rfd.readline())
 
     print ('Topological Thinning')
     wfd.write('Topological Thinning\n')
 
     PrintStatistics('Read Time', read_times, wfd)
     PrintStatistics('Thinning Time', thinning_times, wfd)
-    PrintStatistics('Total Time', total_times, wfd)
+    PrintStatistics('Total Time', total_times.values(), wfd)
 
     return total_times
 
@@ -252,7 +256,7 @@ def SkeletonRefinement(data, wfd):
 
     refinement_times = []
     updated_widths_times = []
-    total_times = []
+    total_times = {}
 
     for label in range(1, data.NLabels()):
         timing_filename = '{}/{:016d}.txt'.format(timing_directory, label)
@@ -261,14 +265,14 @@ def SkeletonRefinement(data, wfd):
         with open(timing_filename, 'r') as rfd:
             refinement_times.append(ParseLine(rfd.readline()))
             updated_widths_times.append(ParseLine(rfd.readline()))
-            total_times.append(ParseLine(rfd.readline()))
+            total_times[label] = ParseLine(rfd.readline())
 
     print ('Skeleton Refinement')
     wfd.write('Skeleton Refinement\n')
 
     PrintStatistics('Refinement Time', refinement_times, wfd)
     PrintStatistics('Update Widths Time', updated_widths_times, wfd)
-    PrintStatistics('Total Time', total_times, wfd)
+    PrintStatistics('Total Time', total_times.values(), wfd)
 
     return total_times
 
@@ -292,10 +296,10 @@ def WallTime(data, times, m_cpus, strategy = 'FIFO'):
     for task in tasks:
         # iterate over every time for this task (already in block index order)
         if strategy == 'FIFO':
-            for time in times[task]:
+            for time in times[task].values():
                 jobs.append(time)
         elif strategy == 'LPT':
-            for time in sorted(times[task], reverse=True):
+            for time in sorted(times[task].values(), reverse=True):
                 jobs.append(time)
 
     # each job is placed on the cpu with the lowest time
@@ -364,12 +368,24 @@ def ConductEndToEndTimingAnalysis(meta_filename):
         times['combine-labels'] = CombineAssociatedLabels(data, fd)
         times['fill-holes'] = FillHoles(data, fd)
 
+        # create aggregate stats 
+        times['hole-filling'] = {}
+        for key in times['components']:
+            # ignore the combine-labels time since it is a global operation
+            times['hole-filling'][key] = times['components'][key] + times['connect-labels'][key] + times['fill-holes'][key]
+        
     # skeleton generation
     times['save-anchor-walls'] = SaveAnchorWalls(data, fd)
     times['compute-anchor-points'] = ComputeAnchorPoints(data, fd)
     times['topological-thinning'] = TopologicalThinning(data, fd)
     times['skeleton-refinement'] = SkeletonRefinement(data, fd)
 
+    # create aggregate stats
+    times['skeletonization'] = {}
+    for key in times['save-anchor-walls']:
+        # ignore the skeleton refinement time since it is a global operation
+        times['skeletonization'][key] = times['save-anchor-walls'][key] + times['compute-anchor-points'][key] + times['topological-thinning'][key]
+        
     # close the timing file
     fd.close()
 
@@ -379,10 +395,10 @@ def ConductEndToEndTimingAnalysis(meta_filename):
         print ()
 
         if not data.HoleFillingOutputDirectory() == None:
-            components_time = sum(times['components'])
-            connect_labels_time = sum(times['connect-labels'])
-            combine_labels_time = sum(times['combine-labels'])
-            fill_holes_time = sum(times['fill-holes'])
+            components_time = sum(times['components'].values())
+            connect_labels_time = sum(times['connect-labels'].values())
+            combine_labels_time = sum(times['combine-labels'].values())
+            fill_holes_time = sum(times['fill-holes'].values())
 
             hole_filling_time = components_time + connect_labels_time + combine_labels_time + fill_holes_time
 
@@ -400,10 +416,10 @@ def ConductEndToEndTimingAnalysis(meta_filename):
             fd.write('Combine Labels Time: {:0.2f} seconds\n'.format(combine_labels_time))
             fd.write('Fill Holes Time: {:0.2f} seconds\n'.format(fill_holes_time))
 
-        save_anchor_walls_time = sum(times['save-anchor-walls'])
-        compute_anchor_points_time = sum(times['compute-anchor-points'])
-        topological_thinning_time = sum(times['topological-thinning'])
-        refinement_time = sum(times['skeleton-refinement'])
+        save_anchor_walls_time = sum(times['save-anchor-walls'].values())
+        compute_anchor_points_time = sum(times['compute-anchor-points'].values())
+        topological_thinning_time = sum(times['topological-thinning'].values())
+        refinement_time = sum(times['skeleton-refinement'].values())
 
         skeletonization_time = save_anchor_walls_time + compute_anchor_points_time + topological_thinning_time + refinement_time
 
@@ -431,6 +447,113 @@ def ConductEndToEndTimingAnalysis(meta_filename):
         print ()
 
         fd.write('Total Time: {:0.2f} seconds\n'.format(total_time))
-
+    
     ComputeParallelStatistics(data, times)
-    #ConductBlockTimingAnalysis(data, times)
+    
+    # open the timing filename and output per block statistics
+    timing_filename = '{}/timing-statistics-per-block.pickle'.format(figures_directory)
+    PickleData(times, timing_filename)
+
+
+
+def PlotCorrelation(x, y, labels, output_filename):
+    fig, ax = plt.subplots()
+
+    # find the correlation for these sets of points
+    slope, intercept, r_value, p_value, _ = scipy.stats.linregress(x, y)
+
+    print (slope)
+    print (intercept)
+    print (r_value)
+    print (p_value)
+    
+    # create the scatter plot
+    ax.scatter(x, y, color='#328da8')
+
+    ax.plot([0, max(x)], [intercept, slope * max(x) + intercept], color='#962020', label='y = {:0.2f} x + {:0.2f} (R = {:0.4f})'.format(slope, intercept, r_value))
+
+    ax.set_xlabel(labels['x-label'], fontsize=14)
+    ax.set_ylabel(labels['y-label'], fontsize=14)
+
+    ax.set_title(labels['title'], fontsize=18)
+
+    plt.legend()
+    
+    plt.tight_layout()
+
+    plt.savefig(output_filename)
+    
+    plt.clf()
+    
+    
+
+
+def ConductBlockTimingAnalysis(meta_filenames):
+    n_non_zero_voxels_per_block = {}
+    skeleton_times_per_block = {}
+    hole_filling_times_per_block = {}
+    
+    for meta_filename in meta_filenames:
+        print (meta_filename)
+
+        data = ReadMetaData(meta_filename)
+        
+        # read the timing file for blocks
+        figures_directory = data.FiguresDirectory()
+        timing_filename = '{}/timing-statistics-per-block.pickle'.format(figures_directory)
+
+        times = ReadPickledData(timing_filename)
+        
+        statistics_directory = '{}/statistics'.format(data.TempDirectory())
+        for iz in range(data.StartZ(), data.EndZ()):
+            for iy in range(data.StartY(), data.EndY()):
+                for ix in range(data.StartX(), data.EndX()):
+                    # read the statistics for this block
+                    statistics_filename = '{}/{:04d}z-{:04d}y-{:04d}x.pickle'.format(statistics_directory, iz, iy, ix)
+                    statistics = ReadPickledData(statistics_filename)
+
+                    # get the relevant statistics for this block
+                    n_non_zero_voxels_per_block[(meta_filename, iz, iy, ix)] = statistics['filled_n_non_zero']
+                    skeleton_times_per_block[(meta_filename, iz, iy, ix)] = times['skeletonization'][(iz, iy, ix)]
+                    hole_filling_times_per_block[(meta_filename, iz, iy, ix)] = times['hole-filling'][(iz, iy, ix)]
+                    
+    # intrinsic properties of the blocks
+    n_non_zero_voxels = []
+    n_zero_voxels = []
+    block_fill_proportion = []
+    block_empty_proportion = []
+
+    # timing properties of the blocks (seconds)
+    skeleton_times = []
+    hole_filling_times = []
+        
+    for key in n_non_zero_voxels_per_block.keys():
+        # read the meta data to get the block size
+        meta_filename = key[0]
+        data = ReadMetaData(meta_filename)
+        block_volume = data.BlockVolume()
+
+        # get the intrinsic properties in list form
+        n_non_zero_voxels.append(n_non_zero_voxels_per_block[key] / 10 ** 6)
+        n_zero_voxels.append((block_volume - n_non_zero_voxels_per_block[key]) / 10 ** 9)
+                
+        # get the timing properties in list form (seconds)
+        skeleton_times.append(skeleton_times_per_block[key])
+        hole_filling_times.append(hole_filling_times_per_block[key])
+        
+    labels = {}
+        
+    output_filename = 'figures/block-based-hole-filling-time.png'
+    labels['x-label'] = 'Billions of Background Voxels'
+    labels['y-label'] = 'CPU Time (seconds)'
+    labels['title'] = 'Hole Filling CPU Time'
+    PlotCorrelation(n_zero_voxels, hole_filling_times, labels, output_filename)
+
+    output_filename = 'figures/block-based-skeleton-time.png'
+    labels['x-label'] = 'Millions of Object Voxels'
+    labels['y-label'] = 'CPU Time (seconds)'
+    labels['title'] = 'Skeletonization CPU Time'
+    PlotCorrelation(n_non_zero_voxels, skeleton_times, labels, output_filename)
+
+
+    
