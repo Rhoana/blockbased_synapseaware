@@ -460,12 +460,7 @@ def PlotCorrelation(x, y, labels, output_filename):
     fig, ax = plt.subplots()
 
     # find the correlation for these sets of points
-    slope, intercept, r_value, p_value, _ = scipy.stats.linregress(x, y)
-
-    print (slope)
-    print (intercept)
-    print (r_value)
-    print (p_value)
+    slope, intercept, r_value, _, _ = scipy.stats.linregress(x, y)
     
     # create the scatter plot
     ax.scatter(x, y, color='#328da8')
