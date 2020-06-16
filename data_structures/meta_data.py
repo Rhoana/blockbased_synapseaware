@@ -289,6 +289,10 @@ class MetaData:
 
 
 
+    def SomataDirectory(self):
+        return self.somata_path
+
+
     def SynapseDirectory(self):
         return self.synapse_path
 
