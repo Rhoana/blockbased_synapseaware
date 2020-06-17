@@ -153,3 +153,40 @@ def CalculateBlockStatisticsSequentially(meta_filename):
                 CalculatePerBlockStatistics(data, iz, iy, ix)
 
     CombineStatistics(data)
+
+
+
+def CalculateSomataStatistics(meta_filename):
+    data = ReadMetaData(meta_filename)
+
+    somata_statistics = {}
+    
+    # iterate over all blocks
+    for iz in range(data.StartZ(), data.EndZ()):
+        for iy in range(data.StartY(), data.EndY()):
+            for ix in range(data.StartX(), data.EndX()):
+                print ('{} {:04d}z-{:04d}y-{:04d}x'.format(meta_filename, iz, iy, ix))
+                # some datasets have no somata (default value)
+                upsampled_non_zero_voxels = 0
+                
+                if data.SomataDownsampleRate():
+                   somata = data.ReadSomataBlock(iz, iy, ix)
+                   
+                   # get the number of non zero voxels
+                   non_zero_voxels = np.count_nonzero(somata)
+
+                   # the upsample factor is the number of voxels at full resolution correspond
+                   # to one voxel at the downsampled resolution
+                   upsample_factor = data.SomataDownsampleRate() ** 3
+
+                   # the number of voxels masked as full resolution 
+                   upsampled_non_zero_voxels = upsample_factor * non_zero_voxels
+
+                somata_statistics[(iz, iy, ix)] = upsampled_non_zero_voxels
+                   
+    statistics_directory = '{}/statistics'.format(data.TempDirectory())
+    if not os.path.exists(statistics_directory):
+        os.makedirs(statistics_directory, exist_ok=True)
+    
+    statistics_filename = '{}/somata-statistics.pickle'.format(statistics_directory)
+    PickleData(somata_statistics, statistics_filename)

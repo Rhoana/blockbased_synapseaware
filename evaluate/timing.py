@@ -485,6 +485,7 @@ def PlotCorrelation(x, y, labels, output_filename):
 
 def ConductBlockTimingAnalysis(meta_filenames):
     n_non_zero_voxels_per_block = {}
+    n_somata_voxels_per_block = {}
     skeleton_times_per_block = {}
     hole_filling_times_per_block = {}
     
@@ -500,6 +501,10 @@ def ConductBlockTimingAnalysis(meta_filenames):
         times = ReadPickledData(timing_filename)
         
         statistics_directory = '{}/statistics'.format(data.TempDirectory())
+
+        somata_statistics_filename = '{}/somata-statistics.pickle'.format(statistics_directory)
+        somata_statistics = ReadPickledData(somata_statistics_filename)
+
         for iz in range(data.StartZ(), data.EndZ()):
             for iy in range(data.StartY(), data.EndY()):
                 for ix in range(data.StartX(), data.EndX()):
@@ -511,9 +516,11 @@ def ConductBlockTimingAnalysis(meta_filenames):
                     n_non_zero_voxels_per_block[(meta_filename, iz, iy, ix)] = statistics['filled_n_non_zero']
                     skeleton_times_per_block[(meta_filename, iz, iy, ix)] = times['skeletonization'][(iz, iy, ix)]
                     hole_filling_times_per_block[(meta_filename, iz, iy, ix)] = times['hole-filling'][(iz, iy, ix)]
+                    n_somata_voxels_per_block[(meta_filename, iz, iy, ix)] = somata_statistics[(iz, iy, ix)]
                     
     # intrinsic properties of the blocks
     n_non_zero_voxels = []
+    n_non_zero_voxels_sans_somata = []
     n_zero_voxels = []
     block_fill_proportion = []
     block_empty_proportion = []
@@ -530,6 +537,7 @@ def ConductBlockTimingAnalysis(meta_filenames):
 
         # get the intrinsic properties in list form
         n_non_zero_voxels.append(n_non_zero_voxels_per_block[key] / 10 ** 6)
+        n_non_zero_voxels_sans_somata.append((n_non_zero_voxels_per_block[key] - n_somata_voxels_per_block[key]) / 10 ** 6)
         n_zero_voxels.append((block_volume - n_non_zero_voxels_per_block[key]) / 10 ** 9)
                 
         # get the timing properties in list form (seconds)
@@ -548,7 +556,7 @@ def ConductBlockTimingAnalysis(meta_filenames):
     labels['x-label'] = 'Millions of Object Voxels'
     labels['y-label'] = 'CPU Time (seconds)'
     labels['title'] = 'Skeletonization CPU Time'
-    PlotCorrelation(n_non_zero_voxels, skeleton_times, labels, output_filename)
+    PlotCorrelation(n_non_zero_voxels_sans_somata, skeleton_times, labels, output_filename)
 
 
     
