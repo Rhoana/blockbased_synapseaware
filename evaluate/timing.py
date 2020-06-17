@@ -465,7 +465,13 @@ def PlotCorrelation(x, y, labels, output_filename):
     # create the scatter plot
     ax.scatter(x, y, color='#328da8')
 
-    ax.plot([0, max(x)], [intercept, slope * max(x) + intercept], color='#962020', label='y = {:0.2f} x + {:0.2f} (R = {:0.4f})'.format(slope, intercept, r_value))
+    if intercept > 0:
+        best_fit_label = 'y = {:0.2f}x + {:0.2f} (R = {:0.4f})'.format(slope, intercept, r_value)
+    else:
+        best_fit_label = 'y = {:0.2f}x - {:0.2f} (R = {:0.4f})'.format(slope, -1 * intercept, r_value)
+        
+    
+    ax.plot([0, max(x)], [intercept, slope * max(x) + intercept], color='#962020', label=best_fit_label)
 
     ax.set_xlabel(labels['x-label'], fontsize=14)
     ax.set_ylabel(labels['y-label'], fontsize=14)
@@ -478,12 +484,12 @@ def PlotCorrelation(x, y, labels, output_filename):
 
     plt.savefig(output_filename)
     
-    plt.clf()
+    plt.close()
     
     
 
 
-def ConductBlockTimingAnalysis(meta_filenames):
+def ConductBlockTimingAnalysis(meta_filenames, output_directory):
     n_non_zero_voxels_per_block = {}
     n_somata_voxels_per_block = {}
     skeleton_times_per_block = {}
@@ -546,13 +552,13 @@ def ConductBlockTimingAnalysis(meta_filenames):
         
     labels = {}
         
-    output_filename = 'figures/block-based-hole-filling-time.png'
+    output_filename = '{}/block-based-hole-filling-time.png'.format(output_directory)
     labels['x-label'] = 'Billions of Background Voxels'
     labels['y-label'] = 'CPU Time (seconds)'
     labels['title'] = 'Hole Filling CPU Time'
     PlotCorrelation(n_zero_voxels, hole_filling_times, labels, output_filename)
 
-    output_filename = 'figures/block-based-skeleton-time.png'
+    output_filename = '{}/block-based-skeleton-time.png'.format(output_directory)
     labels['x-label'] = 'Millions of Object Voxels'
     labels['y-label'] = 'CPU Time (seconds)'
     labels['title'] = 'Skeletonization CPU Time'
