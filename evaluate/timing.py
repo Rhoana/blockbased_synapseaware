@@ -456,7 +456,7 @@ def ConductEndToEndTimingAnalysis(meta_filename):
 
 
 
-def PlotCorrelation(x, y, labels, output_filename):
+def PlotCorrelation(x, y, labels, output_prefix):
     fig, ax = plt.subplots()
 
     # find the correlation for these sets of points
@@ -466,9 +466,9 @@ def PlotCorrelation(x, y, labels, output_filename):
     ax.scatter(x, y, color='#328da8')
 
     if intercept > 0:
-        best_fit_label = 'y = {:0.2f}x + {:0.2f} (R = {:0.4f})'.format(slope, intercept, r_value)
+        best_fit_label = '$y = {:0.2f}x + {:0.2f}$ ($R^2$ = {:0.4f})'.format(slope, intercept, r_value ** 2)
     else:
-        best_fit_label = 'y = {:0.2f}x - {:0.2f} (R = {:0.4f})'.format(slope, -1 * intercept, r_value)
+        best_fit_label = '$y = {:0.2f}x - {:0.2f}$ ($R^2$ = {:0.4f})'.format(slope, -1 * intercept, r_value ** 2)
         
     
     ax.plot([0, max(x)], [intercept, slope * max(x) + intercept], color='#962020', label=best_fit_label)
@@ -482,7 +482,15 @@ def PlotCorrelation(x, y, labels, output_filename):
     
     plt.tight_layout()
 
+    output_filename = '{}.png'.format(output_prefix)
     plt.savefig(output_filename)
+
+    # save the slope, intercept, and r_value for this configuration
+    output_filename = '{}.txt'.format(output_prefix)
+    with open(output_filename, 'w') as fd:
+        fd.write('m = {:0.4f}\n'.format(slope))
+        fd.write('b = {:0.4f}\n'.format(intercept))
+        fd.write('R^2 = {:0.4f}\n'.format(r_value ** 2))
     
     plt.close()
     
@@ -552,17 +560,17 @@ def ConductBlockTimingAnalysis(meta_filenames, output_directory):
         
     labels = {}
         
-    output_filename = '{}/block-based-hole-filling-time.png'.format(output_directory)
+    output_prefix = '{}/block-based-hole-filling-time'.format(output_directory)
     labels['x-label'] = 'Billions of Background Voxels'
     labels['y-label'] = 'CPU Time (seconds)'
     labels['title'] = 'Hole Filling CPU Time'
-    PlotCorrelation(n_zero_voxels, hole_filling_times, labels, output_filename)
+    PlotCorrelation(n_zero_voxels, hole_filling_times, labels, output_prefix)
 
-    output_filename = '{}/block-based-skeleton-time.png'.format(output_directory)
+    output_prefix = '{}/block-based-skeleton-time'.format(output_directory)
     labels['x-label'] = 'Millions of Object Voxels'
     labels['y-label'] = 'CPU Time (seconds)'
     labels['title'] = 'Skeletonization CPU Time'
-    PlotCorrelation(n_non_zero_voxels_sans_somata, skeleton_times, labels, output_filename)
+    PlotCorrelation(n_non_zero_voxels_sans_somata, skeleton_times, labels, output_prefix)
 
 
     
