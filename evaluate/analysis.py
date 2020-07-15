@@ -134,10 +134,34 @@ def EvaluateHoleFilling(meta_filename):
         else:
             hole_distribution[hole_size] += 1
 
+    # sort holes by the size of the hole volume
     sizes = sorted(hole_distribution.keys())
 
+    # calculate the cumulative volume and number of holes
+    cumulative_volume_sizes = [0]
+    cumulative_nholes = [0]
+    import math
     for size in sizes:
-        print ('{}: {}'.format(size, hole_distribution[size]))
+        # for each sized hole, update volume and number of holes less than or equal to this size
+        cumulative_volume_sizes.append((cumulative_volume_sizes[-1] + size * hole_distribution[size]))
+        cumulative_nholes.append((cumulative_nholes[-1] + hole_distribution[size]))
+
+    # calculate the total volume and number  of holes
+    total_volume = cumulative_volume_sizes[-1]
+    total_nholes = cumulative_nholes[-1]
+
+    # calculate the proportion of volume and holes for each size
+    #proportion_cumulative_volume_sizes = [ 100 * volume / total_volume for volume in cumulative_volume_sizes ]
+    #proportion_cumulative_nholes = [ 100 * holes / total_nholes for holes in cumulative_nholes ]
+
+    fig, ax = plt.subplots()
+
+    ax.plot(cumulative_volume_sizes, cumulative_nholes)
+
+    ax.set_ylabel('Cumulative Proportion of Sizes', fontsize=16)
+    ax.set_xlabel('Cumulative Proportion of Volume', fontsize=16)
+
+    plt.show()
 
 
 

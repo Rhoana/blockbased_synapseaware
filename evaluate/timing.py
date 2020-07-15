@@ -368,12 +368,12 @@ def ConductEndToEndTimingAnalysis(meta_filename):
         times['combine-labels'] = CombineAssociatedLabels(data, fd)
         times['fill-holes'] = FillHoles(data, fd)
 
-        # create aggregate stats 
+        # create aggregate stats
         times['hole-filling'] = {}
         for key in times['components']:
             # ignore the combine-labels time since it is a global operation
             times['hole-filling'][key] = times['components'][key] + times['connect-labels'][key] + times['fill-holes'][key]
-        
+
     # skeleton generation
     times['save-anchor-walls'] = SaveAnchorWalls(data, fd)
     times['compute-anchor-points'] = ComputeAnchorPoints(data, fd)
@@ -385,7 +385,7 @@ def ConductEndToEndTimingAnalysis(meta_filename):
     for key in times['save-anchor-walls']:
         # ignore the skeleton refinement time since it is a global operation
         times['skeletonization'][key] = times['save-anchor-walls'][key] + times['compute-anchor-points'][key] + times['topological-thinning'][key]
-        
+
     # close the timing file
     fd.close()
 
@@ -447,9 +447,9 @@ def ConductEndToEndTimingAnalysis(meta_filename):
         print ()
 
         fd.write('Total Time: {:0.2f} seconds\n'.format(total_time))
-    
+
     ComputeParallelStatistics(data, times)
-    
+
     # open the timing filename and output per block statistics
     timing_filename = '{}/timing-statistics-per-block.pickle'.format(figures_directory)
     PickleData(times, timing_filename)
@@ -461,7 +461,7 @@ def PlotCorrelation(x, y, labels, output_prefix):
 
     # find the correlation for these sets of points
     slope, intercept, r_value, _, _ = scipy.stats.linregress(x, y)
-    
+
     # create the scatter plot
     ax.scatter(x, y, color='#328da8')
 
@@ -469,8 +469,8 @@ def PlotCorrelation(x, y, labels, output_prefix):
         best_fit_label = '$y = {:0.2f}x + {:0.2f}$ ($R^2$ = {:0.4f})'.format(slope, intercept, r_value ** 2)
     else:
         best_fit_label = '$y = {:0.2f}x - {:0.2f}$ ($R^2$ = {:0.4f})'.format(slope, -1 * intercept, r_value ** 2)
-        
-    
+
+
     ax.plot([0, max(x)], [intercept, slope * max(x) + intercept], color='#962020', label=best_fit_label)
 
     ax.set_xlabel(labels['x-label'], fontsize=14)
@@ -479,7 +479,7 @@ def PlotCorrelation(x, y, labels, output_prefix):
     ax.set_title(labels['title'], fontsize=18)
 
     plt.legend()
-    
+
     plt.tight_layout()
 
     output_filename = '{}.png'.format(output_prefix)
@@ -491,10 +491,10 @@ def PlotCorrelation(x, y, labels, output_prefix):
         fd.write('m = {:0.4f}\n'.format(slope))
         fd.write('b = {:0.4f}\n'.format(intercept))
         fd.write('R^2 = {:0.4f}\n'.format(r_value ** 2))
-    
+
     plt.close()
-    
-    
+
+
 
 
 def ConductBlockTimingAnalysis(meta_filenames, output_directory):
@@ -502,22 +502,25 @@ def ConductBlockTimingAnalysis(meta_filenames, output_directory):
     n_somata_voxels_per_block = {}
     skeleton_times_per_block = {}
     hole_filling_times_per_block = {}
-    
+
     for meta_filename in meta_filenames:
         print (meta_filename)
 
         data = ReadMetaData(meta_filename)
-        
+
         # read the timing file for blocks
         figures_directory = data.FiguresDirectory()
         timing_filename = '{}/timing-statistics-per-block.pickle'.format(figures_directory)
 
         times = ReadPickledData(timing_filename)
-        
+
         statistics_directory = '{}/statistics'.format(data.TempDirectory())
 
-        somata_statistics_filename = '{}/somata-statistics.pickle'.format(statistics_directory)
-        somata_statistics = ReadPickledData(somata_statistics_filename)
+        if not data.SomataDirectory() == None:
+            somata_statistics_filename = '{}/somata-statistics.pickle'.format(statistics_directory)
+            somata_statistics = ReadPickledData(somata_statistics_filename)
+        else:
+            somata_statistics = {}
 
         for iz in range(data.StartZ(), data.EndZ()):
             for iy in range(data.StartY(), data.EndY()):
@@ -530,8 +533,11 @@ def ConductBlockTimingAnalysis(meta_filenames, output_directory):
                     n_non_zero_voxels_per_block[(meta_filename, iz, iy, ix)] = statistics['filled_n_non_zero']
                     skeleton_times_per_block[(meta_filename, iz, iy, ix)] = times['skeletonization'][(iz, iy, ix)]
                     hole_filling_times_per_block[(meta_filename, iz, iy, ix)] = times['hole-filling'][(iz, iy, ix)]
-                    n_somata_voxels_per_block[(meta_filename, iz, iy, ix)] = somata_statistics[(iz, iy, ix)]
-                    
+                    if (iz, iy, ix) in somata_statistics:
+                        n_somata_voxels_per_block[(meta_filename, iz, iy, ix)] = somata_statistics[(iz, iy, ix)]
+                    else:
+                        n_somata_voxels_per_block[(meta_filename, iz, iy, ix)] = 0
+
     # intrinsic properties of the blocks
     n_non_zero_voxels = []
     n_non_zero_voxels_sans_somata = []
@@ -542,7 +548,7 @@ def ConductBlockTimingAnalysis(meta_filenames, output_directory):
     # timing properties of the blocks (seconds)
     skeleton_times = []
     hole_filling_times = []
-        
+
     for key in n_non_zero_voxels_per_block.keys():
         # read the meta data to get the block size
         meta_filename = key[0]
@@ -553,13 +559,13 @@ def ConductBlockTimingAnalysis(meta_filenames, output_directory):
         n_non_zero_voxels.append(n_non_zero_voxels_per_block[key] / 10 ** 6)
         n_non_zero_voxels_sans_somata.append((n_non_zero_voxels_per_block[key] - n_somata_voxels_per_block[key]) / 10 ** 6)
         n_zero_voxels.append((block_volume - n_non_zero_voxels_per_block[key]) / 10 ** 9)
-                
+
         # get the timing properties in list form (seconds)
         skeleton_times.append(skeleton_times_per_block[key])
         hole_filling_times.append(hole_filling_times_per_block[key])
-        
+
     labels = {}
-        
+
     output_prefix = '{}/block-based-hole-filling-time'.format(output_directory)
     labels['x-label'] = 'Billions of Background Voxels'
     labels['y-label'] = 'CPU Time (seconds)'
@@ -571,6 +577,3 @@ def ConductBlockTimingAnalysis(meta_filenames, output_directory):
     labels['y-label'] = 'CPU Time (seconds)'
     labels['title'] = 'Skeletonization CPU Time'
     PlotCorrelation(n_non_zero_voxels_sans_somata, skeleton_times, labels, output_prefix)
-
-
-    
