@@ -583,4 +583,4 @@ def ConductBlockTimingAnalysis(meta_filenames, output_directory, ignored_blocks 
     labels['title'] = 'Skeletonization CPU Time'
     PlotCorrelation(n_non_zero_voxels_sans_somata, skeleton_times, labels, output_prefix)
 
-    return n_non_zero_voxels, hole_filling_times, n_non_zero_voxels_sans_somata, skeleton_times
+    return n_zero_voxels, hole_filling_times, n_non_zero_voxels_sans_somata, skeleton_times
