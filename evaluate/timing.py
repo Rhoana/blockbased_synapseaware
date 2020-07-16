@@ -530,7 +530,7 @@ def ConductBlockTimingAnalysis(meta_filenames, output_directory, ignored_blocks 
                 for ix in range(data.StartX(), data.EndX()):
                     key = (meta_filename, iz, iy, ix)
 
-                    if keey in ignored_blocks: continue
+                    if key in ignored_blocks: continue
 
                     # read the statistics for this block
                     statistics_filename = '{}/{:04d}z-{:04d}y-{:04d}x.pickle'.format(statistics_directory, iz, iy, ix)
