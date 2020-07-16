@@ -507,8 +507,6 @@ def ConductBlockTimingAnalysis(meta_filenames, output_directory):
     hole_filling_times_per_block = {}
 
     for meta_filename in meta_filenames:
-        print (meta_filename)
-
         data = ReadMetaData(meta_filename)
 
         # read the timing file for blocks
