@@ -498,6 +498,9 @@ def PlotCorrelation(x, y, labels, output_prefix):
 
 
 def ConductBlockTimingAnalysis(meta_filenames, output_directory):
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory, exist_ok=True)
+
     n_non_zero_voxels_per_block = {}
     n_somata_voxels_per_block = {}
     skeleton_times_per_block = {}
@@ -577,3 +580,5 @@ def ConductBlockTimingAnalysis(meta_filenames, output_directory):
     labels['y-label'] = 'CPU Time (seconds)'
     labels['title'] = 'Skeletonization CPU Time'
     PlotCorrelation(n_non_zero_voxels_sans_somata, skeleton_times, labels, output_prefix)
+
+    return n_non_zero_voxels, hole_filling_times, n_non_zero_voxels_sans_somata, skeleton_times
