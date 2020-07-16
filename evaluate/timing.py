@@ -497,9 +497,9 @@ def PlotCorrelation(x, y, labels, output_prefix):
 
 
 
-def ConductBlockTimingAnalysis(meta_filenames, output_directory):
+def ConductBlockTimingAnalysis(meta_filenames, output_directory, ignored_blocks = []):
     if not os.path.exists(output_directory):
-        os.makedirs(output_directory, exist_ok=True)
+        os.makedirs(output_directory, exist_ok = True)
 
     n_non_zero_voxels_per_block = {}
     n_somata_voxels_per_block = {}
@@ -507,6 +507,8 @@ def ConductBlockTimingAnalysis(meta_filenames, output_directory):
     hole_filling_times_per_block = {}
 
     for meta_filename in meta_filenames:
+        print (meta_filename)
+
         data = ReadMetaData(meta_filename)
 
         # read the timing file for blocks
@@ -526,18 +528,22 @@ def ConductBlockTimingAnalysis(meta_filenames, output_directory):
         for iz in range(data.StartZ(), data.EndZ()):
             for iy in range(data.StartY(), data.EndY()):
                 for ix in range(data.StartX(), data.EndX()):
+                    key = (meta_filename, iz, iy, ix)
+
+                    if keey in ignored_blocks: continue
+
                     # read the statistics for this block
                     statistics_filename = '{}/{:04d}z-{:04d}y-{:04d}x.pickle'.format(statistics_directory, iz, iy, ix)
                     statistics = ReadPickledData(statistics_filename)
 
                     # get the relevant statistics for this block
-                    n_non_zero_voxels_per_block[(meta_filename, iz, iy, ix)] = statistics['filled_n_non_zero']
-                    skeleton_times_per_block[(meta_filename, iz, iy, ix)] = times['skeletonization'][(iz, iy, ix)]
-                    hole_filling_times_per_block[(meta_filename, iz, iy, ix)] = times['hole-filling'][(iz, iy, ix)]
+                    n_non_zero_voxels_per_block[key] = statistics['filled_n_non_zero']
+                    skeleton_times_per_block[key] = times['skeletonization'][(iz, iy, ix)]
+                    hole_filling_times_per_block[key] = times['hole-filling'][(iz, iy, ix)]
                     if (iz, iy, ix) in somata_statistics:
-                        n_somata_voxels_per_block[(meta_filename, iz, iy, ix)] = somata_statistics[(iz, iy, ix)]
+                        n_somata_voxels_per_block[key] = somata_statistics[(iz, iy, ix)]
                     else:
-                        n_somata_voxels_per_block[(meta_filename, iz, iy, ix)] = 0
+                        n_somata_voxels_per_block[key] = 0
 
     # intrinsic properties of the blocks
     n_non_zero_voxels = []
@@ -579,4 +585,4 @@ def ConductBlockTimingAnalysis(meta_filenames, output_directory):
     labels['title'] = 'Skeletonization CPU Time'
     PlotCorrelation(n_non_zero_voxels_sans_somata, skeleton_times, labels, output_prefix)
 
-    return n_non_zero_voxels_per_block, hole_filling_times_per_block, n_non_zero_voxels_sans_somata_per_block, skeleton_times_per_block
+    return n_non_zero_voxels, hole_filling_times, n_non_zero_voxels_sans_somata, skeleton_times
