@@ -53,7 +53,7 @@ def EvaluateHoleFilling(meta_filename):
     neighbor_label_dict_global = ReadPickledData(neighbor_label_filename)
     associated_label_filename = '{}/hole-filling-associated-labels.pickle'.format(tmp_directory)
     associated_label_dict = ReadPickledData(associated_label_filename)
-
+    
     # make sure that the keys are identical for hole sizes and associated labels (sanity check)
     assert (sorted(hole_sizes.keys()) == sorted(associated_label_dict.keys()))
 
@@ -103,7 +103,7 @@ def EvaluateHoleFilling(meta_filename):
     for label in neighbor_label_dicts.keys():
         # skip over elements that remain background
         if not associated_label_dict[label]: continue
-
+        
         for neighbor_label in neighbor_label_dicts[label]:
             # skip over the actual neuron label
             if neighbor_label > 0: continue
@@ -123,46 +123,17 @@ def EvaluateHoleFilling(meta_filename):
 
         root_holes_sizes[root_label] += hole_sizes[label]
 
-    hole_distribution = {}
-
-    # go through all elements in neighbor label dicts
+    holes = []
     for root_label in root_holes_sizes.keys():
-        hole_size = root_holes_sizes[root_label]
+        holes.append(root_hole_sizes[root_label])
+        
+    # get statistics on the number of holes
+    nholes = len(holes)
 
-        if not hole_size in hole_distribution:
-            hole_distribution[hole_size] = 1
-        else:
-            hole_distribution[hole_size] += 1
 
-    # sort holes by the size of the hole volume
-    sizes = sorted(hole_distribution.keys())
-
-    # calculate the cumulative volume and number of holes
-    cumulative_volume_sizes = [0]
-    cumulative_nholes = [0]
-    import math
-    for size in sizes:
-        # for each sized hole, update volume and number of holes less than or equal to this size
-        cumulative_volume_sizes.append((cumulative_volume_sizes[-1] + size * hole_distribution[size]))
-        cumulative_nholes.append((cumulative_nholes[-1] + hole_distribution[size]))
-
-    # calculate the total volume and number  of holes
-    total_volume = cumulative_volume_sizes[-1]
-    total_nholes = cumulative_nholes[-1]
-
-    # calculate the proportion of volume and holes for each size
-    #proportion_cumulative_volume_sizes = [ 100 * volume / total_volume for volume in cumulative_volume_sizes ]
-    #proportion_cumulative_nholes = [ 100 * holes / total_nholes for holes in cumulative_nholes ]
-
-    fig, ax = plt.subplots()
-
-    ax.plot(cumulative_volume_sizes, cumulative_nholes)
-
-    ax.set_ylabel('Cumulative Proportion of Sizes', fontsize=16)
-    ax.set_xlabel('Cumulative Proportion of Volume', fontsize=16)
-
-    plt.show()
-
+    print ('No. Holes: {}'.format(nholes))
+    
+    
 
 
 def EvaluateSkeletons(meta_filename):
