@@ -151,7 +151,7 @@ def CalculateBlockStatisticsSequentially(meta_filename):
         for iy in range(data.StartY(), data.EndY()):
             for ix in range(data.StartX(), data.EndX()):
                 CalculatePerBlockStatistics(data, iz, iy, ix)
-
+                
     CombineStatistics(data)
 
 
