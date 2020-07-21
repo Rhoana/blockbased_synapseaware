@@ -53,7 +53,7 @@ def EvaluateHoleFilling(meta_filename):
     neighbor_label_dict_global = ReadPickledData(neighbor_label_filename)
     associated_label_filename = '{}/hole-filling-associated-labels.pickle'.format(tmp_directory)
     associated_label_dict = ReadPickledData(associated_label_filename)
-    
+
     # make sure that the keys are identical for hole sizes and associated labels (sanity check)
     assert (sorted(hole_sizes.keys()) == sorted(associated_label_dict.keys()))
 
@@ -103,7 +103,7 @@ def EvaluateHoleFilling(meta_filename):
     for label in neighbor_label_dicts.keys():
         # skip over elements that remain background
         if not associated_label_dict[label]: continue
-        
+
         for neighbor_label in neighbor_label_dicts[label]:
             # skip over the actual neuron label
             if neighbor_label > 0: continue
@@ -123,7 +123,7 @@ def EvaluateHoleFilling(meta_filename):
 
         root_holes_sizes[root_label.label] += hole_sizes[label]
 
-    # read in the statistics data to find total volume size 
+    # read in the statistics data to find total volume size
     statistics_directory = '{}/statistics'.format(data.TempDirectory())
     statistics_filename = '{}/combined-statistics.pickle'.format(statistics_directory)
     volume_statistics = ReadPickledData(statistics_filename)
@@ -132,13 +132,13 @@ def EvaluateHoleFilling(meta_filename):
     holes = []
 
     small_holes = 0
-    
+
     for root_label in root_holes_sizes.keys():
         if root_holes_sizes[root_label] < 5:
             small_holes += 1
 
         holes.append(root_holes_sizes[root_label])
-        
+
     # get statistics on the number of holes
     nholes = len(holes)
     total_hole_volume = sum(holes)
@@ -147,8 +147,8 @@ def EvaluateHoleFilling(meta_filename):
     print ('No. Holes: {}'.format(nholes))
     print ('Total Volume: {} ({:0.2f}%)'.format(total_hole_volume, 100.0 * total_hole_volume / total_volume))
 
-    
-    
+
+
 
 
 def EvaluateSkeletons(meta_filename):
@@ -498,7 +498,7 @@ def EvaluateWidths(data, label):
     # iterate over all skeleton points
     for iv in widths.keys():
         # get the estimated width at this location
-        width = widths[iv]
+        width = 2 * widths[iv]
 
         iz, iy, ix = data.GlobalIndexToIndices(iv)
 
@@ -507,7 +507,7 @@ def EvaluateWidths(data, label):
         vec[0,:] = (resolution[OR_Z] * iz, resolution[OR_Y] * iy, resolution[OR_X] * ix)
 
         # get the min distance from this point to the surface (true width)
-        min_distance = scipy.spatial.distance.cdist(np_point_cloud, vec).min()
+        min_distance = 2 * scipy.spatial.distance.cdist(np_point_cloud, vec).min()
 
         results['errors'].append(abs(width - min_distance))
         results['estimates'] += width
