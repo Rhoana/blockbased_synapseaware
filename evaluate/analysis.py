@@ -118,20 +118,35 @@ def EvaluateHoleFilling(meta_filename):
         root_label = Find(union_find_elements[label])
 
         # create this hole if it does not already exist
-        if not root_label in root_holes_sizes:
-            root_holes_sizes[root_label] = 0
+        if not root_label.label in root_holes_sizes:
+            root_holes_sizes[root_label.label] = 0
 
-        root_holes_sizes[root_label] += hole_sizes[label]
+        root_holes_sizes[root_label.label] += hole_sizes[label]
+
+    # read in the statistics data to find total volume size 
+    statistics_directory = '{}/statistics'.format(data.TempDirectory())
+    statistics_filename = '{}/combined-statistics.pickle'.format(statistics_directory)
+    volume_statistics = ReadPickledData(statistics_filename)
+    total_volume = volume_statistics['neuronal_volume']
 
     holes = []
+
+    small_holes = 0
+    
     for root_label in root_holes_sizes.keys():
-        holes.append(root_hole_sizes[root_label])
+        if root_holes_sizes[root_label] < 5:
+            small_holes += 1
+
+        holes.append(root_holes_sizes[root_label])
         
     # get statistics on the number of holes
     nholes = len(holes)
+    total_hole_volume = sum(holes)
 
-
+    print ('Percent Small: {}'.format(100.0 * small_holes / nholes))
     print ('No. Holes: {}'.format(nholes))
+    print ('Total Volume: {} ({:0.2f}%)'.format(total_hole_volume, 100.0 * total_hole_volume / total_volume))
+
     
     
 
