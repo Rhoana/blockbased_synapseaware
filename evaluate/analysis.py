@@ -246,7 +246,7 @@ def EvaluateSkeletons(meta_filename):
     fd.write ('Topological Thinning:     {:10d}    ({:05.2f}%)  {:10.2f}x\n'.format(total_thinned_skeleton_length, thinned_remaining_percent, thinning_reduction_factor))
     fd.write ('Skeleton Refinement:      {:10d}    ({:05.2f}%)  {:10.2f}x\n'.format(total_refined_skeleton_length, refined_remaining_percent, refinement_reduction_factor))
     fd.write ('Total:                                  ({:05.2f}%)  {:10.2f}x\n'.format(total_skeleton_percent, total_skeleton_reduction))
-    fd.write ('Average Skeleton: {:0.0.f}'.format(total_refined_skeleton_length / nlabels))
+    fd.write ('Average Skeleton: {:0.0f}'.format(total_refined_skeleton_length / nlabels))
 
     # close the file
     fd.close()
