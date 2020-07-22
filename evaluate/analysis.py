@@ -167,6 +167,7 @@ def EvaluateSkeletons(meta_filename):
     total_volume = 0
     total_thinned_skeleton_length = 0
     total_refined_skeleton_length = 0
+    nlabels = 0
 
     # get the output filename
     evaluation_directory = data.EvaluationDirectory()
@@ -223,6 +224,8 @@ def EvaluateSkeletons(meta_filename):
         fd.write ('  Skeleton Refinement:    {:10d}    ({:05.2f}%)  {:10.2f}x\n'.format(refined_skeleton_length, refined_remaining_percent, refinement_reduction_factor))
         fd.write ('  Total:                                ({:05.2f}%)  {:10.2f}x\n'.format(total_skeleton_percent, total_skeleton_reduction))
 
+        nlabels += 1
+
     # calculate the percent and reduction of total voxels remaining
     thinned_remaining_percent = 100 * total_thinned_skeleton_length / total_volume
     thinning_reduction_factor = total_volume / total_thinned_skeleton_length
@@ -237,11 +240,13 @@ def EvaluateSkeletons(meta_filename):
     print ('Topological Thinning:     {:10d}    ({:05.2f}%)  {:10.2f}x'.format(total_thinned_skeleton_length, thinned_remaining_percent, thinning_reduction_factor))
     print ('Skeleton Refinement:      {:10d}    ({:05.2f}%)  {:10.2f}x'.format(total_refined_skeleton_length, refined_remaining_percent, refinement_reduction_factor))
     print ('Total:                                  ({:05.2f}%)  {:10.2f}x'.format(total_skeleton_percent, total_skeleton_reduction))
+    print ('Average Skeleton: {:0.0f}'.format(total_refined_skeleton_length / nlabels))
 
     fd.write ('Input Volume:             {:10d}\n'.format(total_volume))
     fd.write ('Topological Thinning:     {:10d}    ({:05.2f}%)  {:10.2f}x\n'.format(total_thinned_skeleton_length, thinned_remaining_percent, thinning_reduction_factor))
     fd.write ('Skeleton Refinement:      {:10d}    ({:05.2f}%)  {:10.2f}x\n'.format(total_refined_skeleton_length, refined_remaining_percent, refinement_reduction_factor))
     fd.write ('Total:                                  ({:05.2f}%)  {:10.2f}x\n'.format(total_skeleton_percent, total_skeleton_reduction))
+    fd.write ('Average Skeleton: {:0.0.f}'.format(total_refined_skeleton_length / nlabels))
 
     # close the file
     fd.close()
@@ -498,7 +503,7 @@ def EvaluateWidths(data, label):
     # iterate over all skeleton points
     for iv in widths.keys():
         # get the estimated width at this location
-        width = 2 * widths[iv]
+        width = widths[iv]
 
         iz, iy, ix = data.GlobalIndexToIndices(iv)
 
@@ -507,7 +512,7 @@ def EvaluateWidths(data, label):
         vec[0,:] = (resolution[OR_Z] * iz, resolution[OR_Y] * iy, resolution[OR_X] * ix)
 
         # get the min distance from this point to the surface (true width)
-        min_distance = 2 * scipy.spatial.distance.cdist(np_point_cloud, vec).min()
+        min_distance = scipy.spatial.distance.cdist(np_point_cloud, vec).min()
 
         results['errors'].append(abs(width - min_distance))
         results['estimates'] += width
