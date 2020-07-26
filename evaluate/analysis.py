@@ -481,16 +481,14 @@ def EvaluateWidths(data, label):
     surface = surfaces[label]
     npoints = len(surface)
 
-    # conver the surface into a numpy point cloud
-    np_point_cloud = np.zeros((npoints, 3), dtype=np.int32)
+    # convert the surface into a numpy point cloud
+    np_point_cloud = np.zeros((npoints, 3), dtype=np.float32)
     for index, iv in enumerate(surface):
         # convert the index into indices
         iz, iy, ix = data.GlobalIndexToIndices(iv)
 
         # set the point cloud value according to the resolutions
         np_point_cloud[index,:] = (resolution[OR_Z] * iz, resolution[OR_Y] * iy, resolution[OR_X] * ix)
-
-        index += 1
 
     # create empty dictionary for all results
     results = {}
@@ -508,7 +506,7 @@ def EvaluateWidths(data, label):
         iz, iy, ix = data.GlobalIndexToIndices(iv)
 
         # convert the coordinates into a 2d vector with the resolutions
-        vec = np.zeros((1, 3), dtype=np.int32)
+        vec = np.zeros((1, 3), dtype=np.float32)
         vec[0,:] = (resolution[OR_Z] * iz, resolution[OR_Y] * iy, resolution[OR_X] * ix)
 
         # get the min distance from this point to the surface (true width)
@@ -595,3 +593,156 @@ def EvaluateWidthsSequentially(meta_filename):
         EvaluateWidths(data, label)
 
     CombineEvaluatedWidths(data)
+
+
+
+def EvaluateGeodesicDistances(data, label):
+    # get the resolution of this data 
+    resolution = data.Resolution()
+
+    # read the distance attributes filename
+    distances_directory = '{}/distances'.format(data.SkeletonOutputDirectory())
+    distance_filename = '{}/{:016d}.pts'.format(distances_directory, label)
+
+    # skip over labels not processed
+    if not os.path.exists(distance_filename): return 
+
+    # read the distance attributes 
+    distances, input_label = ReadAttributePtsFile(data, distance_filename)
+    assert (input_label == label)
+
+    # get the synapses filename 
+    synapses_filename = '{}/synapses/{:016d}.pts'.format(data.TempDirectory(), label)
+    if not os.path.exists(synapses_filename): return 
+
+    synapses, _ = ReadPtsFile(data, synapses_filename)
+    synapses = synapses[label]
+
+    # get the somata surface filename 
+    somata_surface_filename = '{}/somata_surfaces/{:016d}.pts'.format(data.TempDirectory(), label)
+    if not os.path.exists(somata_surface_filename): return 
+
+    somata_surfaces, _ = ReadPtsFile(data, somata_surface_filename)
+    somata_surface = somata_surfaces[label]
+    npoints = len(somata_surface)
+
+    # convert the somata surfaces into a numpy point cloud
+    np_point_cloud = np.zeros((npoints, 3), dtype=np.float32)
+    for index, iv in enumerate(somata_surface):
+        # convert the index into indices 
+        iz, iy, ix = data.GlobalIndexToIndices(iv)
+
+        # set the piont cloud value according to the resolution 
+        np_point_cloud[index,:] = (resolution[OR_Z] * iz, resolution[OR_Y] * iy, resolution[OR_X] * ix)
+
+    # create empty dictionary for all results 
+    results = {}
+
+    # keep track of all errors for this label 
+    results['diffs'] = []
+    results['euclidean'] = 0
+    results['geodesic'] = 0
+
+    for iv in synapses:
+        # get the estimated distance at this synapse point 
+        distance = distances[iv]
+
+        iz, iy, ix = data.GlobalIndexToIndices(iv)
+
+        # convert the coordinates into a 2d vector with the resolutions 
+        vec = np.zeros((1, 3), dtype=np.float32)
+        vec[0,:] = (resolution[OR_Z] * iz, resolution[OR_Y] * iy, resolution[OR_X] * ix)
+
+        # get the min distance from this point to the surface (euclidean distance)
+        euclidean_distance = scipy.spatial.distance.cdist(np_point_cloud, vec).min()
+
+        if (distance > 5 * euclidean_distance):
+            print ('Label: {}'.format(label))
+            print (iz, iy, ix)
+            print (distance)
+            print (euclidean_distance)
+            
+            import sys
+            
+            sys.exit()
+
+        results['diffs'].append(abs(distance - euclidean_distance))
+        results['euclidean'] += euclidean_distance 
+        results['geodesic'] += distance 
+
+    if len(results['diffs']) < 2: return 
+        
+    # output the differences, euclidean, and geodesic distances 
+    tmp_distances_directory = '{}/results/distances'.format(data.TempDirectory())
+    if not os.path.exists(tmp_distances_directory):
+        os.makedirs(tmp_distances_directory, exist_ok=True)
+
+    output_filename = '{}/{:016d}.pickle'.format(tmp_distances_directory, label)
+    PickleData(results, output_filename)
+
+
+
+def CombineGeodesicDistances(data):
+    diffs = []
+    euclideans = 0
+    geodesics = 0
+
+    # get the output filename 
+    evaluation_directory = data.EvaluationDirectory()
+    if not os.path.exists(evaluation_directory):
+        os.makedirs(evaluation_directory, exist_ok=True)
+
+    output_filename = '{}/distance-results.txt'.format(evaluation_directory)
+    fd = open(output_filename, 'w') 
+
+    for label in range(1, data.NLabels()):
+        # read the generated distances 
+        tmp_distances_directory = '{}/results/distances'.format(data.TempDirectory())
+        distances_filename = '{}/{:016d}.pickle'.format(tmp_distances_directory, label)
+
+        # skip over files that do not exist 
+        if not os.path.exists(distances_filename): continue
+
+        results = ReadPickledData(distances_filename)
+
+        # output the results and update the average distances
+        print ('Label: {}'.format(label))
+        print ('  Mean Absolute Difference: {:0.4f} (\u00B1{:0.2f}) nanometers'.format(statistics.mean(results['diffs']), statistics.stdev(results['diffs'])))
+        print ('  Euclidean Distances: {:0.4f}'.format(results['euclidean']))
+        print ('  Geodesic Distances: {:0.4f}'.format(results['geodesic']))
+        print ('  Difference: {:0.4f}%'.format(100.0 * (results['geodesic'] - results['euclidean']) / results['euclidean']))
+
+        fd.write ('Label: {}\n'.format(label))
+        fd.write ('  Mean Absolute Difference: {:0.4f} (\u00B1{:0.2f}) nanometers\n'.format(statistics.mean(results['diffs']), statistics.stdev(results['diffs'])))
+        fd.write ('  Euclidean Distances: {:0.4f}\n'.format(results['euclidean']))
+        fd.write ('  Geodesic Distances: {:0.4f}\n'.format(results['geodesic']))
+        fd.write ('  Difference: {:0.4f}%\n'.format(100.0 * (results['geodesic'] - results['euclidean']) / results['euclidean']))
+
+        # update global information 
+        diffs += results['diffs']
+        euclideans += results['euclidean']
+        geodesics += results['geodesic']
+        
+    print ('Total Volume')
+    print ('  Mean Absolute Difference: {:0.4f} (\u00B1{:0.2f}) nanometers'.format(statistics.mean(diffs), statistics.stdev(diffs)))
+    print ('  Euclidean Distances: {:0.4f}'.format(euclideans))
+    print ('  Geodesic Distances: {:0.4f}'.format(geodesics))
+    print ('  Difference: {:0.4f}%'.format(100.0 * (geodesics - euclideans) / euclideans))
+
+    fd.write ('Total Volume\n')
+    fd.write ('  Mean Absolute Difference: {:0.4f} (\u00B1{:0.2f}) nanometers\n'.format(statistics.mean(diffs), statistics.stdev(diffs)))
+    fd.write ('  Euclidean Distances: {:0.4f}\n'.format(euclideans))
+    fd.write ('  Geodesic Distances: {:0.4f}\n'.format(geodesics))
+    fd.write ('  Difference: {:0.4f}%\n'.format(100.0 * (geodesics - euclideans) / euclideans))
+
+
+
+
+def EvaluateGeodesicDistancesSequentially(meta_filename):
+    data = ReadMetaData(meta_filename)
+
+    # iterate over all labels and generate geodesic statistics 
+    for label in range(1, data.NLabels()):
+        EvaluateGeodesicDistances(data, label)
+
+    CombineGeodesicDistances(data)
