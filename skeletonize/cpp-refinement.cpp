@@ -167,6 +167,10 @@ static void RunDijkstrasAlgorithm(const char *skeleton_output_directory, long la
                     // get the linear index for this voxel
                     long neighbor_index = GlobalPaddedIndicesToPaddedIndex(iw, iv, iu);
 
+                    if (neighbor_index == 1559936083) {
+                        printf("Why\n");
+                    }
+
                     // skip if background
                     if (!segments[label][neighbor_index]) continue;
 
@@ -265,7 +269,16 @@ static void RunDijkstrasAlgorithm(const char *skeleton_output_directory, long la
 
         long dijkstra_index = dijkstra_map[padded_global_index];
         DijkstraData *dijkstra_data = &(voxel_data[dijkstra_index]);
-        float distance = dijkstra_data->distance;
+
+        // a weird artifact of somata downsampling...a voxel can be on the surface of the downsampled
+        // somata detected image slices but not on the surface of the full reoslution image slices.
+        // these synapse points have no neighbors since they are on the cell body surface which doesn't
+        // perfectly correspond with the cell body surface (gap between the two).
+        // when this occurs the voxel is not visited and has a distance of infinity.
+        // reset the distance here to 0
+        float distance;
+        if (dijkstra_data->visited) distance = dijkstra_data->distance;
+        else distance = 0.0;
 
         // update the arrays
         global_indices[iv] = global_index;
@@ -336,7 +349,7 @@ void CppSkeletonRefinement(const char *tmp_directory,
                 // read in the somata file if it exists for this label for this block
                 // this must occur first so that skeletons and synapses can override the default somata surface value of 4
                 char somata_filename[4096];
-                snprintf(somata_filename, 4096, "%s/%04ldz-%04ldy-%04ldx/somata_surfaces/%016ld.pts", tmp_directory, iz, iy, ix, label);
+                snprintf(somata_filename, 4096, "%s/%04ldz-%04ldy-%04ldx/somata/%016ld.pts", tmp_directory, iz, iy, ix, label);
 
                 // open the file, if it exists
                 FILE *somata_fp = fopen(somata_filename, "rb");
