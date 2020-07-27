@@ -621,7 +621,7 @@ def EvaluateGeodesicDistances(data, label):
     # get the somata surface filename 
     somata_surface_filename = '{}/somata_surfaces/{:016d}.pts'.format(data.TempDirectory(), label)
     if not os.path.exists(somata_surface_filename): return 
-
+    
     somata_surfaces, _ = ReadPtsFile(data, somata_surface_filename)
     somata_surface = somata_surfaces[label]
     npoints = len(somata_surface)
@@ -656,15 +656,10 @@ def EvaluateGeodesicDistances(data, label):
         # get the min distance from this point to the surface (euclidean distance)
         euclidean_distance = scipy.spatial.distance.cdist(np_point_cloud, vec).min()
 
-        if (distance > 5 * euclidean_distance):
-            print ('Label: {}'.format(label))
-            print (iz, iy, ix)
-            print (distance)
-            print (euclidean_distance)
-            
-            import sys
-            
-            sys.exit()
+        # geodesic distances could be less than euclidean only when the synapse is on the cell body
+        # surface but downsampling causes a disconnect between the assumed surface and the cell 
+        # body surface. skip these trivial points 
+        if (distance < euclidean_distance): continue 
 
         results['diffs'].append(abs(distance - euclidean_distance))
         results['euclidean'] += euclidean_distance 
