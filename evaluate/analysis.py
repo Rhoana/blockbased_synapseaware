@@ -643,6 +643,9 @@ def EvaluateGeodesicDistances(data, label):
     results['euclidean'] = 0
     results['geodesic'] = 0
 
+    # if there are no points return the empty set 
+    if not npoints: return 
+
     for iv in synapses:
         # get the estimated distance at this synapse point 
         distance = distances[iv]
