@@ -349,7 +349,7 @@ void CppSkeletonRefinement(const char *tmp_directory,
                 // read in the somata file if it exists for this label for this block
                 // this must occur first so that skeletons and synapses can override the default somata surface value of 4
                 char somata_filename[4096];
-                snprintf(somata_filename, 4096, "%s/%04ldz-%04ldy-%04ldx/somata/%016ld.pts", tmp_directory, iz, iy, ix, label);
+                snprintf(somata_filename, 4096, "%s/%04ldz-%04ldy-%04ldx/somata_surfaces/%016ld.pts", tmp_directory, iz, iy, ix, label);
 
                 // open the file, if it exists
                 FILE *somata_fp = fopen(somata_filename, "rb");
