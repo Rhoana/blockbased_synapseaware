@@ -167,10 +167,6 @@ static void RunDijkstrasAlgorithm(const char *skeleton_output_directory, long la
                     // get the linear index for this voxel
                     long neighbor_index = GlobalPaddedIndicesToPaddedIndex(iw, iv, iu);
 
-                    if (neighbor_index == 1559936083) {
-                        printf("Why\n");
-                    }
-
                     // skip if background
                     if (!segments[label][neighbor_index]) continue;
 
