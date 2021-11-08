@@ -27,6 +27,13 @@ makeflow_example/working_directories/*
 makeflow_example/working_dir_*/temp_files/*
 makeflow_example/working_dir_*/slurm*
 
+# example output files
+example/results
+example/segmentations
+example/skeletons
+example/surfaces
+example/temp
+
 # skip parameter files
 makeflow_example/mf_parameter_files/
 
