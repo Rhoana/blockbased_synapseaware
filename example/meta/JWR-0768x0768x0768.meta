@@ -17,7 +17,7 @@ surfaces/JWR/0768x0768x0768
 # resolution in nm (x, y, z)
 32x64x30
 # max label
-132
+135
 # somata downsample rate
 4
 # temporary files directory
