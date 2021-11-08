@@ -11,7 +11,7 @@ Automatically segmented neural circuits typically include multiple holes of vari
 ### Skeletonization
 Skeletonization takes as input the filled segmentation and the location of all synapses present in the volume. Additionally, a somata segmentation can be provided. Using this somata segmentation, somata can be masked out in the computation, which reduces the computational demand.  In a first step, so called “anchor points” on all block surfaces are computed, guaranteeing skeleton continuity over block boundaries. Also, if provided, the outer surface of each soma is detected and fixed, forcing skeletons to arise from the soma surface. <br /> Anchorpoints, somata surface points and the already known synapses are then set as fixpoints in the subsequent topological thinning step.  During topological thinning, neuron surfaces are gradually eroded, while always preserving topology. <br /> The skeleton is found when there are no more points (voxels) left that can be eroded, either because a potential voxel is a fixpoint or because its removal would lead to a change in topology. <br /> The skeletons are at first computed for each label present in each block and saved as an intermediate result.   In a final step, the global skeleton for each label is assembled from the various segments resulting from different blocks. Next, a refinement step is executed and the final skeletons for each label are saved as pointfiles.
 ## Installation
-TODO
+
 ## File Types
 ### Point Files
 Point coordinates (x,y,z) are generally saved as linear indices. 
