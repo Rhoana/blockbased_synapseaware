@@ -589,8 +589,8 @@ def EvaluateWidthsSequentially(meta_filename):
     data = ReadMetaData(meta_filename)
 
     # iterate over all labels and generate width statistics
-    #for label in range(1, data.NLabels()):
-    #    EvaluateWidths(data, label)
+    for label in range(1, data.NLabels()):
+        EvaluateWidths(data, label)
 
     CombineEvaluatedWidths(data)
 
@@ -740,7 +740,7 @@ def EvaluateGeodesicDistancesSequentially(meta_filename):
     data = ReadMetaData(meta_filename)
 
     # iterate over all labels and generate geodesic statistics
-    #for label in range(1, data.NLabels()):
-    #    EvaluateGeodesicDistances(data, label)
+    for label in range(1, data.NLabels()):
+        EvaluateGeodesicDistances(data, label)
 
     CombineGeodesicDistances(data)
